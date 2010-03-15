@@ -34,16 +34,11 @@ var Layout = {
 
 		// set editor labels
 		var result = document.id('result');
-		$$('.window_label').setStyle('opacity',0.8);
+		$$('.window_label').setStyle('opacity', 0.8);
 		if (result) {
 			result.getElement('.window_label').setStyle('opacity', 0.3);
 			this.result = result.getElement('iframe');
 		}
-
-		// set appropriate classes to the first and the last action items
-		var actions = document.id('actions');
-		actions.getElement('a.collapsedActions').addClass('firstChild');
-		actions.getElements('a.collapsedActions:last-child').addClass('lastChild');
 
 		this.resize();
 

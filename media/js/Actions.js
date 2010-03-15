@@ -47,14 +47,14 @@ var MooShellActions = new Class({
 			'data': {shell_id: shell_id},
 			'onSuccess': function(response) {
 				// #TODO: reload page after successful save
-				$('mark_favourite').addClass('isFavourite')
-					.getElements('span')[0].set('text', 'Base');
+				$('mark_favourite').addClass('isFavourite').getElements('span')[0].set('text', 'Base');
 			}
 		}).send();
 	
 	},
 	// save and create new pastie
-	saveAsNew: function() {
+	saveAsNew: function(e) {
+		e.stop(); 
 		Layout.updateFromMirror();
 		$('id_slug').value='';
 		$('id_version').value='0';
@@ -72,7 +72,8 @@ var MooShellActions = new Class({
 		}).send(this.form);
 	},
 	// update existing (create shell with new version)
-	saveAndReload: function() {
+	saveAndReload: function(e) {
+		e.stop(); 
 		Layout.updateFromMirror();
 		new Request.JSON({
 			'url': this.options.exampleSaveUrl,
@@ -84,13 +85,15 @@ var MooShellActions = new Class({
 		}).send(this.form);
 	},
 	// run - submit the form (targets to the iframe)
-	run: function() { 
+	run: function(e) {
+		e.stop(); 
 		Layout.updateFromMirror();
 		document.id(this.options.formId).submit();
 		this.fireEvent('run');
 	},
 	// clean all entries, rename example to default value
-	cleanEntries: function () {
+	cleanEntries: function(e) {
+		e.stop(); 
 		// here reload Mirrors
 		Layout.cleanMirrors();
 		$$(this.options.entriesSelector).each( function(t) {t.value='';});
@@ -295,4 +298,4 @@ var Base64 = {
 		return string;
 	}
  
-}
+};
