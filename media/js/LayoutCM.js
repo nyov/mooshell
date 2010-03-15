@@ -40,14 +40,6 @@ var Layout = {
 			this.result = result.getElement('iframe');
 		}
 
-		// set appropriate classes to the first and the last action items
-		var actions = document.id('actions');
-		
-		if (actions.getElement('.collapsedActions')){
-			actions.getElement('a.collapsedActions').addClass('firstChild');
-			actions.getElements('a.collapsedActions:last-child').addClass('lastChild');
-		}
-
 		this.resize();
 
 		if (!Browser.Engine.trident4) {
