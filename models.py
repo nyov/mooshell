@@ -113,6 +113,9 @@ class ExternalResource(models.Model):
 	def __str__(self):
 		return self.filename
 
+	class Meta:
+		ordering = ["id"]
+
 	@property
 	def filename(self):
 		if not hasattr(self, '_filename'):
