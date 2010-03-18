@@ -23,49 +23,14 @@
 	
 	{% for css in css_files %}<link rel="stylesheet" type="text/css" href="{{ css }}"/>{% endfor %}
 	<script type='text/javascript'>
-		var height,
+		var height, 
+			force_height = null,
 			show_src = "{{ FORCE_SHOW_SERVER }}{{ shell.get_show_url }}{{ skin }}/",
-			resize_element_counter = 0;
+			resize_element_counter = 0,
+			shell_edit_url = '{{ shell.get_absolute_url }}{{ skin }}/';
+
+		{% if height %}force_height = {{ height }};{% endif %}
 		
-		window.addEvents({
-			load: function(){
-				height = {% if height %}{{ height }}{% else %}window.getSize().y{% endif %} - $('head').getSize().y - 20;
-				$$('.tCont').setStyle('height', height);
-				$('result_trigger').addEvent('click', loadResult);
-				$('run').addEvent('click', function() { 
-					if (!$('result').hasClass('active')) {
-						this.switchTab(
-							$('result_trigger'), 
-							this.sections.indexOf($('result'))
-						);
-					}
-				}.bind(window));
-				$('run').addEvent('click', loadResult);
-				$('edit').addEvent('click', function(){
-					window.open('{{ shell.get_absolute_url }}{{ skin }}/','editor');
-				});
-				this.sections	= $$('#tabs .tCont');
-				this.actions	= $$('#actions a');
-				
-				this.actions.each(function(action, index){
-					action.addEvents({
-						click: function(e){
-							if (e) e.stop();
-							this.switchTab(action, index);
-						}.bind(this)
-					});
-				}, this);
-				
-				if (!this.sections[0].hasClass('result')) this.actions[0].fireEvent('click');
-			},
-			result_included: function() {
-				$('result_trigger').removeEvent('click',loadResult);
-				$('run').removeEvent('click',loadResult);
-				$('run').addEvent('click', function() {
-					$('result').getFirst('iframe').src = show_src;
-				});
-			}
-		});
 	</script>
 </head>
 <body>
@@ -91,7 +56,7 @@
 				{% endifequal %}
 				{% ifequal tab.type "resources" %}<div class="resources tCont{% if forloop.first %} active{% endif %}" id="resources">
 					<h3>Following resources are loaded into result:</h3>
-					<ol>{% for resource in shell.external_resources.all %}
+					<ol>{% for resource in external_resources %}
 						<li><a href='{{ resource.url|safe }}' title="{{ resource.url }}">{{ resource.filename }}</a></li>
 					{% endfor %}</ol>
 				</div>{% endifequal %}

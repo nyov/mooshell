@@ -260,6 +260,9 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None, skin=N
 	
 	if not shell.external_resources.all() and "resources" in tabs_order:
 		tabs_order.remove("resources")
+		external_resources = []
+	else:
+		external_resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
 
 	tabs = []
 	for t in tabs_order:
@@ -274,6 +277,7 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None, skin=N
 		'height': height,
 		'server': server,
 		'shell': shell,
+		'external_resources': external_resources,
 		'skin': skin,
 		'tabs': tabs,
 		'code_tabs': ['js', 'css', 'html'],
