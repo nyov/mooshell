@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 
-from models import Pastie, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType
+from models import Pastie, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType, ShellExternalResource
 from forms import PastieForm, ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
@@ -54,6 +54,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 			user = get_object_or_404(User,username=author) if author else None
 			shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
 		
+		external_resources = ShellExternalResource.objects.filter(shell__id=shell.id)
+
 		example_url = ''.join([server, shell.get_absolute_url()])
 		embedded_url = ''.join([server, shell.get_embedded_url()])
 		shellform = ShellForm(instance=shell)
@@ -88,12 +90,14 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 		reverse("mooshell_js", args=["Sidebar.js"]),
 		reverse('mooshell_js', args=['LayoutCM.js']),
 		reverse("mooshell_js", args=["Actions.js"]),
+		reverse("mooshell_js", args=["Resources.js"]),
 		reverse("mooshell_js", args=["EditorCM.js"]),
 		reverse("mooshell_js", args=["Settings.js"]),
 	]
 	c.update({
 		'shellform':shellform,
 		'shell': shell,
+		'external_resources': external_resources,
 		'css_files': [reverse('mooshell_css', args=["%s.css" % skin])],
 		'js_libs': js_libs,
 		'examples': examples,
@@ -180,8 +184,13 @@ def pastie_save(req, nosave=False, skin=None):
 				shell.js_dependency.add(dep)
 		
 			# add saved external resources
-			for ext in external_resources:
-				shell.external_resources.add(ext)
+			for idx,ext in enumerate(external_resources):
+				#we use intermediate model now
+				#shell.external_resources.add(ext)
+				ShellExternalResource.objects.create(
+					shell=shell,
+					resource=ext,
+					ord=idx)
 
 			" return json with pastie url "
 			return HttpResponse(simplejson.dumps({
@@ -208,7 +217,7 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=No
 		shell = pastie.favourite
 		" prepare dependencies if needed "
 		dependencies = shell.js_dependency.all()
-		resources = shell.external_resources.all()
+		resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
 		
 	wrap = getattr(shell.js_lib, 'wrap_'+shell.js_wrap, None) if shell.js_wrap else None
 	if not slug:
@@ -289,9 +298,10 @@ def pastie_show(req, slug, version=None, author=None, skin=None):
 		user = get_object_or_404(User,username=author) if author else None
 		shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
 	if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
+	resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
 	return pastie_display(req, slug, shell, 
 						dependencies=shell.js_dependency.all(), 
-						resources=shell.external_resources.all(), skin=skin)
+						resources=resources, skin=skin)
 
 
 #TODO: remove if not used

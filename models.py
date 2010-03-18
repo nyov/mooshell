@@ -239,7 +239,11 @@ class Shell(models.Model):
 	js_lib_option = models.CharField(max_length=255, null=True, blank=True)
 	js_dependency = models.ManyToManyField(JSDependency, null=True, blank=True)
 	js_wrap = models.CharField(max_length=1, choices=WRAPCHOICE, default='d', null=True, blank=True)
-	external_resources = models.ManyToManyField(ExternalResource, null=True, blank=True)
+	external_resources = models.ManyToManyField(
+									ExternalResource, 
+									through='ShellExternalResource', 
+									null=True, blank=True
+	)
 	body_tag = models.CharField(max_length=255, null=True, blank=True, default="<body>")
 	doctype = models.ForeignKey(DocType, blank=True, null=True)
 
@@ -338,8 +342,15 @@ class Shell(models.Model):
 		pass
 
         
+class ShellExternalResource(models.Model):
+	shell = models.ForeignKey(Shell)
+	resource = models.ForeignKey(ExternalResource)
+	ord = models.IntegerField(blank=0, default=0)
+
+	class Meta:
+		ordering = ['ord']
+
     
-# I think it wasn't called as print was there before
 	
 def increase_version_on_save(instance, **kwargs):
 	if kwargs.get('raw',False): return
