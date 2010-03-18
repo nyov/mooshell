@@ -37,6 +37,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 	title = settings.MOOSHELL_NEW_TITLE
 		
 	doctypes = DocType.objects.all()
+	external_resources = []
 	if slug:
 		if skin:
 			" important as {user}/{slug} is indistingushable from {slug}/{skin} "
