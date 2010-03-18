@@ -19,7 +19,7 @@
 			{% for res in external_resources %}
 				<li id='external_resource_{{ res.resource.id }}'>
 					<a class='filename' href="{{ res.resource.url }}" title="{{ res.resource.url }}">
-						{{ res.resource.filename }} {{ res.ord }}
+						{{ res.resource.filename }}
 					</a>
 					<a onclick='remove_resource({{ res.resource.id }})' class='remove'>
 						Remove
