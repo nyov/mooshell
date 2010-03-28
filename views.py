@@ -38,6 +38,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 		
 	doctypes = DocType.objects.all()
 	external_resources = []
+	disqus_url = ''.join([server, '/'])
 	if slug:
 		if skin:
 			" important as {user}/{slug} is indistingushable from {slug}/{skin} "
