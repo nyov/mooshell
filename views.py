@@ -59,6 +59,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 
 		example_url = ''.join([server, shell.get_absolute_url()])
 		embedded_url = ''.join([server, shell.get_embedded_url()])
+		disqus_url = ''.join([server, shell.pastie.get_absolute_url()])
 		shellform = ShellForm(instance=shell)
 		c.update({
 				'is_author': (pastie.author and req.user.is_authenticated and pastie.author_id == req.user.id),
@@ -105,6 +106,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 		'doctypes': doctypes,
 		'title': title,
 		'example_url': example_url,
+		'disqus_url': disqus_url,
 		'web_server': server,
 		'skin': skin,
 		'get_dependencies_url': reverse("_get_dependencies", 
