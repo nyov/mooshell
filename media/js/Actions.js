@@ -93,15 +93,24 @@ var MooShellActions = new Class({
 	},
 	// clean all entries, rename example to default value
 	cleanEntries: function(e) {
-		e.stop(); 
-		// here reload Mirrors
-		Layout.cleanMirrors();
-		$$(this.options.entriesSelector).each( function(t) {t.value='';});
-		if (this.resultText) {
-			document.id(this.options.resultLabel).set('text', this.resultText);
+		e.stop();
+		
+		if (confirm('Are you sure you want to clear all fields?')){
+			// here reload Mirrors
+			Layout.cleanMirrors();
+
+			$$(this.options.entriesSelector).each(function(t){
+				t.value='';
+			});
+
+			if (this.resultText) {
+				document.id(this.options.resultLabel).set('text', this.resultText);
+			}
+
+			if ($(this.options.saveAndReloadId)) $(this.options.saveAndReloadId).destroy();
+
+	 		this.fireEvent('clean');
 		}
-		if ($(this.options.saveAndReloadId)) $(this.options.saveAndReloadId).destroy();
- 		this.fireEvent('clean');
 	},
 	// rename iframe label to present the current URL
 	displayExampleURL: function() {
