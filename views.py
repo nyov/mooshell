@@ -419,7 +419,8 @@ def make_favourite(req):
 
 SORT_CHOICES = {
 	'alphabetical': 'favourite__title',
-	'date': 'created_at'
+	'date': 'created_at',
+	'framework': 'favourite__js_lib__library_group__name'
 }
 ORDER_CHOICES = {
 	'desc': '-',
@@ -437,9 +438,9 @@ def api_get_users_pasties(req, author, method='json'):
 			order = ORDER_CHOICES[req.GET['order']]
 		else:
 			order = ''
+		order_by = '%s%s' % (order, sort)
 	else:
-		sort = 'created_at'
-		order = '-'
+		order_by = False
 	
 	callback = req.GET.get('jsoncallback', None)
 	if not callback:
@@ -452,10 +453,15 @@ def api_get_users_pasties(req, author, method='json'):
 					.filter(favourite__js_lib__library_group__name=framework)
 	pasties_objects = pasties_filter\
 					.exclude(favourite__title__isnull=True)\
-					.exclude(favourite__title="")\
-					.order_by('%s%s' % (order, sort))
+					.exclude(favourite__title="")
+	if order_by:
+		pasties_objects = pasties_objects\
+					.order_by(order_by)
+	pasties_ordered = pasties_objects\
+					.order_by('-created_at')
 	
-	pasties = pasties_objects[start:limit]
+	
+	pasties = pasties_ordered[start:limit]
 	
 	try:
 		server = settings.MOOSHELL_FORCE_SERVER
