@@ -430,6 +430,7 @@ def api_get_users_pasties(req, author, method='json'):
 	separate_log()
 	start = int(req.GET.get('start',0))
 	limit = start + int(req.GET.get('limit',50))
+	framework = req.GET.get('framework', False)
 	if SORT_CHOICES.has_key(req.GET.get('sort', False)):
 		sort= SORT_CHOICES[req.GET['sort']]
 		if ORDER_CHOICES.has_key(req.GET.get('order', False)):
@@ -444,12 +445,17 @@ def api_get_users_pasties(req, author, method='json'):
 	if not callback:
 		callback = req.GET.get('callback', None)
 	user = get_object_or_404(User, username=author)
-	pasties = Pastie.objects\
-					.filter(author__username=author)\
+	pasties_filter = Pastie.objects\
+					.filter(author__username=author)
+	if framework:
+		pasties_filter = pasties_filter\
+					.filter(favourite__js_lib__library_group__name=framework)
+	pasties_objects = pasties_filter\
 					.exclude(favourite__title__isnull=True)\
 					.exclude(favourite__title="")\
-					.order_by('%s%s' % (order, sort))\
-					[start:limit]
+					.order_by('%s%s' % (order, sort))
+	
+	pasties = pasties_objects[start:limit]
 	
 	try:
 		server = settings.MOOSHELL_FORCE_SERVER
