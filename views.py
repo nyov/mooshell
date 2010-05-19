@@ -418,7 +418,7 @@ def make_favourite(req):
 
 
 SORT_CHOICES = {
-	'alphabetical': 'title',
+	'alphabetical': 'favourite__title',
 	'date': 'created_at'
 }
 ORDER_CHOICES = {
