@@ -1,6 +1,4 @@
-{% load mooshell_utils %}
-
-{% if callback %}{{ callback }}({
+{% load mooshell_utils %}{% if callback %}{{ callback }}({
 	"status": "ok",
 	"list": {% endif %}{{ pasties|jsonify_pasties:server }}{% if callback %}
 });{% endif %}
