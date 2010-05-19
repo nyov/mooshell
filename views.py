@@ -417,9 +417,29 @@ def make_favourite(req):
 	raise Http404 
 
 
+SORT_CHOICES = {
+	'alphabetical': 'title',
+	'date': 'created_at'
+}
+ORDER_CHOICES = {
+	'desc': '-',
+	'asc': ''
+}
+
 def api_get_users_pasties(req, author, method='json'):
 	separate_log()
-	limit = req.GET.get('limit',50)
+	start = req.GET.get('start',0)
+	limit = start + req.GET.get('limit',50)
+	if SORT_CHOICES.has_key(req.GET.get('sort', False)):
+		sort= SORT_CHOICES[req.GET['sort']]
+		if ORDER_CHOICES.has_key(req.GET.get('order', False)):
+			order = ORDER_CHOICES[req.GET['order']]
+		else:
+			order = ''
+	else:
+		sort = 'created_at'
+		order = '-'
+	
 	callback = req.GET.get('jsoncallback', None)
 	if not callback:
 		callback = req.GET.get('callback', None)
@@ -428,8 +448,8 @@ def api_get_users_pasties(req, author, method='json'):
 					.filter(author__username=author)\
 					.exclude(favourite__title__isnull=True)\
 					.exclude(favourite__title="")\
-					.order_by('-created_at')\
-					[:limit]
+					.order_by('%s%s' % (order, sort))\
+					[start:limit]
 	
 	try:
 		server = settings.MOOSHELL_FORCE_SERVER
