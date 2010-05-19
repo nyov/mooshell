@@ -53,14 +53,17 @@
 			{% for tab in tabs %}
 				{% ifequal tab.type "result" %}<div class="tCont result{% if forloop.first %} active{% endif %}" id='result'></div>
 					{% if forloop.first %}<script type='text/javascript'>window.addEvent('load',function(){ loadResult(); });</script>{% endif %}
+				{% else %}
+					{% ifequal tab.type "resources" %}<div class="resources tCont{% if forloop.first %} active{% endif %}" id="resources">
+						<h3>Following resources are loaded into result:</h3>
+						<ol>{% for resource in external_resources %}
+							<li><a href='{{ resource.url|safe }}' title="{{ resource.url }}">{{ resource.filename }}</a></li>
+						{% endfor %}</ol>
+					</div>
+					{% else %}
+						<pre class="{{ tab.type }} tCont {% if forloop.first %} active{% endif %}">{{ tab.code }}</pre>
+					{% endifequal %}
 				{% endifequal %}
-				{% ifequal tab.type "resources" %}<div class="resources tCont{% if forloop.first %} active{% endif %}" id="resources">
-					<h3>Following resources are loaded into result:</h3>
-					<ol>{% for resource in external_resources %}
-						<li><a href='{{ resource.url|safe }}' title="{{ resource.url }}">{{ resource.filename }}</a></li>
-					{% endfor %}</ol>
-				</div>{% endifequal %}
-				<pre class="{{ tab.type }} tCont {% if forloop.first %} active{% endif %}">{{ tab.code }}</pre>
 			{% endfor %}
 		</div>
 	</div>
