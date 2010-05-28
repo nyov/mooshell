@@ -440,6 +440,7 @@ def api_get_users_pasties(req, author, method='json'):
 		else:
 			order = ''
 		order_by = '%s%s' % (order, sort)
+		print order_by
 	else:
 		order_by = False
 	
@@ -456,14 +457,11 @@ def api_get_users_pasties(req, author, method='json'):
 					.exclude(favourite__title__isnull=True)\
 					.exclude(favourite__title="")
 	if order_by:
-		pasties_objects = pasties_objects\
+		pasties_ordered = pasties_objects\
 					.order_by(order_by)
-
-	if sort != 'created_at':
+	else:
 		pasties_ordered = pasties_objects\
 						.order_by('-created_at')
-	else:
-		pasties_ordered = pasties_objects
 	
 	
 	pasties = pasties_ordered[start:limit]
