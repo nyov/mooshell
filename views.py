@@ -431,7 +431,7 @@ def api_get_users_pasties(req, author, method='json'):
 	separate_log()
 	start = int(req.GET.get('start',0))
 	limit = start + int(req.GET.get('limit',50))
-	framework = req.GET.get('framework', False)
+	framework = req.GET.get('framework', '')
 	if SORT_CHOICES.has_key(req.GET.get('sort', False)):
 		sort= SORT_CHOICES[req.GET['sort']]
 		if ORDER_CHOICES.has_key(req.GET.get('order', False)):
@@ -448,7 +448,7 @@ def api_get_users_pasties(req, author, method='json'):
 	user = get_object_or_404(User, username=author)
 	pasties_filter = Pastie.objects\
 					.filter(author__username=author)
-	if framework:
+	if framework != '':
 		pasties_filter = pasties_filter\
 					.filter(favourite__js_lib__library_group__name=framework)
 	pasties_objects = pasties_filter\
@@ -457,8 +457,12 @@ def api_get_users_pasties(req, author, method='json'):
 	if order_by:
 		pasties_objects = pasties_objects\
 					.order_by(order_by)
-	pasties_ordered = pasties_objects\
-					.order_by('-created_at')
+
+	if sort != 'created_at':
+		pasties_ordered = pasties_objects\
+						.order_by('-created_at')
+	else:
+		pasties_ordered = pasties_objects
 	
 	
 	pasties = pasties_ordered[start:limit]
