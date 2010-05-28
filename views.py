@@ -432,6 +432,7 @@ def api_get_users_pasties(req, author, method='json'):
 	start = int(req.GET.get('start',0))
 	limit = start + int(req.GET.get('limit',50))
 	framework = req.GET.get('framework', '')
+	sort = None
 	if SORT_CHOICES.has_key(req.GET.get('sort', False)):
 		sort= SORT_CHOICES[req.GET['sort']]
 		if ORDER_CHOICES.has_key(req.GET.get('order', False)):
