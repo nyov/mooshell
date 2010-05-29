@@ -454,13 +454,13 @@ def api_get_users_pasties(req, author, method='json'):
 					.filter(favourite__js_lib__library_group__name=framework)
 	pasties_objects = pasties_filter\
 					.exclude(favourite__title__isnull=True)\
-					.exclude(favourite__title="")
+					.exclude(favourite__title="")\
+					.order_by('-created_at')
 	if order_by:
 		pasties_ordered = pasties_objects\
 					.order_by(order_by)
 	else:
-		pasties_ordered = pasties_objects\
-						.order_by('-created_at')
+		pasties_ordered = pasties_objects
 	
 	
 	pasties = pasties_ordered[start:limit]
