@@ -440,7 +440,6 @@ def api_get_users_pasties(req, author, method='json'):
 		else:
 			order = ''
 		order_by = '%s%s' % (order, sort)
-		print order_by
 	else:
 		order_by = False
 	
