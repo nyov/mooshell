@@ -461,6 +461,8 @@ def api_get_users_pasties(req, author, method='json'):
 					.order_by(order_by)
 	else:
 		pasties_ordered = pasties_objects
+
+	overall_result_set_count = len(pasties_objects)
 	
 	
 	pasties = pasties_ordered[start:limit]
@@ -474,7 +476,8 @@ def api_get_users_pasties(req, author, method='json'):
 								{
 									'pasties': pasties, 
 									'server': server, 
-									'callback': callback
+									'callback': callback,
+									'overallResultSetCount': overall_result_set_count
 								},
 								context_instance=RequestContext(req),
 								mimetype="application/javascript"

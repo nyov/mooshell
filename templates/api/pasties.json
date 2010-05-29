@@ -1,4 +1,5 @@
 {% load mooshell_utils %}{% if callback %}{{ callback }}({
 	"status": "ok",
-	"list": {% endif %}{{ pasties|jsonify_pasties:server }}{% if callback %}
+	"list": {% endif %}{{ pasties|jsonify_pasties:server }}{% if callback %},
+	"overallResultSetCount": {{ overallResultSetCount }}
 });{% endif %}
