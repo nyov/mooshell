@@ -430,7 +430,7 @@ ORDER_CHOICES = {
 def api_get_users_pasties(req, author, method='json'):
 	separate_log()
 	start = int(req.GET.get('start',0))
-	limit = start + int(req.GET.get('limit',50))
+	limit = start + int(req.GET.get('limit',10))
 	framework = req.GET.get('framework', '')
 	sort = None
 	if SORT_CHOICES.has_key(req.GET.get('sort', False)):
