@@ -22,6 +22,10 @@ class PastieManager(models.Manager):
 				libs[group_name] = []
 			libs[group_name].append(ex)
 		return libs
+	
+	def get_all_owned(self, user=None):
+		return self.get_query_set().filter(author__id=user.id)
+
 
 class ShellManager(models.Manager):
 	def all(self):

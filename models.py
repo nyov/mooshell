@@ -187,6 +187,11 @@ class Pastie(models.Model):
 	def __unicode__(self):
 		return self.slug
 	
+	def get_latest(self):
+		return Shell.objects.filter(pastie__id=self.id).order_by('-version')[0]
+		
+
+
 	@models.permalink
 	def get_absolute_url(self):
 		return ('pastie',[self.slug])
@@ -334,6 +339,14 @@ class Shell(models.Model):
 	def set_next_version(self):
 		self.version = self.get_next_version()
 	
+	def get_name(self):
+		past = ''
+		if self.id != self.pastie.favourite.id:
+			past += '-%i' % self.version
+		pre = '%s - ' % self.title if self.title else ''
+		return pre + self.pastie.slug + past 
+
+
 	class Meta:
 		ordering = ["-version", "revision"]
 		unique_together = ['pastie', 'version']
