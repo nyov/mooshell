@@ -194,9 +194,8 @@ class Pastie(models.Model):
 			return []
 
 
-	@models.permalink
 	def get_absolute_url(self):
-		return ('pastie',[self.slug])
+		return self.favourite.get_absolute_url() if self.favourite else reverse('pastie',args=[self.slug])
 	
 	class Admin:
 		pass
