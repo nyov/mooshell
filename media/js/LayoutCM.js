@@ -40,7 +40,8 @@ var Layout = {
 			this.result = result.getElement('iframe');
 		}
 
-		this.resize.bind(this).delay(10);
+		this.resize();
+		this.resize.bind(this).delay(20);
 
 		if (!Browser.Engine.trident4) {
 			this.createDragInstances();
