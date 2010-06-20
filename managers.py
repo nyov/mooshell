@@ -26,6 +26,9 @@ class PastieManager(models.Manager):
 	def get_all_owned(self, user=None):
 		return self.get_query_set().filter(author__id=user.id).order_by('-created_at')
 
+	def get_public_owned(self, user=None):
+		return self.get_query_set().exclude(favourite__title='').filter(favourite__private=False).filter(author__id=user.id).order_by('-created_at')
+
 
 class ShellManager(models.Manager):
 	def all(self):
