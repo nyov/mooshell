@@ -188,8 +188,10 @@ class Pastie(models.Model):
 		return self.slug
 	
 	def get_latest(self):
-		return Shell.objects.filter(pastie__id=self.id).order_by('-version')[0]
-		
+		try:
+			return Shell.objects.filter(pastie__id=self.id).order_by('-version')[0]
+		except:
+			return []
 
 
 	@models.permalink
