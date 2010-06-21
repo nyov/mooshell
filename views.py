@@ -26,7 +26,7 @@ from mooshell.helpers import expire_page, expire_view_cache
 
 CACHE_TIME = settings.CACHE_MIDDLEWARE_SECONDS
 
-def get_pastie_edit_key(req, slug=None, version=None, revision=None, author=Nonev, skin=None):
+def get_pastie_edit_key(req, slug=None, version=None, revision=None, author=None, skin=None):
 
 	key = "%s:pastie_edit" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
 	key = "%s:%s" % (key, slug) if slug else '%s:homepage' % key
@@ -136,7 +136,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 		})
 		cache.set(key, c)
 
-	if (slug and pastie) c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id)
+	if slug and pastie: 
+		c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id)
 
 	return render_to_response('pastie_edit.html',c,
 							context_instance=RequestContext(req))
@@ -366,7 +367,7 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None, skin=N
 	return page
 		
 
-def get_pastie_show_key(req, slug, version=None, author=None, skin=None);
+def get_pastie_show_key(req, slug, version=None, author=None, skin=None):
 	key = "%s:pastie_show" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
 	key = "%s:%s" % (key, slug)
 	if version: key = "%s:%s" % (key, version)
