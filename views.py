@@ -136,7 +136,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 		})
 		cache.set(key, c)
 
-	if (slug and pastie) c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id),
+	if (slug and pastie) c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id)
 
 	return render_to_response('pastie_edit.html',c,
 							context_instance=RequestContext(req))
