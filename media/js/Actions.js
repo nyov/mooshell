@@ -47,8 +47,8 @@ var MooShellActions = new Class({
 			'data': {shell_id: shell_id},
 			'onSuccess': function(response) {
 				// #TODO: reload page after successful save
-				//window.location.href = response.url;
-				$('mark_favourite').addClass('isFavourite').getElements('span')[0].set('text', 'Base');
+				window.location.href = response.url;
+				//$('mark_favourite').addClass('isFavourite').getElements('span')[0].set('text', 'Base');
 			}
 		}).send();
 	

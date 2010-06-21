@@ -42,14 +42,16 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 	display the edit shell page ( main display)
 	"""
 	
+	#separate_log('-')
+	#log_to_file('pastie_edit')
 	# build the cache key on the basis of url and user
 	key = get_pastie_edit_key(req, slug, version, revision, author, skin) 
 	
 	if cache.get(key, None):
-		log_to_file('pastie_edit - cache key found %s' % key)
+		#log_to_file('pastie_edit - cache key found %s' % key)
 		c = cache.get(key)
 	else:
-		log_to_file('pastie_edit - no cache key found %s - generating from db' % key)
+		#log_to_file('pastie_edit - no cache key found %s - generating from db' % key)
 		shell = None
 		c = {}
 		
@@ -85,7 +87,6 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 			example_url = ''.join([server, shell.get_absolute_url()])
 			embedded_url = ''.join([server, shell.get_embedded_url()])
 			disqus_url = ''.join([server, shell.pastie.favourite.get_absolute_url()])
-			shellform = ShellForm(instance=shell)
 			c['embedded_url'] = embedded_url
 			title = shell.title if shell.title else settings.MOOSHELL_VIEW_TITLE
 			for dtd in doctypes:
@@ -119,7 +120,6 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 			reverse("mooshell_js", args=["Settings.js"]),
 		]
 		c.update({
-			'shellform':shellform,
 			'shell': shell,
 			'external_resources': external_resources,
 			'css_files': [reverse('mooshell_css', args=["%s.css" % skin])],
@@ -136,9 +136,24 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 			'get_library_versions_url': reverse("_get_library_versions", 
 									args=["group_id"]).replace('group_id','{group_id}'),
 		})
-		cache.set(key, c)
+		#log_to_file('context generated')
+		try:
+			cache.set(key, c)
+			#log_to_file('context saved in cache')
+		except Exception, err:
+			log_to_file(err.__str__())
+			#log_to_file(c)
 
-	if slug and pastie: 
+	if slug: 
+		shellform = ShellForm(instance=c['shell'])
+	else:
+		shellform = ShellForm()
+	c['shellform'] = shellform
+
+
+
+	if slug and c['shell']: 
+		pastie = c['shell'].pastie
 		c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id)
 
 	return render_to_response('pastie_edit.html',c,
@@ -264,7 +279,10 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=No
 	#if cache.get(key, None):
 	#	return cache.get(key)
 
+	#separate_log('-')
+	#log_to_file('pastie_display - with shell %s' % shell)
 	if not shell:
+		#log_to_file('pastie_display - no shell')
 		pastie = get_object_or_404(Pastie, slug=slug)
 		shell = pastie.favourite
 		" prepare dependencies if needed "
@@ -290,15 +308,13 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=No
 	return page
 	
 
-def get_pastie_embedded_key(req, slug, version=None, revision=0, author=None, tabs=None, skin=None):
+def get_embedded_key(req, slug, version=None, revision=0, author=None, tabs=None, skin=None):
 
 	key = "%s:embedded" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
 	key = "%s:%s" % (key, slug)
 	if version: key = "%s:%s" % (key, version)
 	if revision: key = "%s:%s" % (key, revision)
 	if author: key = "%s:%s" % (key, author)
-	if tabs: key = "%s:%s" % (key, tabs)
-	if skin: key = "%s:%s" % (key, skin)
 	#if req.user.is_authenticated(): key = "%s:auth-%s" % (key, req.user.username)
 
 	return key
@@ -308,97 +324,130 @@ def get_pastie_embedded_key(req, slug, version=None, revision=0, author=None, ta
 def embedded(req, slug, version=None, revision=0, author=None, tabs=None, skin=None):
 	" display embeddable version of the shell "
 
-	key = get_pastie_embedded_key(req, slug, version, revision, author, tabs, skin)
+	#separate_log('-')
+	#log_to_file('embedded')
+	key = get_embedded_key(req, slug, version, revision, author, tabs, skin)
 	if cache.get(key, None):
-		return cache.get(key)
-
-	pastie = get_object_or_404(Pastie,slug=slug)
-	if version == None:
-		shell = pastie.favourite
+		 context = cache.get(key)
+		 #log_to_file('embedded key %s' % key)
 	else:
-		user = get_object_or_404(User,username=author) if author else None
-		shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
-	
-	if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
-	if not tabs: tabs = req.GET.get('tabs', 'js,resources,html,css,result')
-	
-	try:
-		server = settings.MOOSHELL_FORCE_SERVER
-	except:
-		server = 'http://%s' % req.META['SERVER_NAME']
+		pastie = get_object_or_404(Pastie,slug=slug)
+		if version == None:
+			shell = pastie.favourite
+		else:
+			user = get_object_or_404(User,username=author) if author else None
+			shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+		
+		if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
+		if not tabs: tabs = req.GET.get('tabs', 'js,resources,html,css,result')
+		
+		try:
+			server = settings.MOOSHELL_FORCE_SERVER
+		except:
+			server = 'http://%s' % req.META['SERVER_NAME']
 
-	height = req.GET.get('height', None)
-	tabs_order = tabs #req.GET.get('tabs',"js,html,css,result")
-	tabs_order = tabs_order.split(',')
-	
-	if not shell.external_resources.all() and "resources" in tabs_order:
-		tabs_order.remove("resources")
-		external_resources = []
-	else:
-		external_resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+		height = req.GET.get('height', None)
+		tabs_order = tabs #req.GET.get('tabs',"js,html,css,result")
+		tabs_order = tabs_order.split(',')
+		
+		if not shell.external_resources.all() and "resources" in tabs_order:
+			tabs_order.remove("resources")
+			external_resources = []
+		else:
+			external_resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
 
-	tabs = []
-	for t in tabs_order:
-		tab = {	'type': t,
-						'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
-					}
-		if not t in ["result", "resources"]:
-			tab['code'] = getattr(shell,'code_'+t)
-		tabs.append(tab)	
-															
-	context = { 
-		'height': height,
-		'server': server,
-		'shell': shell,
-		'external_resources': external_resources,
-		'skin': skin,
-		'tabs': tabs,
-		'code_tabs': ['js', 'css', 'html'],
-		'css_files': [
-				reverse('mooshell_css', args=["embedded-%s.css" % skin])
-				],
-		'js_libs': [
-				reverse('mooshell_js', args=[settings.MOOTOOLS_CORE]),
-				reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
-				]
-	}
+		tabs = []
+		for t in tabs_order:
+			tab = {	'type': t,
+							'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
+						}
+			if not t in ["result", "resources"]:
+				tab['code'] = getattr(shell,'code_'+t)
+			tabs.append(tab)	
+																
+		context = { 
+			'height': height,
+			'server': server,
+			'shell': shell,
+			'external_resources': external_resources,
+			'skin': skin,
+			'tabs': tabs,
+			'code_tabs': ['js', 'css', 'html'],
+			'css_files': [
+					reverse('mooshell_css', args=["embedded-%s.css" % skin])
+					],
+			'js_libs': [
+					reverse('mooshell_js', args=[settings.MOOTOOLS_CORE]),
+					reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
+					]
+		}
+		cache.set(key, context)
 	page = render_to_response(	'embedded.html', 
 								context, 
 								context_instance=RequestContext(req))
-	cache.set(key, page)
 	return page
 		
 
-def get_pastie_show_key(req, slug, version=None, author=None, skin=None):
+def get_pastie_show_key(slug, version=None, author=None, obj=None):
 	key = "%s:pastie_show" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
 	key = "%s:%s" % (key, slug)
 	if version: key = "%s:%s" % (key, version)
 	if author: key = "%s:%s" % (key, author)
-	if skin: key = "%s:%s" % (key, skin)
-	if req.user.is_authenticated(): key = "%s:auth-%s" % (key, req.user.username)
-
+	if obj: key = "%s:%s" % (key, obj)
 	return key
+
+def delete_pastie_show_keys(slug, version=None, author=None):
+	for obj in ['shell','resources','dependencies']:
+		key = get_pastie_show_key(slug, version, author, obj)
+		#log_to_file('checking %s' % key)
+		if cache.has_key(key):
+			#log_to_file('deleting %s' % key)
+			cache.delete(key)
+			#log_to_file('%s deleted' % key)
 
 def pastie_show(req, slug, version=None, author=None, skin=None):
 	" render the shell only "
 
-	key = get_pastie_show_key(req, slug, version, author, skin)
-	if cache.get(key, None):
-		return cache.get(key)
-
-	pastie = get_object_or_404(Pastie, slug=slug)
-	if version == None:
-		shell = pastie.favourite
+	#separate_log('-')
+	#log_to_file('pastie_show')
+	key = get_pastie_show_key(slug, version, author, 'shell')
+	#log_to_file(key)
+	if cache.has_key(key):
+		shell = cache.get(key)
+		#log_to_file('shell read from cache %s' % key)
 	else:
-		user = get_object_or_404(User,username=author) if author else None
-		shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+		pastie = get_object_or_404(Pastie, slug=slug)
+		if version == None:
+			shell = pastie.favourite
+		else:
+			user = get_object_or_404(User,username=author) if author else None
+			shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+		cache.set(key, shell)
+		#log_to_file('pastie_show, shell saved in cache %s' % key)
+
 	if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
-	resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
-	page =  pastie_display(req, slug, shell, 
-						dependencies=shell.js_dependency.all(), 
+
+	key = get_pastie_show_key(slug, version, author, 'resources')
+	if cache.has_key(key):
+		resources = cache.get(key)
+		#log_to_file('resources read from cache %s' % key)
+	else:
+		resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+		cache.set(key, resources)
+		#log_to_file('pastie_show, resources saved in cache %s' % key)
+
+	key = get_pastie_show_key(slug, version, author, 'dependencies')
+	if cache.has_key(key):
+		dependencies = cache.get(key)
+		#log_to_file('dependencies read from cache %s' % key)
+	else:
+		dependencies = shell.js_dependency.all()
+		cache.set(key, dependencies)
+		#log_to_file('pastie_show, dependencies saved in cache %s' % key )
+
+	return pastie_display(req, slug, shell, 
+						dependencies=dependencies, 
 						resources=resources, skin=skin)
-	cache.set(key, page)
-	return page
 
 
 #TODO: remove if not used
@@ -520,8 +569,18 @@ def make_favourite(req):
 	#	from urllib2 import urlopen
 	#	response = urlopen('%s%s' % (settings.FORCE_SHOW_SERVER, reverse('expire', args=[shell.pastie.get_absolute_url()])))
 
-	
-	#key = get_pastie_edit_key(req, shell.pastie.slug, author=shell.author):
+	separate_log('-')
+	log_to_file('make favourite - deleting caches')
+	delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
+	keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
+			get_pastie_edit_key(req, shell.pastie.slug, author=shell.author, version=shell.version),
+			get_embedded_key(req, shell.pastie.slug, author=shell.author)
+			]
+	for key in keys:
+		log_to_file('checking %s' % key)
+		if cache.has_key(key):
+			log_to_file('deleting')
+			cache.delete(key)
 	#expire_page(shell.get_absolute_url())
 	#expire_page(shell.get_show_url())
 	#expire_page(shell.get_embedded_url())
