@@ -1,9 +1,40 @@
 from django.core.cache import cache
-from django.utils.cache import get_cache_key
+#from django.utils.cache import get_cache_key
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
+from django.utils.hashcompat import md5_constructor
+from django.conf import settings
+from django.utils.encoding import smart_str, iri_to_uri
+from django.utils.translation import get_language
 
 from base.utils import log_to_file, separate_log
+
+def _i18n_cache_key_suffix(request, cache_key):
+    """If enabled, returns the cache key ending with a locale."""
+    if settings.USE_I18N:
+        # first check if LocaleMiddleware or another middleware added
+        # LANGUAGE_CODE to request, then fall back to the active language
+        # which in turn can also fall back to settings.LANGUAGE_CODE
+        cache_key += '.%s' % getattr(request, 'LANGUAGE_CODE', get_language())
+    return cache_key
+
+def _generate_cache_header_key(key_prefix, request):
+    """Returns a cache key for the header cache."""
+    path = md5_constructor(iri_to_uri(request.path))
+    cache_key = 'views.decorators.cache.cache_header.%s.%s' % (
+        key_prefix, path.hexdigest())
+    return _i18n_cache_key_suffix(request, cache_key)
+
+def get_cache_key(request, key_prefix=None):
+    if key_prefix is None:
+        key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
+    cache_key = _generate_cache_header_key(key_prefix, request)
+    headerlist = cache.get(cache_key, None)
+    if headerlist is not None:
+        return cache_key
+    else:
+        return None
+
 
 def expire_page(path):
 	request = HttpRequest()
