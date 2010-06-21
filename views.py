@@ -406,6 +406,12 @@ def get_dependencies_dict(lib_id):
 	dependencies = JSDependency.objects.filter(active=True,library__id=lib_id)
 	return [{'id': d.id, 'name': d.name, 'selected': d.selected} for d in dependencies ]
 
+def expire_path(r, path):
+	path = '%s' % path
+	expire_page(path)
+	return HttpResponse(simplejson.dumps({'message':'path expired', 'path':path}),
+						mimetype="application/javascript")
+	
 def make_favourite(req):
 	shell_id = req.POST.get('shell_id')
 	shell = Shell.objects.get(id=shell_id)
@@ -416,8 +422,10 @@ def make_favourite(req):
 	shell.pastie.favourite = shell
 	shell.pastie.save()
 	
-	#expire_page(shell.pastie.get_absolute_url())
-	expire_view_cache('author_pastie', args=[req.user.username, shell.pastie.slug])
+	if settings.FORCE_SHOW_SERVER:
+		from urllib2 import urlopen
+		response = urlopen('%s%s' % (settings.FORCE_SHOW_SERVER, reverse('expire', args=[shell.pastie.get_absolute_url()])))
+
 	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
 						mimetype="application/javascript")
 

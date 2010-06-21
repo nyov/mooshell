@@ -20,7 +20,9 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
 	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
 	url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
-	
+
+	# expire
+    url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
 
 	# compatibility with old mooshell/* urls DO NOT USE THEM
 	url(r'^mooshell/ajax_json_response/$','ajax_json_response', name='old_ajax_json_response'),
@@ -86,6 +88,7 @@ urlpatterns = patterns('mooshell.views',
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/$','pastie_edit', name='author_revision'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/(?P<skin>\w+)/$','pastie_edit'),
     
+	
     
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/$','pastie_edit', name='u_author_pastie'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/$','pastie_edit', name='u_author_shell'),
