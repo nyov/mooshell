@@ -12,5 +12,5 @@ def expire_page(path):
 		cache.delete(key)
 		log_to_file('cache deleted %s, path: %s' % (key, request.path))
 	else:
-		log_to_file('no such key' % key)
+		log_to_file('no such key %s' % key)
 	
