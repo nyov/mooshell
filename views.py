@@ -417,7 +417,7 @@ def make_favourite(req):
 	shell.pastie.save()
 	
 	#expire_page(shell.pastie.get_absolute_url())
-	expire_view_cache('author_pastie', args=[r.user.username, shell.pastie.slug])
+	expire_view_cache('author_pastie', args=[req.user.username, shell.pastie.slug])
 	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
 						mimetype="application/javascript")
 
