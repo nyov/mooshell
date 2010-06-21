@@ -18,6 +18,7 @@ from models import Pastie, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDe
 from forms import PastieForm, ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
+from mooshell.helpers import expire_page
 
 
 # consider better caching for that function.
@@ -408,13 +409,17 @@ def get_dependencies_dict(lib_id):
 def make_favourite(req):
 	shell_id = req.POST.get('shell_id')
 	shell = Shell.objects.get(id=shell_id)
-	if req.user.is_authenticated() and req.user.id == shell.pastie.author.id:
-		shell.pastie.favourite = shell
-		shell.pastie.save()
-		# TODO: clear the cache of the shell
-		return HttpResponse(simplejson.dumps({'message':'saved as favourite'}),
-							mimetype="application/javascript")
-	raise Http404 
+
+	if not req.user.is_authenticated() or req.user.id != shell.pastie.author.id:
+		raise Http404
+
+	shell.pastie.favourite = shell
+	shell.pastie.save()
+	
+	expire_page(shell.pastie.get_absolute_url())
+	# TODO: clear the cache of the shell
+	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
+						mimetype="application/javascript")
 
 
 SORT_CHOICES = {
