@@ -422,9 +422,13 @@ def make_favourite(req):
 	shell.pastie.favourite = shell
 	shell.pastie.save()
 	
-	if settings.FORCE_SHOW_SERVER:
-		from urllib2 import urlopen
-		response = urlopen('%s%s' % (settings.FORCE_SHOW_SERVER, reverse('expire', args=[shell.pastie.get_absolute_url()])))
+	#if settings.FORCE_SHOW_SERVER:
+	#	from urllib2 import urlopen
+	#	response = urlopen('%s%s' % (settings.FORCE_SHOW_SERVER, reverse('expire', args=[shell.pastie.get_absolute_url()])))
+
+	expire_page(shell.get_absolute_url())
+	expire_page(shell.get_show_url())
+	expire_page(shell.get_embedded_url())
 
 	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
 						mimetype="application/javascript")
