@@ -417,6 +417,8 @@ def make_favourite(req):
 	shell.pastie.save()
 	
 	expire_page(shell.pastie.get_absolute_url())
+	expire_page('%s%s' % (settings.MOOSHELL_FORCE_SHOW_SERVER, shell.pastie.get_absolute_url()))
+	print shell.pastie.get_absolute_url()
 	# TODO: clear the cache of the shell
 	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
 						mimetype="application/javascript")
