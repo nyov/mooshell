@@ -18,7 +18,7 @@ from models import Pastie, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDe
 from forms import PastieForm, ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
-from mooshell.helpers import expire_page
+from mooshell.helpers import expire_page, expire_view_cache
 
 
 # consider better caching for that function.
@@ -416,8 +416,8 @@ def make_favourite(req):
 	shell.pastie.favourite = shell
 	shell.pastie.save()
 	
-	expire_page(shell.pastie.get_absolute_url())
-	expire_page('%s%s' % (settings.MOOSHELL_FORCE_SHOW_SERVER, shell.pastie.get_absolute_url()))
+	#expire_page(shell.pastie.get_absolute_url())
+	expire_view_cache('pastie', args=[shell.pastie.slug])
 	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
 						mimetype="application/javascript")
 
