@@ -46,8 +46,10 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 	key = get_pastie_edit_key(req, slug, version, revision, author, skin) 
 	
 	if cache.get(key, None):
+		log_to_file('pastie_edit - cache key found %s' % key)
 		c = cache.get(key)
 	else:
+		log_to_file('pastie_edit - no cache key found %s - generating from db' % key)
 		shell = None
 		c = {}
 		
