@@ -151,6 +151,7 @@ var MooShellActions = new Class({
 	loadDependencies: function(lib_id) {
 		new Request.JSON({
 			url: this.options.loadDependenciesURL.substitute({lib_id: lib_id}),
+			method: 'get',
 			onSuccess: function(response) {
 				$('js_dependency').empty();
 				response.each(function (dep) {
