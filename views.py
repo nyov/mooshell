@@ -544,7 +544,6 @@ def get_library_versions(request, group_id):
 def get_dependencies(request, lib_id): 
 	return HttpResponse(simplejson.dumps(get_dependencies_dict(lib_id)),mimetype='application/javascript')
 
-@cache_page(CACHE_TIME)
 def get_dependencies_dict(lib_id):
 	dependencies = JSDependency.objects.filter(active=True,library__id=lib_id)
 	return [{'id': d.id, 'name': d.name, 'selected': d.selected} for d in dependencies ]
