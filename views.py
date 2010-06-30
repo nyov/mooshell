@@ -188,7 +188,6 @@ def pastie_save(req, nosave=False, skin=None):
 			shell = shellform.save(commit=False)
 			
 			" Base64 decode "
-			print shell.code_js
 			shell.code_js = base64.b64decode(shell.code_js)
 			shell.code_html = base64.b64decode(shell.code_html)
 			shell.code_css = base64.b64decode(shell.code_css)
@@ -221,7 +220,7 @@ def pastie_save(req, nosave=False, skin=None):
 										skin=skin)
 				" save the draft version "
 				if req.user.is_authenticated():
-					Draft.objects.make(r.user, display_page)
+					Draft.objects.make(req.user, display_page)
 
 				" return page "
 				return display_page
@@ -266,7 +265,7 @@ def pastie_save(req, nosave=False, skin=None):
 @login_required
 def display_draft(req):
 	try:
-		return req.user.draft.all()[0].html
+		return HttpResponse(req.user.draft.all()[0].html)
 	except:
 		raise HttpResponse('Error')
 

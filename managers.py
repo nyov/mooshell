@@ -32,12 +32,13 @@ class PastieManager(models.Manager):
 
 class DraftManager(models.Manager):
 	def make(self, user, html):
+		html = html._container[0]
 		try:
-			draft = self.get(user__username=user.username)
+			draft = self.get(author__username=user.username)
 			draft.html = html
 			draft.save()
 		except:
-			draft = self.create(user=user, html=html)
+			draft = self.create(author=user, html=html)
 
 		return draft
 

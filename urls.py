@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('mooshell.views',
+	# draft
+	url(r'^draft/$','display_draft'),
+
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
     url(r'^css/(?P<path>.*)$', 'serve_static', {'type': 'css'}, name='mooshell_css'),
     url(r'^js/(?P<path>.*)$', 'serve_static', {'type': 'js'}, name='mooshell_js'),
@@ -60,7 +63,6 @@ urlpatterns = patterns('mooshell.views',
 	# API
 	url(r'^api/user_shells/(?P<author>\w+)/$','api_get_users_pasties'),
 	url(r'^api/user/(?P<author>\w+)/demo/list.(?P<method>\w+)$', 'api_get_users_pasties'),
-
 
     # show
     url(r'^(?P<slug>\w+)/show/$','pastie_show', name='pastie_show'),
