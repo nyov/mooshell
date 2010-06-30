@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class JSDependencyManager(models.Manager):
@@ -31,7 +32,11 @@ class PastieManager(models.Manager):
 
 
 class DraftManager(models.Manager):
-	def make(self, user, html):
+	def make(self, username, html):
+		try:
+			user = User.objects.get(username=username)
+		except:
+			return
 		html = html._container[0]
 		try:
 			draft = self.get(author__username=user.username)

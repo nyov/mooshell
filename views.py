@@ -219,8 +219,8 @@ def pastie_save(req, nosave=False, skin=None):
 										resources=external_resources, 
 										skin=skin)
 				" save the draft version "
-				if req.user.is_authenticated():
-					Draft.objects.make(req.user, display_page)
+				if req.POST.get('username', False):
+					Draft.objects.make(req.POST.get('username'), display_page)
 
 				" return page "
 				return display_page

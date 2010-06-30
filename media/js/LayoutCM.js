@@ -66,7 +66,6 @@ var Layout = {
 		this.resize();
 	},
 	decodeEditors: function() {
-		console.log('decode editors')
 		this.editors.each( function(ed) {
 			ed.b64decode();
 		});
