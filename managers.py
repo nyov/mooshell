@@ -30,6 +30,18 @@ class PastieManager(models.Manager):
 		return self.get_query_set().exclude(favourite__title='').filter(favourite__private=False).filter(author__id=user.id).order_by('-created_at')
 
 
+class DraftManager(models.Manager):
+	def make(self, user, html):
+		try:
+			draft = self.get(user__username=user.username)
+			draft.html = html
+			draft.save()
+		except:
+			draft = self.create(user=user, html=html)
+
+		return draft
+
+
 class ShellManager(models.Manager):
 	def all(self):
 		public = self.get_query_set().filter(private=False)

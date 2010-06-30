@@ -14,8 +14,9 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
+from django.contrib.auth.decorators import login_required
 
-from models import Pastie, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType, ShellExternalResource
+from models import Pastie, Draft, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType, ShellExternalResource
 from forms import PastieForm, ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
@@ -187,6 +188,7 @@ def pastie_save(req, nosave=False, skin=None):
 			shell = shellform.save(commit=False)
 			
 			" Base64 decode "
+			print shell.code_js
 			shell.code_js = base64.b64decode(shell.code_js)
 			shell.code_html = base64.b64decode(shell.code_html)
 			shell.code_css = base64.b64decode(shell.code_css)
@@ -211,12 +213,18 @@ def pastie_save(req, nosave=False, skin=None):
 					pass
 
 			if nosave:
-				" return the pastie page only " 
+				" get page " 
 				# no need to connect with pastie
-				return pastie_display(req, None, shell, 
+				display_page = pastie_display(req, None, shell, 
 										dependencies=dependencies, 
 										resources=external_resources, 
 										skin=skin)
+				" save the draft version "
+				if req.user.is_authenticated():
+					Draft.objects.make(r.user, display_page)
+
+				" return page "
+				return display_page
 
 			" add user to shell if anyone logged in "
 			if req.user.is_authenticated():
@@ -255,6 +263,12 @@ def pastie_save(req, nosave=False, skin=None):
 					mimetype='application/javascript'
 	)
 
+@login_required
+def display_draft(req):
+	try:
+		return req.user.draft.all()[0].html
+	except:
+		raise HttpResponse('Error')
 
 def get_pastie_display_key(req, slug, shell=None, dependencies=[], resources=[], skin=None):
 

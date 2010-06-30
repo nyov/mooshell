@@ -6,7 +6,7 @@ from django.db.models.signals import pre_save, post_save
 from django.contrib.auth.models import User
 from django.conf import settings   
 
-from managers import JSDependencyManager, JSLibraryManager, PastieManager, ShellManager
+from managers import JSDependencyManager, JSLibraryManager, PastieManager, ShellManager, DraftManager
 
 def next_week():
 	return datetime.now() + timedelta(days=7)
@@ -208,6 +208,17 @@ def make_slug_on_create(instance, **kwargs):
 	if not instance.id and not instance.slug:
 		instance.set_slug() 
 pre_save.connect(make_slug_on_create, sender=Pastie)
+
+
+class Draft(models.Model):
+	"""
+	Saves the draft (only one per user)
+	"""
+	author = models.ForeignKey(User, unique=True, related_name='draft')
+	html = models.TextField()
+
+	objects = DraftManager()
+	
 
 class Shell(models.Model):
 	"""
