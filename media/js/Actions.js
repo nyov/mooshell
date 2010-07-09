@@ -310,3 +310,52 @@ var Base64 = {
 	}
  
 };
+
+
+var Dropdown = new Class({
+	
+	initialize: function(){
+		this.dropdown = {
+			cont: $$('.dropdownCont'),
+			trigger: $$('.dropdown a.aiButton')
+		};
+		
+		this.setDefaults();
+	},
+	
+	setDefaults: function(){
+		this.dropdown.cont.fade('hide');
+		this.dropdown.cont.set('tween', {
+			duration: 200
+		});
+		
+		this.dropdown.trigger.each(function(trigger){
+			trigger.addEvents({
+				click: this.toggle.bindWithEvent(trigger, this)
+			});
+		}, this);
+		
+		$(document.body).addEvents({
+			click: function(e){
+				if (!$(e.target).getParent('.dropdownCont')){
+					this.hide();
+				}
+			}.bind(this)
+		});
+	},
+	
+	toggle: function(e, parent){
+		e.stop();
+		
+		parent.dropdown.cont.fade('out');
+
+		if (this.getNext('.dropdownCont').getStyles('opacity')['opacity'] === 0){
+			this.getNext('.dropdownCont').fade('in');
+		}
+	},
+	
+	hide: function(){
+		this.dropdown.cont.fade('out');
+	}
+});
+
