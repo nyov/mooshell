@@ -1517,8 +1517,9 @@ var Beautifier = {
 	js: function(content) {
 		return js_beautify(content);
 	},
-    html: function(content) {
-		return style_html(content);
-	},
+    html: $empty,
+	//function(content) {
+	//	return style_html(content);
+	//},
 	css: $empty
 }
