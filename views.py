@@ -330,6 +330,7 @@ def get_embedded_key(req, slug, version=None, revision=0, author=None, tabs=None
 	if revision: key = "%s:%s" % (key, revision)
 	if author: key = "%s:%s" % (key, author)
 	if tabs: key = "%s:%s" % (key, tabs)
+	if skin: key = "%s:%s" % (key, skin)
 	#if req.user.is_authenticated(): key = "%s:auth-%s" % (key, req.user.username)
 
 	return key
