@@ -43,6 +43,12 @@
 			Layout.render();
 			{# var mooshellSettings = new MooShellSettings(); #}
 		});
+		window.addEvent('load', function() {
+			{% if preloaded %}
+				$('show-result').submit();
+				alert('yeah');
+			{% endif %}
+		});
 		{% comment %}
 		{% if not example_url %}
 			window.addEvent('load', function() {
