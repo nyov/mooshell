@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('mooshell.views',
 	# draft
-	url(r'^draft/$','display_draft'),
+	url(r'^draft/$','display_draft', name='mooshell_draft'),
 
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
     url(r'^css/(?P<path>.*)$', 'serve_static', {'type': 'css'}, name='mooshell_css'),
