@@ -150,6 +150,7 @@ class DocType(models.Model):
 	name = models.CharField(max_length=255, unique=True)
 	code = models.TextField(blank=True, null=True)
 	type = models.CharField(max_length=100, default='html', blank=True)
+	template = models.CharField(max_length=100, default='xhtml.1.0.strict.html', blank=True)
 	selected = models.BooleanField(default=False, blank=True)
 	
 	def __unicode__(self):
