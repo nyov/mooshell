@@ -492,7 +492,15 @@ def echo_json(req):
 	" respond with POST['json'] "
 	if req.POST.get('delay'):
 		time.sleep(req.POST.get('delay')) 
-	return HttpResponse(req.POST.get('json', {}),mimetype='application/javascript')
+	
+	try:
+		response = simplejson.dumps(simplejson.loads(req.POST.get('json', '{}')))
+	except Exception, e:
+		response = simplejson.dumps({'error': e.__str__()})
+	return HttpResponse(
+		response,
+		mimetype='application/javascript'
+	)
 
 
 def echo_html(req):
