@@ -486,6 +486,41 @@ def show_part(req, slug, part, version=None, author=None):
 	return render_to_response('show_part.html', 
 								{'content': getattr(shell, 'code_'+part)})
 
+
+
+def echo_json(req):
+	" respond with POST['json'] "
+	if req.POST.get('delay'):
+		time.sleep(req.POST.get('delay')) 
+	return HttpResponse(req.POST.get('json', {}),mimetype='application/javascript')
+
+
+def echo_html(req):
+	" respond with POST['html'] "
+	if req.POST.get('delay'):
+		time.sleep(req.POST.get('delay')) 
+	return HttpResponse(req.POST.get('html', ''))
+
+
+def echo_jsonp(req):
+	" respond what provided via GET "
+	response = {}
+	callback = None
+	for key, value in req.GET.items():
+		if key == 'callback':
+			callback = value
+		else:
+			response.update({key: value})
+	
+	response = simplejson.dumps(response)
+
+	if callback:
+		response = '%s(%s);' % (callback, response)
+	
+	return HttpResponse(response, mimetype='application/javascript')
+
+
+
 def ajax_json_echo(req, delay=True):
 	" echo GET and POST "
 	if delay:

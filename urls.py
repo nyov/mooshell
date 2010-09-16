@@ -13,6 +13,15 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^_save/$','pastie_save', name='pastie_save'),
 	url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
 	url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
+	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
+	url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
+
+	# Echo
+	url(r'^echo/json/$','echo_json', name='echo_json'),
+	url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
+	url(r'^echo/html/$','echo_html', name='echo_html'),
+
+	# OLD ECHO
 	url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),
 	url(r'^ajax_html_javascript_response/$','ajax_html_javascript_response', name='ajax_html_javascript_response'),
 	url(r'^ajax_json_echo/$','ajax_json_echo', name='ajax_json_echo'),
@@ -21,8 +30,6 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^ajax_html_echo/nodelay/$','ajax_html_echo', {'delay': False}, name='ajax_html_echo_nodelay'),
 	url(r'^ajax_xml_echo/$','ajax_xml_echo', name='ajax_xml_echo'),
 	url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
-	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
-	url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
 
 	# expire
     url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
