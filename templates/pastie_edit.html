@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% include "_top_head.html" %}
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 	<meta name="description" edit="{{ SEO_DESCRIPTION }}">
 	<meta name="keywords" edit="{{ SEO_KEYWORDS }}">
 	<meta name="robots" edit="all">
@@ -43,6 +44,13 @@
 			Layout.render();
 			{# var mooshellSettings = new MooShellSettings(); #}
 		});
+		window.addEvent('load', function() {
+			{% if preloaded %}
+				Layout.updateFromMirror();
+				$('show-result').submit();
+				this.fireEvent('run');
+			{% endif %}
+		});
 		{% comment %}
 		{% if not example_url %}
 			window.addEvent('load', function() {
@@ -55,6 +63,7 @@
 	{% block head %}{% endblock %}
 </head><body>
 	<form method='post' id='show-result' target='result' action='{{ FORCE_SHOW_SERVER }}{% url pastie_display %}{{ skin }}/' >
+		{% if user.is_authenticated %}<input type="hidden" name="username" value="{{ user.username }}" />{% endif %}
 		<div id='header'>
 			<div id='branding'>
 				<p id='name'><a href='{% url pastie %}' id='home'>{{ project_name }} {{ project_status }}</a></p>

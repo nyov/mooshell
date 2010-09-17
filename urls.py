@@ -1,6 +1,9 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('mooshell.views',
+	# draft
+	url(r'^draft/$','display_draft', name='mooshell_draft'),
+
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
     url(r'^css/(?P<path>.*)$', 'serve_static', {'type': 'css'}, name='mooshell_css'),
     url(r'^js/(?P<path>.*)$', 'serve_static', {'type': 'js'}, name='mooshell_js'),
@@ -10,6 +13,15 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^_save/$','pastie_save', name='pastie_save'),
 	url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
 	url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
+	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
+	url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
+
+	# Echo
+	url(r'^echo/json/$','echo_json', name='echo_json'),
+	url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
+	url(r'^echo/html/$','echo_html', name='echo_html'),
+
+	# OLD ECHO
 	url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),
 	url(r'^ajax_html_javascript_response/$','ajax_html_javascript_response', name='ajax_html_javascript_response'),
 	url(r'^ajax_json_echo/$','ajax_json_echo', name='ajax_json_echo'),
@@ -18,9 +30,9 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^ajax_html_echo/nodelay/$','ajax_html_echo', {'delay': False}, name='ajax_html_echo_nodelay'),
 	url(r'^ajax_xml_echo/$','ajax_xml_echo', name='ajax_xml_echo'),
 	url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
-	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
-	url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
-	
+
+	# expire
+    url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
 
 	# compatibility with old mooshell/* urls DO NOT USE THEM
 	url(r'^mooshell/ajax_json_response/$','ajax_json_response', name='old_ajax_json_response'),
@@ -59,7 +71,6 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^api/user_shells/(?P<author>\w+)/$','api_get_users_pasties'),
 	url(r'^api/user/(?P<author>\w+)/demo/list.(?P<method>\w+)$', 'api_get_users_pasties'),
 
-
     # show
     url(r'^(?P<slug>\w+)/show/$','pastie_show', name='pastie_show'),
     url(r'^(?P<slug>\w+)/show/(?P<skin>\w+)/$','pastie_show', name='pastie_show_with_skin'),
@@ -86,6 +97,7 @@ urlpatterns = patterns('mooshell.views',
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/$','pastie_edit', name='author_revision'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/(?P<skin>\w+)/$','pastie_edit'),
     
+	
     
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/$','pastie_edit', name='u_author_pastie'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/$','pastie_edit', name='u_author_shell'),

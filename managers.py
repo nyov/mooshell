@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class JSDependencyManager(models.Manager):
@@ -24,7 +25,27 @@ class PastieManager(models.Manager):
 		return libs
 	
 	def get_all_owned(self, user=None):
-		return self.get_query_set().filter(author__id=user.id)
+		return self.get_query_set().filter(author__id=user.id).order_by('-created_at')
+
+	def get_public_owned(self, user=None):
+		return self.get_query_set().exclude(favourite__title='').filter(favourite__private=False).filter(author__id=user.id).order_by('-created_at')
+
+
+class DraftManager(models.Manager):
+	def make(self, username, html):
+		try:
+			user = User.objects.get(username=username)
+		except:
+			return
+		html = html._container[0]
+		try:
+			draft = self.get(author__username=user.username)
+			draft.html = html
+			draft.save()
+		except:
+			draft = self.create(author=user, html=html)
+
+		return draft
 
 
 class ShellManager(models.Manager):
@@ -40,7 +61,7 @@ class ShellManager(models.Manager):
 		return public
 
 	def all_owned(self, user=None):
-		return self.get_query_set().filter(private=True, author__id=user.id)
+		return self.get_query_set().filter(private=True, author__id=user.id).order_by('-revision')
 
 	def all_with_private(self):
 		return super(ShellManager, self).all()

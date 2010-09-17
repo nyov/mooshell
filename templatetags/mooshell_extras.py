@@ -6,10 +6,12 @@ register = template.Library()
 
 
 @register.inclusion_tag('_js_library_groups.html')
-def get_js_library_groups(shell=None):
+def get_js_library_groups(shell=None, current_group=None, current_lib=None):
 	"return a list of possible library groups if more than one"
-	current_group = shell.js_lib.library_group if shell else None
-	current_lib = shell.js_lib if shell else None
+	if not current_group:
+		current_group = shell.js_lib.library_group if shell else None
+	if not current_lib:
+		current_lib = shell.js_lib if shell else None
 	groups = JSLibraryGroup.objects.all()
 	for group in groups:
 		group.lib_list = list(group.libs.all())

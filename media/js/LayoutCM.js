@@ -41,6 +41,7 @@ var Layout = {
 		}
 
 		this.resize();
+		this.resize.bind(this).delay(20);
 
 		if (!Browser.Engine.trident4) {
 			this.createDragInstances();
@@ -182,56 +183,6 @@ var Layout = {
 		this.handlers.left.setStyle('top', this.windows[0].getCoordinates(this.content).bottom);
 		this.handlers.right.setStyle('top', this.windows[2].getCoordinates(this.content).bottom);
 
-//		this.editors.each( function(ed) {
-//			ed.show();
-//		});
-//		if (this.result) {
-//			this.result.show();
-//		}
-
-		/*
-		// there is a need to do some IE fixes
-		var ie_offset = (Browser.Engine.trident) ? 2 : 0;
-		// hide results to measure the size of a window without them
-		var height, window_size, offset, width, js, js_top, top;
-		this.editors.each( function(ed) {
-			ed.hide();
-		});
-		if (this.result) this.result.hide();
-
-		window_size = window.getSize();
-		// width of textareas and iframe
-		offset = 10 + ie_offset; // options?
-		width = Math.floor($('content').getInnerWidth() / 2) - offset;
-
-		$$('fieldset p').setStyle('width', width + offset - ie_offset);
-
-		// set all editors width
-		this.editors.each( function(ed) {
-			ed.show();
-			ed.setStyle('width', width);
-		});
-
-		// get JS height
-		if (this.editors.js) {
-			js = this.editors.js;
-			js_top = js.getPosition().y;
-			height = window_size.y - js_top - offset;
-			js.setStyle('height', height);
-		}
-
-		if (this.result) {
-			this.result.show();
-			if (!this.editors.js) {
-				top = this.result.getPosition().y;
-				height = window_size.y - top - offset;
-			}
-			this.result.setStyles({
-				'height': height,
-				'width': width
-			});
-		}
-		*/
 		this.fireEvent('resize');
 	}
 };

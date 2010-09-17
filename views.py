@@ -11,110 +11,153 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.template import Template,RequestContext
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
+from django.contrib.auth.decorators import login_required
 
-from models import Pastie, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType, ShellExternalResource
+from models import Pastie, Draft, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType, ShellExternalResource
 from forms import PastieForm, ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
+from mooshell.helpers import expire_page, expire_view_cache
 
 
 # consider better caching for that function.
-@vary_on_cookie
+
+CACHE_TIME = settings.CACHE_MIDDLEWARE_SECONDS
+
+def get_pastie_edit_key(req, slug=None, version=None, revision=None, author=None, skin=None):
+
+	key = "%s:pastie_edit" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
+	key = "%s:%s" % (key, slug) if slug else '%s:homepage' % key
+	if version: key = "%s:%s" % (key, version)
+	if revision: key = "%s:%d" % (key, revision)
+	if author: key = "%s:%s" % (key, author)
+	if skin: key = "%s:%s" % (key, skin)
+
+	return key
+
 def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=None):
 	"""
 	display the edit shell page ( main display)
 	"""
-	shell = None
-	c = {}
 	
-	try:
-		server = settings.MOOSHELL_FORCE_SERVER
-	except:
-		server = 'http://%s' % req.META['SERVER_NAME']
-
-	title = settings.MOOSHELL_NEW_TITLE
-		
-	doctypes = DocType.objects.all()
-	external_resources = []
-	disqus_url = ''.join([server, '/'])
-	if slug:
-		if skin:
-			" important as {user}/{slug} is indistingushable from {slug}/{skin} "
-			try:
-				user = User.objects.get(username=slug)
-				author = slug
-				slug = skin
-				skin = None
-			except:
-				pass
-		pastie = get_object_or_404(Pastie, slug=slug)
-		if version == None:
-			shell = pastie.favourite
-		else:
-			user = get_object_or_404(User,username=author) if author else None
-			shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
-		
-		external_resources = ShellExternalResource.objects.filter(shell__id=shell.id)
-
-		example_url = ''.join([server, shell.get_absolute_url()])
-		embedded_url = ''.join([server, shell.get_embedded_url()])
-		disqus_url = ''.join([server, shell.pastie.favourite.get_absolute_url()])
-		shellform = ShellForm(instance=shell)
-		c.update({
-				'is_author': (pastie.author and req.user.is_authenticated and pastie.author_id == req.user.id),
-				'embedded_url': embedded_url
-				})
-		title = shell.title if shell.title else settings.MOOSHELL_VIEW_TITLE
-		for dtd in doctypes:
-			if dtd.id == shell.doctype.id:
-				dtd.current = True
+	#separate_log('-')
+	#log_to_file('pastie_edit')
+	# build the cache key on the basis of url and user
+	key = get_pastie_edit_key(req, slug, version, revision, author, skin) 
+	
+	if cache.get(key, None):
+		#log_to_file('pastie_edit - cache key found %s' % key)
+		c = cache.get(key)
 	else:
-		example_url = ''
-		#pastieform = PastieForm()
+		#log_to_file('pastie_edit - no cache key found %s - generating from db' % key)
+		shell = None
+		c = {}
+		
+		try:
+			server = settings.MOOSHELL_FORCE_SERVER
+		except:
+			server = 'http://%s' % req.META['SERVER_NAME']
+
+		title = settings.MOOSHELL_NEW_TITLE
+			
+		doctypes = DocType.objects.all()
+		external_resources = []
+		disqus_url = ''.join([server, '/'])
+		if slug:
+			if skin:
+				" important as {user}/{slug} is indistingushable from {slug}/{skin} "
+				try:
+					user = User.objects.get(username=slug)
+					author = slug
+					slug = skin
+					skin = None
+				except:
+					pass
+			pastie = get_object_or_404(Pastie, slug=slug)
+			if version == None:
+				shell = pastie.favourite
+			else:
+				user = get_object_or_404(User,username=author) if author else None
+				shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+			
+			external_resources = ShellExternalResource.objects.filter(shell__id=shell.id)
+
+			example_url = ''.join([server, shell.get_absolute_url()])
+			embedded_url = ''.join([server, shell.get_embedded_url()])
+			disqus_url = ''.join([server, shell.pastie.favourite.get_absolute_url()])
+			c['embedded_url'] = embedded_url
+			title = shell.title if shell.title else settings.MOOSHELL_VIEW_TITLE
+			for dtd in doctypes:
+				if dtd.id == shell.doctype.id:
+					dtd.current = True
+		else:
+			example_url = ''
+			#pastieform = PastieForm()
+			shellform = ShellForm()
+		
+		if settings.DEBUG: moo = settings.MOOTOOLS_DEV_CORE
+		else: moo = settings.MOOTOOLS_CORE
+		
+		if not skin: skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
+
+		examples = Pastie.objects.all_examples_by_groups()
+
+
+		
+		# TODO: join some js files for less requests
+		js_libs = [
+			reverse('mooshell_js', args=[moo]),
+			reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
+			reverse('codemirror', args=['js/codemirror.js']),
+			reverse('codemirror', args=['js/mirrorframe.js']),
+			reverse("mooshell_js", args=["beautifier.js"]),
+			reverse("mooshell_js", args=["Sidebar.js"]),
+			reverse('mooshell_js', args=['LayoutCM.js']),
+			reverse("mooshell_js", args=["Actions.js"]),
+			reverse("mooshell_js", args=["Resources.js"]),
+			reverse("mooshell_js", args=["EditorCM.js"]),
+			reverse("mooshell_js", args=["Settings.js"]),
+		]
+		c.update({
+			'shell': shell,
+			'external_resources': external_resources,
+			'css_files': [reverse('mooshell_css', args=["%s.css" % skin])],
+			'js_libs': js_libs,
+			'examples': examples,
+			'doctypes': doctypes,
+			'title': title,
+			'example_url': example_url,
+			'disqus_url': disqus_url,
+			'web_server': server,
+			'skin': skin,
+			'get_dependencies_url': reverse("_get_dependencies", 
+									args=["lib_id"]).replace('lib_id','{lib_id}'),
+			'get_library_versions_url': reverse("_get_library_versions", 
+									args=["group_id"]).replace('group_id','{group_id}'),
+		})
+		#log_to_file('context generated')
+		try:
+			cache.set(key, c)
+			#log_to_file('context saved in cache')
+		except Exception, err:
+			log_to_file(err.__str__())
+			#log_to_file(c)
+
+	if slug: 
+		shellform = ShellForm(instance=c['shell'])
+	else:
 		shellform = ShellForm()
-	
-	if settings.DEBUG: moo = settings.MOOTOOLS_DEV_CORE
-	else: moo = settings.MOOTOOLS_CORE
-	
-	if not skin: skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
-
-	examples = Pastie.objects.all_examples_by_groups()
+	c['shellform'] = shellform
 
 
-	
-	# TODO: join some js files for less requests
-	js_libs = [
-		reverse('mooshell_js', args=[moo]),
-		reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
-		reverse('codemirror', args=['js/codemirror.js']),
-		reverse('codemirror', args=['js/mirrorframe.js']),
-		reverse("mooshell_js", args=["Sidebar.js"]),
-		reverse('mooshell_js', args=['LayoutCM.js']),
-		reverse("mooshell_js", args=["Actions.js"]),
-		reverse("mooshell_js", args=["Resources.js"]),
-		reverse("mooshell_js", args=["EditorCM.js"]),
-		reverse("mooshell_js", args=["Settings.js"]),
-	]
-	c.update({
-		'shellform':shellform,
-		'shell': shell,
-		'external_resources': external_resources,
-		'css_files': [reverse('mooshell_css', args=["%s.css" % skin])],
-		'js_libs': js_libs,
-		'examples': examples,
-		'doctypes': doctypes,
-		'title': title,
-		'example_url': example_url,
-		'disqus_url': disqus_url,
-		'web_server': server,
-		'skin': skin,
-		'get_dependencies_url': reverse("_get_dependencies", 
-								args=["lib_id"]).replace('lib_id','{lib_id}'),
-		'get_library_versions_url': reverse("_get_library_versions", 
-								args=["group_id"]).replace('group_id','{group_id}'),
-	})
+
+	if slug and c['shell']: 
+		pastie = c['shell'].pastie
+		c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id)
+
 	return render_to_response('pastie_edit.html',c,
 							context_instance=RequestContext(req))
 	
@@ -170,12 +213,18 @@ def pastie_save(req, nosave=False, skin=None):
 					pass
 
 			if nosave:
-				" return the pastie page only " 
+				" get page " 
 				# no need to connect with pastie
-				return pastie_display(req, None, shell, 
+				display_page = pastie_display(req, None, shell, 
 										dependencies=dependencies, 
 										resources=external_resources, 
 										skin=skin)
+				" save the draft version "
+				if req.POST.get('username', False):
+					Draft.objects.make(req.POST.get('username'), display_page)
+
+				" return page "
+				return display_page
 
 			" add user to shell if anyone logged in "
 			if req.user.is_authenticated():
@@ -214,9 +263,40 @@ def pastie_save(req, nosave=False, skin=None):
 					mimetype='application/javascript'
 	)
 
+@login_required
+def display_draft(req):
+	try:
+		return HttpResponse(req.user.draft.all()[0].html)
+	except:
+		raise HttpResponse('Error')
+
+def get_pastie_display_key(req, slug, shell=None, dependencies=[], resources=[], skin=None):
+
+	key = "%s:pastie_display" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
+	key = "%s:%s" % (key, slug)
+	if shell: key = "%s:%d" % (key, shell.id)
+	if dependencies: 
+		dependencies_str = ''
+		for d in dependencies: dependencies_str = "%s,%d" % (dependecies_str, d.id)
+		key = "%s:%s" % (key, dependencies_str)
+	if resources:
+		resources_str = ''
+		for i in resources: resources_str = "%s:%d" % (resources_str, i.id)
+	if skin: key = "%s:%s" % (key, skin)
+
+	return key
+
 def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=None):
 	" render the shell only "
+
+	#key = get_pastie_display_key(req, slug, shell, dependencies, resources, skin)
+	#if cache.get(key, None):
+	#	return cache.get(key)
+
+	#separate_log('-')
+	#log_to_file('pastie_display - with shell %s' % shell)
 	if not shell:
+		#log_to_file('pastie_display - no shell')
 		pastie = get_object_or_404(Pastie, slug=slug)
 		shell = pastie.favourite
 		" prepare dependencies if needed "
@@ -229,7 +309,7 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=No
 	
 	if not skin: skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
 	
-	return render_to_response('pastie_show.html', {
+	page = render_to_response('pastie_show.html', {
 									'shell': shell,
 									'dependencies': dependencies,
 									'resources': resources,
@@ -238,87 +318,162 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=No
 									'skin': skin,
 									'skin_css': reverse("mooshell_css", args=['result-%s.css' % skin])
 							})
+	#cache.set(key, page)
+	return page
 	
+
+def get_embedded_key(req, slug, version=None, revision=0, author=None, tabs=None, skin=None):
+
+	key = "%s:embedded" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
+	key = "%s:%s" % (key, slug)
+	if version: key = "%s:%s" % (key, version)
+	if revision: key = "%s:%s" % (key, revision)
+	if author: key = "%s:%s" % (key, author)
+	if tabs: key = "%s:%s" % (key, tabs)
+	if skin: key = "%s:%s" % (key, skin)
+	#if req.user.is_authenticated(): key = "%s:auth-%s" % (key, req.user.username)
+
+	return key
+
 # consider better caching for that function.
+
 def embedded(req, slug, version=None, revision=0, author=None, tabs=None, skin=None):
 	" display embeddable version of the shell "
-	pastie = get_object_or_404(Pastie,slug=slug)
-	if version == None:
-		shell = pastie.favourite
-	else:
-		user = get_object_or_404(User,username=author) if author else None
-		shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
-	
-	if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
-	if not tabs: tabs = req.GET.get('tabs', 'js,resources,html,css,result')
-	
-	try:
-		server = settings.MOOSHELL_FORCE_SERVER
-	except:
-		server = 'http://%s' % req.META['SERVER_NAME']
 
-	height = req.GET.get('height', None)
-	tabs_order = tabs #req.GET.get('tabs',"js,html,css,result")
-	tabs_order = tabs_order.split(',')
-	
-	if not shell.external_resources.all() and "resources" in tabs_order:
-		tabs_order.remove("resources")
-		external_resources = []
+	#separate_log('-')
+	#log_to_file('embedded')
+	key = get_embedded_key(req, slug, version, revision, author, tabs, skin)
+	if cache.get(key, None):
+		 context = cache.get(key)
+		 #log_to_file('embedded key %s' % key)
 	else:
-		external_resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+		pastie = get_object_or_404(Pastie,slug=slug)
+		if version == None:
+			shell = pastie.favourite
+		else:
+			user = get_object_or_404(User,username=author) if author else None
+			shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+		
+		if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
+		if not tabs: tabs = req.GET.get('tabs', 'js,resources,html,css,result')
+		
+		try:
+			server = settings.MOOSHELL_FORCE_SERVER
+		except:
+			server = 'http://%s' % req.META['SERVER_NAME']
 
-	tabs = []
-	for t in tabs_order:
-		tab = {	'type': t,
-						'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
-					}
-		if not t in ["result", "resources"]:
-			tab['code'] = getattr(shell,'code_'+t)
-		tabs.append(tab)	
-															
-	context = { 
-		'height': height,
-		'server': server,
-		'shell': shell,
-		'external_resources': external_resources,
-		'skin': skin,
-		'tabs': tabs,
-		'code_tabs': ['js', 'css', 'html'],
-		'css_files': [
-				reverse('mooshell_css', args=["embedded-%s.css" % skin])
-				],
-		'js_libs': [
-				reverse('mooshell_js', args=[settings.MOOTOOLS_CORE]),
-				reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
-				]
-	}
-	return render_to_response(	'embedded.html', 
+		height = req.GET.get('height', None)
+		tabs_order = tabs #req.GET.get('tabs',"js,html,css,result")
+		tabs_order = tabs_order.split(',')
+		
+		if not shell.external_resources.all() and "resources" in tabs_order:
+			tabs_order.remove("resources")
+			external_resources = []
+		else:
+			external_resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+
+		tabs = []
+		for t in tabs_order:
+			tab = {	'type': t,
+							'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
+						}
+			if not t in ["result", "resources"]:
+				tab['code'] = getattr(shell,'code_'+t)
+			tabs.append(tab)	
+																
+		context = { 
+			'height': height,
+			'server': server,
+			'shell': shell,
+			'external_resources': external_resources,
+			'skin': skin,
+			'tabs': tabs,
+			'code_tabs': ['js', 'css', 'html'],
+			'css_files': [
+					reverse('mooshell_css', args=["embedded-%s.css" % skin])
+					],
+			'js_libs': [
+					reverse('mooshell_js', args=[settings.MOOTOOLS_CORE]),
+					reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
+					]
+		}
+		cache.set(key, context)
+	page = render_to_response(	'embedded.html', 
 								context, 
 								context_instance=RequestContext(req))
+	return page
 		
-# consider better caching for that function.
+
+def get_pastie_show_key(slug, version=None, author=None, obj=None):
+	key = "%s:pastie_show" % settings.CACHE_MIDDLEWARE_KEY_PREFIX 
+	key = "%s:%s" % (key, slug)
+	if version: key = "%s:%s" % (key, version)
+	if author: key = "%s:%s" % (key, author)
+	if obj: key = "%s:%s" % (key, obj)
+	return key
+
+def delete_pastie_show_keys(slug, version=None, author=None):
+	for obj in ['shell','resources','dependencies']:
+		key = get_pastie_show_key(slug, version, author, obj)
+		#log_to_file('checking %s' % key)
+		if cache.has_key(key):
+			#log_to_file('deleting %s' % key)
+			cache.delete(key)
+			#log_to_file('%s deleted' % key)
+
 def pastie_show(req, slug, version=None, author=None, skin=None):
 	" render the shell only "
-	pastie = get_object_or_404(Pastie, slug=slug)
-	if version == None:
-		shell = pastie.favourite
+
+	#separate_log('-')
+	#log_to_file('pastie_show')
+	key = get_pastie_show_key(slug, version, author, 'shell')
+	#log_to_file(key)
+	if cache.has_key(key):
+		shell = cache.get(key)
+		#log_to_file('shell read from cache %s' % key)
 	else:
-		user = get_object_or_404(User,username=author) if author else None
-		shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+		pastie = get_object_or_404(Pastie, slug=slug)
+		if version == None:
+			shell = pastie.favourite
+		else:
+			user = get_object_or_404(User,username=author) if author else None
+			shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+		cache.set(key, shell)
+		#log_to_file('pastie_show, shell saved in cache %s' % key)
+
 	if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
-	resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+
+	key = get_pastie_show_key(slug, version, author, 'resources')
+	if cache.has_key(key):
+		resources = cache.get(key)
+		#log_to_file('resources read from cache %s' % key)
+	else:
+		resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+		cache.set(key, resources)
+		#log_to_file('pastie_show, resources saved in cache %s' % key)
+
+	key = get_pastie_show_key(slug, version, author, 'dependencies')
+	if cache.has_key(key):
+		dependencies = cache.get(key)
+		#log_to_file('dependencies read from cache %s' % key)
+	else:
+		dependencies = shell.js_dependency.all()
+		cache.set(key, dependencies)
+		#log_to_file('pastie_show, dependencies saved in cache %s' % key )
+
 	return pastie_display(req, slug, shell, 
-						dependencies=shell.js_dependency.all(), 
+						dependencies=dependencies, 
 						resources=resources, skin=skin)
 
 
 #TODO: remove if not used
+@cache_page(CACHE_TIME)
 def author_show_part(req, author, slug, part, version=0):
 	return render_to_response('show_part.html', 
 								{'content': getattr(shell, 'code_'+part)})
 
-# it is bad for automate picking the latest revision 
-# consider better caching for that function.
+
+@cache_page(CACHE_TIME)
 def show_part(req, slug, part, version=None, author=None):
 	pastie = get_object_or_404(Pastie,slug=slug)
 	if pastie.favourite and version == None:
@@ -330,6 +485,49 @@ def show_part(req, slug, part, version=None, author=None):
 		shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
 	return render_to_response('show_part.html', 
 								{'content': getattr(shell, 'code_'+part)})
+
+
+
+def echo_json(req):
+	" respond with POST['json'] "
+	if req.POST.get('delay'):
+		time.sleep(float(req.POST.get('delay'))) 
+	
+	try:
+		response = simplejson.dumps(simplejson.loads(req.POST.get('json', '{}')))
+	except Exception, e:
+		response = simplejson.dumps({'error': e.__str__()})
+	return HttpResponse(
+		response,
+		mimetype='application/javascript'
+	)
+
+
+def echo_html(req):
+	" respond with POST['html'] "
+	if req.POST.get('delay'):
+		time.sleep(float(req.POST.get('delay')))
+	return HttpResponse(req.POST.get('html', ''))
+
+
+def echo_jsonp(req):
+	" respond what provided via GET "
+	response = {}
+	callback = None
+	for key, value in req.GET.items():
+		if key == 'callback':
+			callback = value
+		else:
+			response.update({key: value})
+	
+	response = simplejson.dumps(response)
+
+	if callback:
+		response = '%s(%s);' % (callback, response)
+	
+	return HttpResponse(response, mimetype='application/javascript')
+
+
 
 def ajax_json_echo(req, delay=True):
 	" echo GET and POST "
@@ -374,11 +572,14 @@ def ajax_html_javascript_response(req):
 <script type='text/javascript'>alert('sample alert');</script>""")
 
 
+@cache_page(CACHE_TIME)
 def serve_static(request, path, media='media', type=None):
 	if path == 'favicon':
 		path = 'favicon.png'
 	return base_serve_static(request, path, media, type)
 
+
+@cache_page(CACHE_TIME)
 def get_library_versions(request, group_id): 
 	libraries = JSLibrary.objects.filter(library_group__id=group_id)
 	c = {'libraries': [
@@ -398,6 +599,7 @@ def get_library_versions(request, group_id):
 	return HttpResponse(simplejson.dumps(c),mimetype='application/javascript')
 
 
+@cache_page(CACHE_TIME)
 def get_dependencies(request, lib_id): 
 	return HttpResponse(simplejson.dumps(get_dependencies_dict(lib_id)),mimetype='application/javascript')
 
@@ -405,16 +607,44 @@ def get_dependencies_dict(lib_id):
 	dependencies = JSDependency.objects.filter(active=True,library__id=lib_id)
 	return [{'id': d.id, 'name': d.name, 'selected': d.selected} for d in dependencies ]
 
+def expire_path(r, path):
+	path = '%s' % path
+	expire_page(path)
+	return HttpResponse(simplejson.dumps({'message':'path expired', 'path':path}),
+						mimetype="application/javascript")
+	
 def make_favourite(req):
 	shell_id = req.POST.get('shell_id')
 	shell = Shell.objects.get(id=shell_id)
-	if req.user.is_authenticated() and req.user.id == shell.pastie.author.id:
-		shell.pastie.favourite = shell
-		shell.pastie.save()
-		# TODO: clear the cache of the shell
-		return HttpResponse(simplejson.dumps({'message':'saved as favourite'}),
-							mimetype="application/javascript")
-	raise Http404 
+
+	if not req.user.is_authenticated() or req.user.id != shell.pastie.author.id:
+		raise Http404
+
+	shell.pastie.favourite = shell
+	shell.pastie.save()
+	
+	#if settings.FORCE_SHOW_SERVER:
+	#	from urllib2 import urlopen
+	#	response = urlopen('%s%s' % (settings.FORCE_SHOW_SERVER, reverse('expire', args=[shell.pastie.get_absolute_url()])))
+
+	separate_log('-')
+	log_to_file('make favourite - deleting caches')
+	delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
+	keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
+			get_pastie_edit_key(req, shell.pastie.slug, author=shell.author, version=shell.version),
+			get_embedded_key(req, shell.pastie.slug, author=shell.author)
+			]
+	for key in keys:
+		log_to_file('checking %s' % key)
+		if cache.has_key(key):
+			log_to_file('deleting')
+			cache.delete(key)
+	#expire_page(shell.get_absolute_url())
+	#expire_page(shell.get_show_url())
+	#expire_page(shell.get_embedded_url())
+
+	return HttpResponse(simplejson.dumps({'message':'saved as favourite', 'url':shell.pastie.get_absolute_url()}),
+						mimetype="application/javascript")
 
 
 SORT_CHOICES = {
@@ -427,6 +657,7 @@ ORDER_CHOICES = {
 	'asc': ''
 }
 
+@cache_page(CACHE_TIME)
 def api_get_users_pasties(req, author, method='json'):
 	separate_log()
 	start = int(req.GET.get('start',0))

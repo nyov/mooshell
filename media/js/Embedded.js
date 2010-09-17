@@ -1,5 +1,6 @@
 // inject iframe and fire event	
 var loadResult = function () {
+	$$('#result iframe').each(function(el) { el.destroy(); });
 	new Element('iframe', {
 		'src': show_src,
 		'styles': {

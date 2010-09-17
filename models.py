@@ -6,7 +6,7 @@ from django.db.models.signals import pre_save, post_save
 from django.contrib.auth.models import User
 from django.conf import settings   
 
-from managers import JSDependencyManager, JSLibraryManager, PastieManager, ShellManager
+from managers import JSDependencyManager, JSLibraryManager, PastieManager, ShellManager, DraftManager
 
 def next_week():
 	return datetime.now() + timedelta(days=7)
@@ -150,6 +150,7 @@ class DocType(models.Model):
 	name = models.CharField(max_length=255, unique=True)
 	code = models.TextField(blank=True, null=True)
 	type = models.CharField(max_length=100, default='html', blank=True)
+	template = models.CharField(max_length=100, default='xhtml.1.0.strict.html', blank=True)
 	selected = models.BooleanField(default=False, blank=True)
 	
 	def __unicode__(self):
@@ -188,13 +189,14 @@ class Pastie(models.Model):
 		return self.slug
 	
 	def get_latest(self):
-		return Shell.objects.filter(pastie__id=self.id).order_by('-version')[0]
-		
+		try:
+			return Shell.objects.filter(pastie__id=self.id).order_by('-version')[0]
+		except:
+			return []
 
 
-	@models.permalink
 	def get_absolute_url(self):
-		return ('pastie',[self.slug])
+		return self.favourite.get_absolute_url() if self.favourite else reverse('pastie',args=[self.slug])
 	
 	class Admin:
 		pass
@@ -207,6 +209,17 @@ def make_slug_on_create(instance, **kwargs):
 	if not instance.id and not instance.slug:
 		instance.set_slug() 
 pre_save.connect(make_slug_on_create, sender=Pastie)
+
+
+class Draft(models.Model):
+	"""
+	Saves the draft (only one per user)
+	"""
+	author = models.ForeignKey(User, unique=True, related_name='draft')
+	html = models.TextField()
+
+	objects = DraftManager()
+	
 
 class Shell(models.Model):
 	"""

@@ -47,7 +47,8 @@ var MooShellActions = new Class({
 			'data': {shell_id: shell_id},
 			'onSuccess': function(response) {
 				// #TODO: reload page after successful save
-				$('mark_favourite').addClass('isFavourite').getElements('span')[0].set('text', 'Base');
+				window.location.href = response.url;
+				//$('mark_favourite').addClass('isFavourite').getElements('span')[0].set('text', 'Base');
 			}
 		}).send();
 	
@@ -150,6 +151,7 @@ var MooShellActions = new Class({
 	loadDependencies: function(lib_id) {
 		new Request.JSON({
 			url: this.options.loadDependenciesURL.substitute({lib_id: lib_id}),
+			method: 'get',
 			onSuccess: function(response) {
 				$('js_dependency').empty();
 				response.each(function (dep) {
@@ -308,3 +310,52 @@ var Base64 = {
 	}
  
 };
+
+
+var Dropdown = new Class({
+	
+	initialize: function(){
+		this.dropdown = {
+			cont: $$('.dropdownCont'),
+			trigger: $$('.dropdown a.aiButton')
+		};
+		
+		this.setDefaults();
+	},
+	
+	setDefaults: function(){
+		this.dropdown.cont.fade('hide');
+		this.dropdown.cont.set('tween', {
+			duration: 200
+		});
+		
+		this.dropdown.trigger.each(function(trigger){
+			trigger.addEvents({
+				click: this.toggle.bindWithEvent(trigger, this)
+			});
+		}, this);
+		
+		$(document.body).addEvents({
+			click: function(e){
+				if (!$(e.target).getParent('.dropdownCont')){
+					this.hide();
+				}
+			}.bind(this)
+		});
+	},
+	
+	toggle: function(e, parent){
+		e.stop();
+		
+		parent.dropdown.cont.fade('out');
+
+		if (this.getNext('.dropdownCont').getStyles('opacity')['opacity'] === 0){
+			this.getNext('.dropdownCont').fade('in');
+		}
+	},
+	
+	hide: function(){
+		this.dropdown.cont.fade('out');
+	}
+});
+
