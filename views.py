@@ -528,6 +528,12 @@ def echo_jsonp(req):
 	return HttpResponse(response, mimetype='application/javascript')
 
 
+def echo_xml(req):
+	" respond with POST['xml'] "
+	if req.POST.get('delay'):
+		time.sleep(float(req.POST.get('delay')))
+	return HttpResponse(req.POST.get('xml', ''), mimetype='text/xml')
+
 
 def ajax_json_echo(req, delay=True):
 	" echo GET and POST "

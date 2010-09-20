@@ -20,6 +20,7 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^echo/json/$','echo_json', name='echo_json'),
 	url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
 	url(r'^echo/html/$','echo_html', name='echo_html'),
+	url(r'^echo/xml/$','echo_xml', name='echo_xml'),
 
 	# OLD ECHO
 	url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),
