@@ -487,11 +487,13 @@ def show_part(req, slug, part, version=None, author=None):
 								{'content': getattr(shell, 'code_'+part)})
 
 
+MAX_DELAY = 15.0
+
 
 def echo_json(req):
 	" respond with POST['json'] "
 	if req.POST.get('delay'):
-		time.sleep(float(req.POST.get('delay'))) 
+		time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
 	
 	try:
 		response = simplejson.dumps(simplejson.loads(req.POST.get('json', '{}')))
@@ -506,7 +508,7 @@ def echo_json(req):
 def echo_html(req):
 	" respond with POST['html'] "
 	if req.POST.get('delay'):
-		time.sleep(float(req.POST.get('delay')))
+		time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
 	return HttpResponse(req.POST.get('html', ''))
 
 
@@ -527,6 +529,12 @@ def echo_jsonp(req):
 	
 	return HttpResponse(response, mimetype='application/javascript')
 
+
+def echo_xml(req):
+	" respond with POST['xml'] "
+	if req.POST.get('delay'):
+		time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
+	return HttpResponse(req.POST.get('xml', ''), mimetype='text/xml')
 
 
 def ajax_json_echo(req, delay=True):
