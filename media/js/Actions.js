@@ -80,7 +80,7 @@ var MooShellActions = new Class({
 		addBinded(this.options.runId, this.run, this);
 		addBinded(this.options.cleanId, this.cleanEntries, this);
 		addBinded(this.options.jslintId, this.jsLint, this);
-		addBinded(this.options.tidyId, this.makeTidy, this);
+		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
 		addBinded(this.options.favId, this.makeFavourite, this);
 		addBinded(this.options.disqusId, this.showDisqusWindow, this);
 
@@ -114,8 +114,17 @@ var MooShellActions = new Class({
 		});
 		
 	},
-	makeTidy: function(e){
+	prepareAndLaunchTidy: function(e) {
 		e.stop();
+		if (!$defined(window.js_beautify)) {
+			Asset.javascript('/js/beautifier.js', {
+				onload: this.makeTidy.bind(this)
+			});
+		} else {
+			this.makeTidy();
+		}
+	},
+	makeTidy: function(){
 		Layout.editors.each(function(w){
 			var code = w.editor.getCode();
 			if (code) {

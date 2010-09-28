@@ -113,7 +113,6 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
 			reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
 			reverse('codemirror', args=['js/codemirror.js']),
 			reverse('codemirror', args=['js/mirrorframe.js']),
-			reverse("mooshell_js", args=["beautifier.js"]),
 			reverse("mooshell_js", args=["Sidebar.js"]),
 			reverse('mooshell_js', args=['LayoutCM.js']),
 			reverse("mooshell_js", args=["Actions.js"]),
