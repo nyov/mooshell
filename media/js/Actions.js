@@ -135,9 +135,13 @@ var MooShellActions = new Class({
 			console.log('JSLint error objects:');
 			JSLINT.errors.each(function(error) {
 				console.log(error);
-				error.id = error.id.replace('(','').replace(')','');
-				error.id_name = error.id.substr(0, 1).toUpperCase() + error.id.substr(1);
-				html += "<p class='{id}'>{id_name}: {reason} in line #{line}:{character}</p>".substitute(error);
+				if (error) {
+					if (error.id) {
+						error.id = error.id.replace('(','').replace(')','');
+						error.id_name = error.id.substr(0, 1).toUpperCase() + error.id.substr(1) + ': ';
+					}
+					html += "<p class='{id}'>{id_name}{reason} in line #{line}:{character}</p>".substitute(error);
+				} 
 			});
 			html +=		'</div></div>';
 			new StickyWin({
