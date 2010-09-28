@@ -9,7 +9,6 @@
 	{% if GOOGLE_VERIFICATION_META_TAG %}{{ GOOGLE_VERIFICATION_META_TAG|safe }}{% endif %}
 	<meta name="author" edit="Piotr Zalewa">
 	<meta name='copyright' content='share alike'/>
-	<script type="text/javascript" src="/js/jslint.min.js"></script>
 	{% for js in js_libs %}<script type="text/javascript" src="{{ js }}"></script>{% endfor %}
 	{% include "_head.html" %}
 	{{ SPECIAL_HEAD_CODE|safe }}

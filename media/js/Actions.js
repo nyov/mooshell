@@ -127,6 +127,15 @@ var MooShellActions = new Class({
 	},
 	jsLint: function(e) {
 		e.stop();
+		if (!window.JSLINT) {
+			Asset.javascript('/js/jslint.min.js', {
+				onload: this.JSLintValidate.bind(this)
+			});
+		} else {
+			return this.JSLintValidate();
+		}
+	},
+	JSLintValidate: function() {
 		var html = '<div class="modalWrap">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
