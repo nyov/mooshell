@@ -9,6 +9,7 @@
 	{% if GOOGLE_VERIFICATION_META_TAG %}{{ GOOGLE_VERIFICATION_META_TAG|safe }}{% endif %}
 	<meta name="author" edit="Piotr Zalewa">
 	<meta name='copyright' content='share alike'/>
+	<script type="text/javascript" src="http://www.jslint.com/fulljslint.js"></script>
 	{% for js in js_libs %}<script type="text/javascript" src="{{ js }}"></script>{% endfor %}
 	{% include "_head.html" %}
 	{{ SPECIAL_HEAD_CODE|safe }}
@@ -28,11 +29,13 @@
 			mediapath = "{% url mooshell_media "" %}",
 			codemirrorpath = "{% url codemirror "" %}",
 			makefavouritepath = "{% url make_favourite %}",
+			example_server = "{{ web_server }}",
 			mooshell;
 		Layout.skin = "{{ skin }}"
 		window.addEvent('domready', function() {
 			$extend(Layout, new Events());
 			mooshell = new MooShellActions({
+				example_id: '{{ shell.id }}',
 				exampleURL: "{{ example_url }}",
 				exampleSaveUrl: '{% url pastie_save %}',
 				loadDependenciesURL: '{{ get_dependencies_url|safe }}',

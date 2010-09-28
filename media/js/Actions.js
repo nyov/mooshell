@@ -1,3 +1,43 @@
+var DiscussionWindow = new Class({
+	initialize: function(){
+		this.modal;
+	},
+
+	create: function(subs){
+		var discussionHtml = '';
+		discussionHtml += '<div class="modalWrap {specialClass}">';
+		discussionHtml += '<div class="modalHeading"><h3>Discussion</h3><span class="close">Close window</span></div>';
+		discussionHtml += '<div id="{specialId}" class="modalBody"></div>';
+		discussionHtml += '</div>';
+
+		subs = $merge({
+			specialClass: '',
+			specialId: ''
+		}, subs);
+
+		this.modal = new StickyWin({
+			content: discussionHtml.substitute(subs),
+			relativeTo: $(document.body),
+			position: 'center',
+			edge: 'center',
+			closeClassName: 'close',
+			draggable: true,
+			dragHandleSelector: 'h3',
+			closeOnEsc: true,
+			destroyOnClose: true,
+			allowMultiple: false
+		});
+		
+		this.modal.show();
+
+		return this.modal;
+	},
+
+	destroy: function(){
+		this.modal.hide();
+	}
+});
+
 /*
  * Define actions on the run/save/clean buttons
  */
@@ -11,9 +51,15 @@ var MooShellActions = new Class({
 		saveAsNewId: 'savenew',
 		runId: 'run',
 		cleanId: 'clean',
+		jslintId: 'jslint',
+		tidyId: 'tidy',
+		disqusId: 'discussion',
+		shareSelector: '#share_link_dropdown, #share_embedded_dropdown',
+		favId: 'mark_favourite',
 		entriesSelector: 'textarea',
 		resultLabel: 'result_label',
 		resultInput: 'select_link',
+		example_id: false,
 		exampleURL: '',
 		exampleSaveURL: '',
 		loadDependenciesURL: ''
@@ -23,14 +69,27 @@ var MooShellActions = new Class({
 	 */
 	initialize: function(options) {
 		this.setOptions(options);
-		if ($(this.options.saveAndReloadId)) 
-			$(this.options.saveAndReloadId).addEvent('click', this.saveAndReload.bind(this));
-		if ($(this.options.saveAsNewId)) 
-			$(this.options.saveAsNewId).addEvent('click', this.saveAsNew.bind(this));
-		if ($(this.options.runId)) 
-			$(this.options.runId).addEvent('click', this.run.bind(this));
-		if ($(this.options.cleanId)) 
-			$(this.options.cleanId).addEvent('click', this.cleanEntries.bind(this));
+		var addBinded = function(el, callback, bind) {
+			el = $(el);
+			if (el) 
+				el.addEvent('click', callback.bind(bind));
+		}
+		addBinded(this.options.saveAndReloadId, this.saveAndReload, this);
+		addBinded(this.options.saveAsNewId, this.saveAsNew, this);
+		addBinded(this.options.runId, this.run, this);
+		addBinded(this.options.cleanId, this.cleanEntries, this);
+		addBinded(this.options.jslintId, this.jsLint, this);
+		addBinded(this.options.tidyId, this.makeTidy, this);
+		addBinded(this.options.favId, this.makeFavourite, this);
+		addBinded(this.options.disqusId, this.showDisqusWindow, this);
+
+		var share = $$(this.options.shareSelector);
+		if (share.length > 0) {
+			share.addEvent('click', function() {
+				this.select();				
+			});
+		}
+
 		// actions run if shell loaded
 		
 		this.form = document.id(this.options.formId);
@@ -40,11 +99,45 @@ var MooShellActions = new Class({
 			this.displayExampleURL();
 		}
 	},
+	showDisqusWindow: function(e) {
+		e.stop();
+
+		// create the discussion modal
+		new DiscussionWindow().create({
+			specialClass: 'disqus_thread',
+			specialId: 'disqus_thread'
+		});
+		
+		Asset.javascript('http://jsfiddle.disqus.com/embed.js', {
+			async: true
+		});
+		
+	},
+	makeTidy: function(e){
+		e.stop();
+		Layout.editors.each(function(w){
+			var code = w.editor.getCode();
+			if (code) {
+				var fixed = Beautifier[w.options.name](code);
+				if (fixed) w.editor.setCode(fixed);
+				else w.editor.reindent();
+			}
+		});
+	},
+	jsLint: function(e) {
+		e.stop();
+		if (!JSLINT(Layout.editors.js.editor.getCode())) {
+			console.log(JSLINT.errors);
+		} else {
+			console.log('valid');
+		}
+	},
 	// mark shell as favourite
-	makeFavourite: function(shell_id) {
+	makeFavourite: function(e) {
+		e.stop();
 		new Request.JSON({
 			'url': makefavouritepath,
-			'data': {shell_id: shell_id},
+			'data': {shell_id: this.options.example_id},
 			'onSuccess': function(response) {
 				// #TODO: reload page after successful save
 				window.location.href = response.url;
