@@ -63,7 +63,13 @@ var MooShellActions = new Class({
 		example_id: false,
 		exampleURL: '',
 		exampleSaveURL: '',
-		loadDependenciesURL: ''
+		loadDependenciesURL: '',
+		jslint: {
+			evil: true,
+			passfail: false,
+			browser: true,
+			newcap: false
+		}
 	},
 	/*
 	 * Assign actions
@@ -149,7 +155,7 @@ var MooShellActions = new Class({
 		var html = '<div class="modalWrap">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
-		if (!JSLINT(Layout.editors.js.editor.getCode())) {
+		if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
 			html = 	html.substitute({title: 'Errors'}) + 
 					JSLINT.report(true) +
 					'</div></div>';
