@@ -1,3 +1,4 @@
+// TODO: refactor 
 var DiscussionWindow = new Class({
 	initialize: function(){
 		this.modal;
@@ -126,10 +127,46 @@ var MooShellActions = new Class({
 	},
 	jsLint: function(e) {
 		e.stop();
+		var html = '<div class="modalWrap">' +
+					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
+					'<div id="" class="modalBody">';
 		if (!JSLINT(Layout.editors.js.editor.getCode())) {
-			console.log(JSLINT.errors);
+			html = html.substitute({title: 'Errors'});
+			console.log('JSLint error objects:');
+			JSLINT.errors.each(function(error) {
+				console.log(error);
+				error.id = error.id.replace('(','').replace(')','');
+				error.id_name = error.id.substr(0, 1).toUpperCase() + error.id.substr(1);
+				html += "<p class='{id}'>{id_name}: {reason} in line #{line}:{character}</p>".substitute(error);
+			});
+			html +=		'</div></div>';
+			new StickyWin({
+				content: html,		
+				relativeTo: $(document.body),
+				position: 'center',
+				edge: 'center',
+				closeClassName: 'close',
+				draggable: true,
+				dragHandleSelector: 'h3',
+				closeOnEsc: true,
+				destroyOnClose: true,
+				allowMultiple: false
+			}).show()
 		} else {
-			console.log('valid');
+			html = html.substitute({title: 'Valid!'});
+			html +=	'<p>Your code is JSLint Valid.</p></div></div>';
+			new StickyWin({
+				content: html,		
+				relativeTo: $(document.body),
+				position: 'center',
+				edge: 'center',
+				closeClassName: 'close',
+				draggable: true,
+				dragHandleSelector: 'h3',
+				closeOnEsc: true,
+				destroyOnClose: true,
+				allowMultiple: false
+			}).show()
 		}
 	},
 	// mark shell as favourite
