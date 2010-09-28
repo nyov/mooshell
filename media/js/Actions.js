@@ -128,7 +128,7 @@ var MooShellActions = new Class({
 	jsLint: function(e) {
 		e.stop();
 		if (!window.JSLINT) {
-			Asset.javascript('/js/jslint.min.js', {
+			Asset.javascript('/js/fulljslint.js', {
 				onload: this.JSLintValidate.bind(this)
 			});
 		} else {
