@@ -152,7 +152,7 @@ var MooShellActions = new Class({
 		}
 	},
 	JSLintValidate: function() {
-		var html = '<div class="modalWrap">' +
+		var html = '<div class="modalWrap modal_jslint">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
 		if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
