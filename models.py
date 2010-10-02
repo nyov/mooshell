@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from managers import JSDependencyManager, JSLibraryManager, PastieManager, ShellManager, DraftManager
+from managers import JSDependencyManager, JSLibraryManager, PastieManager, \
+        ShellManager, DraftManager
+
 
 def next_week():
     return datetime.now() + timedelta(days=7)
@@ -53,7 +55,8 @@ class JSLibrary(models.Model):
     """
     library_group = models.ForeignKey(JSLibraryGroup, related_name="libs")
     version = models.CharField(max_length=30, null=True, blank=True)
-    href = models.CharField('URL to the core library file', max_length=255, unique=True)
+    href = models.CharField('URL to the core library file', max_length=255,
+                            unique=True)
     selected = models.BooleanField(blank=True, default=False)
     wrap_d = models.ForeignKey(JSLibraryWrap, related_name='lib_for_domready')
     wrap_l = models.ForeignKey(JSLibraryWrap, related_name='lib_for_load')
@@ -99,7 +102,8 @@ class JSDependency(models.Model):
 
 
 class ExternalResource(models.Model):
-    url = models.CharField('URL to the resource file', max_length=255, unique=True)
+    url = models.CharField('URL to the resource file', max_length=255,
+                           unique=True)
 
     class Admin:
         pass
@@ -147,7 +151,8 @@ class DocType(models.Model):
     name = models.CharField(max_length=255, unique=True)
     code = models.TextField(blank=True, null=True)
     type = models.CharField(max_length=100, default='html', blank=True)
-    template = models.CharField(max_length=100, default='xhtml.1.0.strict.html', blank=True)
+    template = models.CharField(max_length=100, default='xhtml.1.0.strict.html',
+                                blank=True)
     selected = models.BooleanField(default=False, blank=True)
 
     def __unicode__(self):
@@ -166,7 +171,8 @@ class Pastie(models.Model):
     created_at = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(User, null=True, blank=True)
     example = models.BooleanField(default=False, blank=True)
-    favourite = models.ForeignKey('Shell', null=True, blank=True, related_name='favs')
+    favourite = models.ForeignKey('Shell', null=True, blank=True,
+                                  related_name='favs')
 
     objects = PastieManager()
 
@@ -176,7 +182,8 @@ class Pastie(models.Model):
         check_slug = True
         # repeat until the slug will be unique
         while check_slug:
-            self.slug = ''.join([choice(allowed_chars) for i in range(settings.MOOSHELL_SLUG_LENGTH)]) #here some random stuff
+            self.slug = ''.join([choice(allowed_chars) \
+                for i in range(settings.MOOSHELL_SLUG_LENGTH)])
             try:
                 check_slug = Pastie.objects.get(slug=self.slug)
             except:
@@ -187,13 +194,15 @@ class Pastie(models.Model):
 
     def get_latest(self):
         try:
-            return Shell.objects.filter(pastie__id=self.id).order_by('-version')[0]
+            return Shell.objects.filter(
+                pastie__id=self.id).order_by('-version')[0]
         except:
             return []
 
 
     def get_absolute_url(self):
-        return self.favourite.get_absolute_url() if self.favourite else reverse('pastie',args=[self.slug])
+        return self.favourite.get_absolute_url() \
+                if self.favourite else reverse('pastie',args=[self.slug])
 
     class Admin:
         pass
@@ -239,7 +248,8 @@ class Shell(models.Model):
 
     # is the shell private (do not list in search)
     # how long author she should be hold by the system ?
-    valid_until = models.DateTimeField('Valid until', default=None, null=True, blank=True)
+    valid_until = models.DateTimeField('Valid until', default=None,
+                                       null=True, blank=True)
 
     # editors
     code_css = models.TextField('CSS', null=True, blank=True)
@@ -253,19 +263,23 @@ class Shell(models.Model):
     js_lib = models.ForeignKey(JSLibrary)
     js_lib_option = models.CharField(max_length=255, null=True, blank=True)
     js_dependency = models.ManyToManyField(JSDependency, null=True, blank=True)
-    js_wrap = models.CharField(max_length=1, choices=WRAPCHOICE, default='d', null=True, blank=True)
+    js_wrap = models.CharField(max_length=1, choices=WRAPCHOICE, default='d',
+                               null=True, blank=True)
     external_resources = models.ManyToManyField(
                                     ExternalResource,
                                     through='ShellExternalResource',
                                     null=True, blank=True
     )
-    body_tag = models.CharField(max_length=255, null=True, blank=True, default="<body>")
+    body_tag = models.CharField(max_length=255, null=True, blank=True,
+                                default="<body>")
     doctype = models.ForeignKey(DocType, blank=True, null=True)
 
     objects = ShellManager()
 
     def is_favourite(self):
-        return (self.version == 0 and not self.pastie.favourite) or (self.pastie.favourite and self.pastie.favourite_id == self.id)
+        return (self.version == 0 and not self.pastie.favourite) \
+                or (self.pastie.favourite \
+                and self.pastie.favourite_id == self.id)
 
     def __str__(self):
         past = ''
@@ -343,7 +357,8 @@ class Shell(models.Model):
         return (rev, args)
 
     def get_next_version(self):
-        shell_with_highest_version = Shell.objects.filter(pastie=self.pastie).order_by('-version')[0]
+        shell_with_highest_version = Shell.objects.filter(
+            pastie=self.pastie).order_by('-version')[0]
         return shell_with_highest_version.version + 1
 
     def set_next_version(self):
@@ -353,9 +368,8 @@ class Shell(models.Model):
         past = ''
         if self.id != self.pastie.favourite.id:
             past += '-%i' % self.version
-        pre = '%s - ' % self.title if self.title else ''
-        return pre + self.pastie.slug + past
-
+        pre = self.title if self.title else self.pastie.slug
+        return pre + past
 
     class Meta:
         ordering = ["-version", "revision"]
@@ -374,18 +388,19 @@ class ShellExternalResource(models.Model):
         ordering = ['ord']
 
 
-
 def increase_version_on_save(instance, **kwargs):
     if kwargs.get('raw',False): return
     if not instance.id:
         # check if any shell exists for the pastie
         try:
-            shells = Shell.objects.filter(pastie__id=instance.pastie.id).order_by('-version')
+            shells = Shell.objects.filter(
+                pastie__id=instance.pastie.id).order_by('-version')
             version = list(shells)[0].version + 1
         except:
             version = 0
         instance.version = version
 pre_save.connect(increase_version_on_save, sender=Shell)
+
 
 def make_first_version_favourite(instance, **kwargs):
     if kwargs.get('raw',False): return
@@ -394,5 +409,3 @@ def make_first_version_favourite(instance, **kwargs):
         instance.pastie.favourite = instance
         instance.pastie.save()
 post_save.connect(make_first_version_favourite, sender=Shell)
-
-
