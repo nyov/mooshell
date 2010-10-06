@@ -18,13 +18,17 @@ from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
 from forms import ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
+from mooshell.helpers import expire_page
 
 
 CACHE_TIME = settings.CACHE_MIDDLEWARE_SECONDS
+# max delay for echo
+MAX_DELAY = 15.0
 
 
 def get_pastie_edit_key(req, slug=None, version=None, revision=None,
                         author=None, skin=None):
+    " creating a unique key for pastie_edit "
 
     key = "%s:pastie_edit" % settings.CACHE_MIDDLEWARE_KEY_PREFIX
     key = "%s:%s" % (key, slug) if slug else '%s:homepage' % key
@@ -200,7 +204,8 @@ def pastie_save(req, nosave=False, skin=None):
             shell.pastie = pastie
 
             # get javascript dependencies
-            dependency_ids = [int(dep[1]) for dep in req.POST.items() if dep[0].startswith('js_dependency')]
+            dependency_ids = [int(dep[1]) for dep in req.POST.items() \
+                              if dep[0].startswith('js_dependency')]
             dependencies = []
             for dep_id in dependency_ids:
                 dep = JSDependency.objects.get(id=dep_id)
@@ -211,25 +216,25 @@ def pastie_save(req, nosave=False, skin=None):
             ext_ids = req.POST.get('add_external_resources', '').split(',')
             for ext_id in ext_ids:
                 try:
-                    external_resources.append(ExternalResource.objects.get(id=int(ext_id)))
+                    external_resources.append(
+                        ExternalResource.objects.get(id=int(ext_id)))
                 except:
-                    pass
+                    log_to_file('called a nin existing external resource')
 
             if nosave:
-                " get page "
+                # get page
                 # no need to connect with pastie
                 display_page = pastie_display(req, None, shell,
                                         dependencies=dependencies,
                                         resources=external_resources,
                                         skin=skin)
-                " save the draft version "
+                # save the draft version
                 if req.POST.get('username', False):
                     Draft.objects.make(req.POST.get('username'), display_page)
 
-                " return page "
                 return display_page
 
-            " add user to shell if anyone logged in "
+            # add user to shell if anyone logged in
             if req.user.is_authenticated():
                 shell.author = req.user
 
@@ -241,8 +246,6 @@ def pastie_save(req, nosave=False, skin=None):
 
             # add saved external resources
             for idx,ext in enumerate(external_resources):
-                #we use intermediate model now
-                #shell.external_resources.add(ext)
                 ShellExternalResource.objects.create(
                     shell=shell,
                     resource=ext,
@@ -262,20 +265,22 @@ def pastie_save(req, nosave=False, skin=None):
         error = 'Please use POST request'
 
     # Report errors
-    return HttpResponse(simplejson.dumps({'error':error}),
-                    mimetype='application/javascript'
-    )
+    return HttpResponse(simplejson.dumps({'error': error}),
+                    mimetype='application/javascript')
+
 
 @login_required
 def display_draft(req):
+    " return the draft as saved in user's files "
     try:
         return HttpResponse(req.user.draft.all()[0].html)
     except:
-        raise HttpResponse('Error')
+        raise HttpResponse("You've got no draft saved")
+
 
 def get_pastie_display_key(req, slug, shell=None, dependencies=[],
                            resources=[], skin=None):
-
+    " get cache key for pastie_display "
     key = "%s:pastie_display" % settings.CACHE_MIDDLEWARE_KEY_PREFIX
     key = "%s:%s" % (key, slug)
     if shell: key = "%s:%d" % (key, shell.id)
@@ -291,11 +296,12 @@ def get_pastie_display_key(req, slug, shell=None, dependencies=[],
 
     return key
 
+
 def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
                    skin=None):
     " render the shell only "
-
-    key = get_pastie_display_key(req, slug, shell, dependencies, resources, skin)
+    key = get_pastie_display_key(req, slug, shell, dependencies,
+                                 resources, skin)
     if cache.get(key, None):
         return cache.get(key)
 
@@ -304,9 +310,12 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
         shell = pastie.favourite
         " prepare dependencies if needed "
         dependencies = shell.js_dependency.all()
-        resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
+        resources = [res.resource \
+                     for res in ShellExternalResource.objects.filter(
+                         shell__id=shell.id)]
 
-    wrap = getattr(shell.js_lib, 'wrap_'+shell.js_wrap, None) if shell.js_wrap else None
+    wrap = getattr(shell.js_lib, 'wrap_'+shell.js_wrap, None) \
+            if shell.js_wrap else None
 
     if not skin:
         skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
@@ -324,7 +333,8 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
     return page
 
 
-def get_embedded_key(req, slug, version=None, revision=0, author=None, tabs=None, skin=None):
+def get_embedded_key(req, slug, version=None, revision=0, author=None,
+                     tabs=None, skin=None):
 
     key = "%s:embedded" % settings.CACHE_MIDDLEWARE_KEY_PREFIX
     key = "%s:%s" % (key, slug)
@@ -468,13 +478,6 @@ def pastie_show(req, slug, version=None, author=None, skin=None):
                         resources=resources, skin=skin)
 
 
-#TODO: remove if not used
-@cache_page(CACHE_TIME)
-def author_show_part(req, author, slug, part, version=0):
-    return render_to_response('show_part.html',
-                                {'content': getattr(shell, 'code_'+part)})
-
-
 @cache_page(CACHE_TIME)
 def show_part(req, slug, part, version=None, author=None):
     pastie = get_object_or_404(Pastie,slug=slug)
@@ -489,19 +492,16 @@ def show_part(req, slug, part, version=None, author=None):
                                 {'content': getattr(shell, 'code_'+part)})
 
 
-MAX_DELAY = 15.0
-
-
 def echo_json(req):
     " respond with POST['json'] "
     if req.POST.get('delay'):
         time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
 
     try:
-        print req.POST.get('json')
         response = simplejson.dumps(simplejson.loads(req.POST.get('json', '{}')))
     except Exception, e:
         response = simplejson.dumps({'error': e.__str__()})
+
     return HttpResponse(
         response,
         mimetype='application/javascript'
