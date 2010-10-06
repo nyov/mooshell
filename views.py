@@ -1,33 +1,30 @@
-import os.path
 import random
 import time
 import base64
 
 from django.shortcuts import render_to_response, get_object_or_404
-from django.views import static
 from django.conf import settings
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
-from django.template import Template,RequestContext
+from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 from django.contrib.auth.decorators import login_required
 
-from models import Pastie, Draft, Shell, JSLibraryGroup, JSLibrary, JSLibraryWrap, JSDependency, ExternalResource, DocType, ShellExternalResource
-from forms import PastieForm, ShellForm
+from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
+        ExternalResource, DocType, ShellExternalResource
+from forms import ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file, separate_log
-from mooshell.helpers import expire_page, expire_view_cache
 
-
-# consider better caching for that function.
 
 CACHE_TIME = settings.CACHE_MIDDLEWARE_SECONDS
 
-def get_pastie_edit_key(req, slug=None, version=None, revision=None, author=None, skin=None):
+
+def get_pastie_edit_key(req, slug=None, version=None, revision=None,
+                        author=None, skin=None):
 
     key = "%s:pastie_edit" % settings.CACHE_MIDDLEWARE_KEY_PREFIX
     key = "%s:%s" % (key, slug) if slug else '%s:homepage' % key
@@ -38,7 +35,8 @@ def get_pastie_edit_key(req, slug=None, version=None, revision=None, author=None
 
     return key
 
-def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=None):
+def pastie_edit(req, slug=None, version=None, revision=None, author=None,
+                skin=None):
     """
     display the edit shell page ( main display)
     """
@@ -49,10 +47,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
     key = get_pastie_edit_key(req, slug, version, revision, author, skin)
 
     if cache.get(key, None):
-        #log_to_file('pastie_edit - cache key found %s' % key)
         c = cache.get(key)
     else:
-        #log_to_file('pastie_edit - no cache key found %s - generating from db' % key)
         shell = None
         c = {}
 
@@ -68,7 +64,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
         disqus_url = ''.join([server, '/'])
         if slug:
             if skin:
-                " important as {user}/{slug} is indistingushable from {slug}/{skin} "
+                # important as {user}/{slug} is indistingushable from
+                # {slug}/{skin} "
                 try:
                     user = User.objects.get(username=slug)
                     author = slug
@@ -80,16 +77,21 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
             if version == None:
                 shell = pastie.favourite
             else:
-                user = get_object_or_404(User,username=author) if author else None
-                shell = get_object_or_404(Shell, pastie__slug=slug, version=version, author=user)
+                user = get_object_or_404(
+                    User,username=author) if author else None
+                shell = get_object_or_404(Shell, pastie__slug=slug,
+                                          version=version, author=user)
 
-            external_resources = ShellExternalResource.objects.filter(shell__id=shell.id)
+            external_resources = ShellExternalResource.objects.filter(
+                shell__id=shell.id)
 
             example_url = ''.join([server, shell.get_absolute_url()])
             embedded_url = ''.join([server, shell.get_embedded_url()])
-            disqus_url = ''.join([server, shell.pastie.favourite.get_absolute_url()])
+            disqus_url = ''.join([server,
+                                  shell.pastie.favourite.get_absolute_url()])
             c['embedded_url'] = embedded_url
-            title = shell.title if shell.title else settings.MOOSHELL_VIEW_TITLE
+            title = shell.title \
+                    if shell.title else settings.MOOSHELL_VIEW_TITLE
             for dtd in doctypes:
                 if dtd.id == shell.doctype.id:
                     dtd.current = True
@@ -133,9 +135,11 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None, skin=N
             'web_server': server,
             'skin': skin,
             'get_dependencies_url': reverse("_get_dependencies",
-                                    args=["lib_id"]).replace('lib_id','{lib_id}'),
+                                    args=["lib_id"]).replace(
+                                        'lib_id','{lib_id}'),
             'get_library_versions_url': reverse("_get_library_versions",
-                                    args=["group_id"]).replace('group_id','{group_id}'),
+                                    args=["group_id"]).replace(
+                                        'group_id','{group_id}'),
         })
         #log_to_file('context generated')
         try:
@@ -269,14 +273,16 @@ def display_draft(req):
     except:
         raise HttpResponse('Error')
 
-def get_pastie_display_key(req, slug, shell=None, dependencies=[], resources=[], skin=None):
+def get_pastie_display_key(req, slug, shell=None, dependencies=[],
+                           resources=[], skin=None):
 
     key = "%s:pastie_display" % settings.CACHE_MIDDLEWARE_KEY_PREFIX
     key = "%s:%s" % (key, slug)
     if shell: key = "%s:%d" % (key, shell.id)
     if dependencies:
         dependencies_str = ''
-        for d in dependencies: dependencies_str = "%s,%d" % (dependecies_str, d.id)
+        for d in dependencies: dependencies_str = "%s,%d" % (dependencies_str,
+                                                             d.id)
         key = "%s:%s" % (key, dependencies_str)
     if resources:
         resources_str = ''
@@ -285,17 +291,15 @@ def get_pastie_display_key(req, slug, shell=None, dependencies=[], resources=[],
 
     return key
 
-def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=None):
+def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
+                   skin=None):
     " render the shell only "
 
-    #key = get_pastie_display_key(req, slug, shell, dependencies, resources, skin)
-    #if cache.get(key, None):
-    #    return cache.get(key)
+    key = get_pastie_display_key(req, slug, shell, dependencies, resources, skin)
+    if cache.get(key, None):
+        return cache.get(key)
 
-    #separate_log('-')
-    #log_to_file('pastie_display - with shell %s' % shell)
     if not shell:
-        #log_to_file('pastie_display - no shell')
         pastie = get_object_or_404(Pastie, slug=slug)
         shell = pastie.favourite
         " prepare dependencies if needed "
@@ -303,21 +307,20 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[], skin=No
         resources = [res.resource for res in ShellExternalResource.objects.filter(shell__id=shell.id)]
 
     wrap = getattr(shell.js_lib, 'wrap_'+shell.js_wrap, None) if shell.js_wrap else None
-    if not slug:
-        " assign dependencies from request "
 
-    if not skin: skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
+    if not skin:
+        skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
 
     page = render_to_response('pastie_show.html', {
-                                    'shell': shell,
-                                    'dependencies': dependencies,
-                                    'resources': resources,
-                                    'resources_length': len(resources),
-                                    'wrap': wrap,
-                                    'skin': skin,
-                                    'skin_css': reverse("mooshell_css", args=['result-%s.css' % skin])
-                            })
-    #cache.set(key, page)
+        'shell': shell,
+        'dependencies': dependencies,
+        'resources': resources,
+        'resources_length': len(resources),
+        'wrap': wrap,
+        'skin': skin,
+        'skin_css': reverse("mooshell_css", args=['result-%s.css' % skin])
+    })
+    cache.set(key, page)
     return page
 
 
