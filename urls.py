@@ -2,63 +2,63 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns(
     'mooshell.views',
-	# draft
-	url(r'^draft/$','display_draft', name='mooshell_draft'),
+    # draft
+    url(r'^draft/$','display_draft', name='mooshell_draft'),
 
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
     url(r'^css/(?P<path>.*)$', 'serve_static', {'mimetype': 'css'}, name='mooshell_css'),
     url(r'^js/(?P<path>.*)$', 'serve_static', {'mimetype': 'js'}, name='mooshell_js'),
     url(r'^img/(?P<path>.*)$', 'serve_static', {'mimetype': 'img'}, name='mooshell_img'),
     url(r'^html/(?P<path>.*)$', 'serve_static', {'mimetype': 'html'}, name='mooshell_html'),
-	url(r'^(?P<path>.*).ico$', 'serve_static', {'type': 'img'}, name='mooshell_favicon'),
-	url(r'^codemirror/(?P<path>.*)$', 'serve_static', {'media': 'codemirror'}, name='codemirror'),
-	url(r'^_save/$','pastie_save', name='pastie_save'),
-	url(r'^_delete/(?P<slug>\w+)/$','pastie_delete', name='pastie_delete'),
+    url(r'^(?P<path>.*).ico$', 'serve_static', {'type': 'img'}, name='mooshell_favicon'),
+    url(r'^codemirror/(?P<path>.*)$', 'serve_static', {'media': 'codemirror'}, name='codemirror'),
+    url(r'^_save/$','pastie_save', name='pastie_save'),
+    url(r'^_delete/(?P<slug>\w+)/$','pastie_delete', name='pastie_delete'),
     url(r'^_confirm_delete/(?P<slug>\w+)/$','pastie_delete', {'confirmation': True}, name='pastie_delete_confirmation'),
-	url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
-	url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
-	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
-	url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
+    url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
+    url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
+    url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
+    url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
 
-	# Echo
-	url(r'^echo/json/$','echo_json', name='echo_json'),
-	url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
-	url(r'^echo/html/$','echo_html', name='echo_html'),
-	url(r'^echo/xml/$','echo_xml', name='echo_xml'),
+    # Echo
+    url(r'^echo/json/$','echo_json', name='echo_json'),
+    url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
+    url(r'^echo/html/$','echo_html', name='echo_html'),
+    url(r'^echo/xml/$','echo_xml', name='echo_xml'),
 
-	# OLD ECHO
-	url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),
-	url(r'^ajax_html_javascript_response/$','ajax_html_javascript_response', name='ajax_html_javascript_response'),
-	url(r'^ajax_json_echo/$','ajax_json_echo', name='ajax_json_echo'),
-	url(r'^ajax_json_echo/nodelay/$','ajax_json_echo', {'delay': False}, name='ajax_json_echo_nodelay'),
-	url(r'^ajax_html_echo/$','ajax_html_echo', name='ajax_html_echo'),
-	url(r'^ajax_html_echo/nodelay/$','ajax_html_echo', {'delay': False}, name='ajax_html_echo_nodelay'),
-	url(r'^ajax_xml_echo/$','ajax_xml_echo', name='ajax_xml_echo'),
-	url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
+    # OLD ECHO
+    url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),
+    url(r'^ajax_html_javascript_response/$','ajax_html_javascript_response', name='ajax_html_javascript_response'),
+    url(r'^ajax_json_echo/$','ajax_json_echo', name='ajax_json_echo'),
+    url(r'^ajax_json_echo/nodelay/$','ajax_json_echo', {'delay': False}, name='ajax_json_echo_nodelay'),
+    url(r'^ajax_html_echo/$','ajax_html_echo', name='ajax_html_echo'),
+    url(r'^ajax_html_echo/nodelay/$','ajax_html_echo', {'delay': False}, name='ajax_html_echo_nodelay'),
+    url(r'^ajax_xml_echo/$','ajax_xml_echo', name='ajax_xml_echo'),
+    url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
 
-	# expire
+    # expire
     url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
 
-	# compatibility with old mooshell/* urls DO NOT USE THEM
-	url(r'^mooshell/ajax_json_response/$','ajax_json_response', name='old_ajax_json_response'),
-	url(r'^mooshell/ajax_html_javascript_response/$','ajax_html_javascript_response', name='old_ajax_html_javascript_response'),
+    # compatibility with old mooshell/* urls DO NOT USE THEM
+    url(r'^mooshell/ajax_json_response/$','ajax_json_response', name='old_ajax_json_response'),
+    url(r'^mooshell/ajax_html_javascript_response/$','ajax_html_javascript_response', name='old_ajax_html_javascript_response'),
     url(r'^mooshell/(?P<slug>.*)/$','pastie_edit', name='old_pastie'),
 
-	# embedded
-	url(r'^(?P<slug>\w+)/embedded/$','embedded', name='embedded'),
-	url(r'^(?P<slug>\w+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='embedded_with_tabs_and_skin'),
-	url(r'^(?P<slug>\w+)/embedded/(?P<tabs>.*)/$','embedded', name='embedded_with_tabs'),
-	url(r'^(?P<slug>\w+)/(?P<version>\d+)/embedded/$','embedded', name='embedded_with_version'),
-	url(r'^(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='embedded_with_version_tabs_and_skin'),
-	url(r'^(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/$','embedded', name='embedded_with_version_and_tabs'),
-	url(r'^(?P<author>\w+)/(?P<slug>\w+)/embedded/$','embedded', name='author_embedded'),
-	url(r'^(?P<author>\w+)/(?P<slug>\w+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='author_embedded_with_tabs_and_skin'),
-	url(r'^(?P<author>\w+)/(?P<slug>\w+)/embedded/(?P<tabs>.*)/$','embedded', name='author_embedded_with_tabs'),
-	url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/$','embedded', name='author_embedded_with_version'),
-	url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='author_embedded_with_version_tabs_and_skin'),
-	url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/$','embedded', name='author_embedded_with_version_and_tabs'),
+    # embedded
+    url(r'^(?P<slug>\w+)/embedded/$','embedded', name='embedded'),
+    url(r'^(?P<slug>\w+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='embedded_with_tabs_and_skin'),
+    url(r'^(?P<slug>\w+)/embedded/(?P<tabs>.*)/$','embedded', name='embedded_with_tabs'),
+    url(r'^(?P<slug>\w+)/(?P<version>\d+)/embedded/$','embedded', name='embedded_with_version'),
+    url(r'^(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='embedded_with_version_tabs_and_skin'),
+    url(r'^(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/$','embedded', name='embedded_with_version_and_tabs'),
+    url(r'^(?P<author>\w+)/(?P<slug>\w+)/embedded/$','embedded', name='author_embedded'),
+    url(r'^(?P<author>\w+)/(?P<slug>\w+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='author_embedded_with_tabs_and_skin'),
+    url(r'^(?P<author>\w+)/(?P<slug>\w+)/embedded/(?P<tabs>.*)/$','embedded', name='author_embedded_with_tabs'),
+    url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/$','embedded', name='author_embedded_with_version'),
+    url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='author_embedded_with_version_tabs_and_skin'),
+    url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/$','embedded', name='author_embedded_with_version_and_tabs'),
 
-	# simple API (parts)
+    # simple API (parts)
     url(r'^(?P<slug>\w+)/show_html/$','show_part', {'part': 'html'}, name='show_html'),
     url(r'^(?P<slug>\w+)/show_css/$','show_part', {'part': 'css'}, name='show_css'),
     url(r'^(?P<slug>\w+)/show_js/$','show_part', {'part': 'js'}, name='show_js'),
@@ -72,9 +72,9 @@ urlpatterns = patterns(
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/show_css/$','show_part', {'part': 'css'}, name='author_show_css_with_version'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/show_js/$','show_part', {'part': 'js'}, name='author_show_js_with_version'),
 
-	# API
-	url(r'^api/user_shells/(?P<author>\w+)/$','api_get_users_pasties'),
-	url(r'^api/user/(?P<author>\w+)/demo/list.(?P<method>\w+)$', 'api_get_users_pasties'),
+    # API
+    url(r'^api/user_shells/(?P<author>\w+)/$','api_get_users_pasties'),
+    url(r'^api/user/(?P<author>\w+)/demo/list.(?P<method>\w+)$', 'api_get_users_pasties'),
 
     # show
     url(r'^(?P<slug>\w+)/show/$','pastie_show', name='pastie_show'),
@@ -86,9 +86,9 @@ urlpatterns = patterns(
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/show/$','pastie_show', name='author_pastie_show_with_version'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/show/(?P<skin>\w+)/$','pastie_show', name='author_pastie_show_with_version_and_skin'),
 
-	# main action
-	url(r'^_make_favourite/$','make_favourite', name='make_favourite'),
-	url(r'^_add_external_resource/$', 'add_external_resource', name='add_external_resource'),
+    # main action
+    url(r'^_make_favourite/$','make_favourite', name='make_favourite'),
+    url(r'^_add_external_resource/$', 'add_external_resource', name='add_external_resource'),
     url(r'^(?P<slug>\w+)/$','pastie_edit', name='pastie'),
     url(r'^(?P<slug>\w+)/(?P<version>\d+)/$','pastie_edit', name='shell'),
     url(r'^(?P<slug>\w+)/(?P<skin>\w+)/$','pastie_edit'),

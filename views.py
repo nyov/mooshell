@@ -19,6 +19,7 @@ from forms import ShellForm
 from base.views import serve_static as base_serve_static
 from base.utils import log_to_file  # , separate_log
 from mooshell.helpers import expire_page
+from person.views import delete_dashboard_keys
 
 
 CACHE_TIME = settings.CACHE_MIDDLEWARE_SECONDS
@@ -298,6 +299,7 @@ def pastie_delete(req, slug, confirmation=False):
         # delete pastie
         pastie.delete()
         response['deleted'] = True
+        delete_dashboard_keys(req)
 
     return HttpResponse(simplejson.dumps(response),
                        mimetype='application/javascript')
