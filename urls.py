@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('mooshell.views',
+urlpatterns = patterns(
+    'mooshell.views',
 	# draft
 	url(r'^draft/$','display_draft', name='mooshell_draft'),
 
@@ -13,6 +14,7 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^codemirror/(?P<path>.*)$', 'serve_static', {'media': 'codemirror'}, name='codemirror'),
 	url(r'^_save/$','pastie_save', name='pastie_save'),
 	url(r'^_delete/(?P<slug>\w+)/$','pastie_delete', name='pastie_delete'),
+    url(r'^_confirm_delete/(?P<slug>\w+)/$','pastie_delete', {'confirmation': True}, name='pastie_delete_confirmation'),
 	url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
 	url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
 	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),

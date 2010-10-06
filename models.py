@@ -204,6 +204,12 @@ class Pastie(models.Model):
         return self.favourite.get_absolute_url() \
                 if self.favourite else reverse('pastie',args=[self.slug])
 
+    def get_delete_url(self):
+        return reverse('pastie_delete', args=[self.slug])
+
+    def get_delete_confirmation_url(self):
+        return reverse('pastie_delete_confirmation', args=[self.slug])
+
     class Admin:
         pass
 

@@ -280,21 +280,27 @@ def pastie_save(req, nosave=False, skin=None):
 
 
 @login_required
-def pastie_delete(req, slug):
+def pastie_delete(req, slug, confirmation=False):
     " deleting whole pastie "
     pastie = get_object_or_404(Pastie, slug=slug,
                                author__username=req.user.username)
-    response = {'shells': pastie.shells.count()}
-    # delete shells
-    for shell in list(pastie.shells.all()):
-        # delete external resources
-        for resource in list(shell.external_resources.all()):
-            #shell.external_resources.delete(resource)
-            ""
-        shell.delete()
-    # delete pastie
-    pastie.delete()
-    return HttpResponse(str(response))
+    response = {'shells': pastie.shells.count(),
+                'deleted': False}
+    if not confirmation:
+        # delete shells
+        for shell in list(pastie.shells.all()):
+            # delete external resources
+            for resource in list(shell.external_resources.all()):
+                relation = ShellExternalResource.objects.get(
+                    shell__pk=shell.pk, resource__pk=resource.pk)
+                relation.delete()
+            shell.delete()
+        # delete pastie
+        pastie.delete()
+        response['deleted'] = True
+
+    return HttpResponse(simplejson.dumps(response),
+                       mimetype='application/javascript')
 
 
 
@@ -306,25 +312,6 @@ def display_draft(req):
     except:
         raise HttpResponse("You've got no draft saved")
 
-
-#def get_pastie_display_key(req, slug, shell=None, dependencies=[],
-#                           resources=[], skin=None):
-#    " get cache key for pastie_display "
-#    key = "%s:pastie_display" % settings.CACHE_MIDDLEWARE_KEY_PREFIX
-#    key = "%s:%s" % (key, slug)
-#    if shell: key = "%s:%d" % (key, shell.id)
-#    if dependencies:
-#        dependencies_str = ''
-#        for d in dependencies: dependencies_str = "%s,%d" % (dependencies_str,
-#                                                             d.id)
-#        key = "%s:%s" % (key, dependencies_str)
-#    if resources:
-#        resources_str = ''
-#        for i in resources: resources_str = "%s:%d" % (resources_str, i.id)
-#    if skin: key = "%s:%s" % (key, skin)
-#
-#    return key
-#
 
 def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
                    skin=None):
