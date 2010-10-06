@@ -5,13 +5,14 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^draft/$','display_draft', name='mooshell_draft'),
 
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
-    url(r'^css/(?P<path>.*)$', 'serve_static', {'type': 'css'}, name='mooshell_css'),
-    url(r'^js/(?P<path>.*)$', 'serve_static', {'type': 'js'}, name='mooshell_js'),
-    url(r'^img/(?P<path>.*)$', 'serve_static', {'type': 'img'}, name='mooshell_img'),
-    url(r'^html/(?P<path>.*)$', 'serve_static', {'type': 'html'}, name='mooshell_html'),
+    url(r'^css/(?P<path>.*)$', 'serve_static', {'mimetype': 'css'}, name='mooshell_css'),
+    url(r'^js/(?P<path>.*)$', 'serve_static', {'mimetype': 'js'}, name='mooshell_js'),
+    url(r'^img/(?P<path>.*)$', 'serve_static', {'mimetype': 'img'}, name='mooshell_img'),
+    url(r'^html/(?P<path>.*)$', 'serve_static', {'mimetype': 'html'}, name='mooshell_html'),
 	url(r'^(?P<path>.*).ico$', 'serve_static', {'type': 'img'}, name='mooshell_favicon'),
 	url(r'^codemirror/(?P<path>.*)$', 'serve_static', {'media': 'codemirror'}, name='codemirror'),
 	url(r'^_save/$','pastie_save', name='pastie_save'),
+	url(r'^_delete/(?P<slug>\w+)/$','pastie_delete', name='pastie_delete'),
 	url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
 	url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
 	url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
@@ -54,7 +55,7 @@ urlpatterns = patterns('mooshell.views',
 	url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/$','embedded', name='author_embedded_with_version'),
 	url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/(?P<skin>\w+)/$','embedded', name='author_embedded_with_version_tabs_and_skin'),
 	url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/embedded/(?P<tabs>.*)/$','embedded', name='author_embedded_with_version_and_tabs'),
-	
+
 	# simple API (parts)
     url(r'^(?P<slug>\w+)/show_html/$','show_part', {'part': 'html'}, name='show_html'),
     url(r'^(?P<slug>\w+)/show_css/$','show_part', {'part': 'css'}, name='show_css'),
@@ -82,7 +83,7 @@ urlpatterns = patterns('mooshell.views',
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/show/(?P<skin>\w+)/$','pastie_show', name='author_pastie_show_with_skin'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/show/$','pastie_show', name='author_pastie_show_with_version'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/show/(?P<skin>\w+)/$','pastie_show', name='author_pastie_show_with_version_and_skin'),
-    
+
 	# main action
 	url(r'^_make_favourite/$','make_favourite', name='make_favourite'),
 	url(r'^_add_external_resource/$', 'add_external_resource', name='add_external_resource'),
@@ -98,15 +99,14 @@ urlpatterns = patterns('mooshell.views',
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<skin>\w+)/$','pastie_edit'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/$','pastie_edit', name='author_revision'),
     url(r'^(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/(?P<skin>\w+)/$','pastie_edit'),
-    
-	
-    
+
+    # really OLD
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/$','pastie_edit', name='u_author_pastie'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/$','pastie_edit', name='u_author_shell'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<skin>\w+)/$','pastie_edit'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<skin>\w+)/$','pastie_edit'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/$','pastie_edit', name='u_author_revision'),
     url(r'^u/(?P<author>\w+)/(?P<slug>\w+)/(?P<version>\d+)/(?P<revision>\d+)/(?P<skin>\w+)/$','pastie_edit'),
-    
+
     url(r'^$','pastie_edit', name='pastie'),
    )

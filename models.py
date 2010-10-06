@@ -231,7 +231,7 @@ class Shell(models.Model):
     """
     Holds shell data
     """
-    pastie = models.ForeignKey(Pastie)
+    pastie = models.ForeignKey(Pastie, related_name='shells')
     version = models.IntegerField(default=0, blank=True)
     revision = models.IntegerField(default=0, blank=True, null=True)
 
