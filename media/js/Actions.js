@@ -135,7 +135,7 @@ var MooShellActions = new Class({
 		var share = $$(this.options.shareSelector);
 		if (share.length > 0) {
 			share.addEvent('click', function() {
-				this.select();				
+				this.select();
 			});
 		}
 
