@@ -290,7 +290,7 @@ def pastie_delete(req, slug, confirmation=False):
                 'title': pastie.favourite.get_name()
                }
     if confirmation:
-        response['delete_url'] = pastie.get_delete_confirmation_url()
+        response['delete_url'] = pastie.get_delete_url()
     else:
         # delete shells
         for shell in list(pastie.shells.all()):
