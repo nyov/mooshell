@@ -287,7 +287,9 @@ def pastie_delete(req, slug, confirmation=False):
                                author__username=req.user.username)
     response = {'shells': pastie.shells.count(),
                 'deleted': False}
-    if not confirmation:
+    if confirmation:
+        response['delete_url'] = pastie.get_delete_confirmation_url()
+    else:
         # delete shells
         for shell in list(pastie.shells.all()):
             # delete external resources
