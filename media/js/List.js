@@ -67,9 +67,9 @@ var List = new Class({
 	
 	showModal: function(shell){
 		var html = '<div class="modalWrap modal_confirmation">' +
-					'<div class="modalHeading"><h3>Are you cetrain?</h3><span class="close">Close window</span></div>'+
+					'<div class="modalHeading"><h3>Are you certain?</h3><span class="close">Close window</span></div>'+
 					'<div class="modalBody">You\'re about to permanently delete <strong>{title}</strong>' + 
-					(shell.shells > 1 ? ', and <strong>{shells}</strong> of its revisions' : '') +
+					(shell.shells > 1 ? ', and <strong>{shells}</strong> of its revisions.' : '') +
 					'<div class="actionsCont"><a href="{delete_url}" class="actionButton submit confirmDelete"><span>Confirm delete</span></a></div>' +
 					'</div></div>';
 
