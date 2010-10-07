@@ -286,7 +286,9 @@ def pastie_delete(req, slug, confirmation=False):
     pastie = get_object_or_404(Pastie, slug=slug,
                                author__username=req.user.username)
     response = {'shells': pastie.shells.count(),
-                'deleted': False}
+                'deleted': False,
+                'title': pastie.favourite.get_name()
+               }
     if confirmation:
         response['delete_url'] = pastie.get_delete_confirmation_url()
     else:
