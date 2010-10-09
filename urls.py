@@ -21,6 +21,7 @@ urlpatterns = patterns(
     url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
 
     # Echo
+    url(r'^echo/js/$','echo_js', name='echo_js'),
     url(r'^echo/json/$','echo_json', name='echo_json'),
     url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
     url(r'^echo/html/$','echo_html', name='echo_html'),
