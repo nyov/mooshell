@@ -502,9 +502,17 @@ def show_part(req, slug, part, version=None, author=None):
                                 {'content': getattr(shell, 'code_'+part)})
 
 
+def echo_js(req):
+    " respond JS from GET['js']"
+    if req.GET.get('delay', False):
+        time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
+    return HttpResponse(req.GET.get('js', ''))
+                      # mimetype='application/javascript')
+
+
 def echo_json(req):
     " respond with POST['json'] "
-    if req.POST.get('delay'):
+    if req.POST.get('delay', False):
         time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
 
     try:
@@ -521,19 +529,22 @@ def echo_json(req):
 
 def echo_html(req):
     " respond with POST['html'] "
-    if req.POST.get('delay'):
+    if req.POST.get('delay', False):
         time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
     return HttpResponse(req.POST.get('html', ''))
 
 
 def echo_jsonp(req):
     " respond what provided via GET "
+    if req.GET.get('delay', False):
+        time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
+
     response = {}
-    callback = None
+    callback = req.GET('callback', False)
+    noresponse_keys = ['callback', 'delay']
+
     for key, value in req.GET.items():
-        if key == 'callback':
-            callback = value
-        else:
+        if key not in noresponse_keys:
             response.update({key: value})
 
     response = simplejson.dumps(response)
