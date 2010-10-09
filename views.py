@@ -17,7 +17,7 @@ from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
         ExternalResource, DocType, ShellExternalResource
 from forms import ShellForm
 from base.views import serve_static as base_serve_static
-from base.utils import log_to_file  # , separate_log
+from base.utils import log_to_file, is_referer_allowed  # , separate_log
 from mooshell.helpers import expire_page
 from person.views import delete_dashboard_keys
 
@@ -504,10 +504,17 @@ def show_part(req, slug, part, version=None, author=None):
 
 def echo_js(req):
     " respond JS from GET['js']"
+
+    referer = (settings.MOOSHELL_FORCE_SHOW_SERVER,) \
+            if hasattr(settings, 'MOOSHELL_FORCE_SHOW_SERVER') else False
+    if not is_referer_allowed(req, referer):
+        raise Http404
+
     if req.GET.get('delay', False):
         time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
-    return HttpResponse(req.GET.get('js', ''))
-                      # mimetype='application/javascript')
+
+    return HttpResponse(req.GET.get('js', ''),
+                      mimetype='application/javascript')
 
 
 def echo_json(req):
