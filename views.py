@@ -17,7 +17,7 @@ from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
         ExternalResource, DocType, ShellExternalResource
 from forms import ShellForm
 from base.views import serve_static as base_serve_static
-from base.utils import log_to_file  # , separate_log
+from base.utils import log_to_file, is_referer_allowed  # , separate_log
 from mooshell.helpers import expire_page
 from person.views import delete_dashboard_keys
 
@@ -502,9 +502,24 @@ def show_part(req, slug, part, version=None, author=None):
                                 {'content': getattr(shell, 'code_'+part)})
 
 
+def echo_js(req):
+    " respond JS from GET['js']"
+
+    referer = (settings.MOOSHELL_FORCE_SHOW_SERVER,) \
+            if hasattr(settings, 'MOOSHELL_FORCE_SHOW_SERVER') else False
+    if not is_referer_allowed(req, referer):
+        raise Http404
+
+    if req.GET.get('delay', False):
+        time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
+
+    return HttpResponse(req.GET.get('js', ''),
+                      mimetype='application/javascript')
+
+
 def echo_json(req):
     " respond with POST['json'] "
-    if req.POST.get('delay'):
+    if req.POST.get('delay', False):
         time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
 
     try:
@@ -521,19 +536,22 @@ def echo_json(req):
 
 def echo_html(req):
     " respond with POST['html'] "
-    if req.POST.get('delay'):
+    if req.POST.get('delay', False):
         time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
     return HttpResponse(req.POST.get('html', ''))
 
 
 def echo_jsonp(req):
     " respond what provided via GET "
+    if req.GET.get('delay', False):
+        time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
+
     response = {}
-    callback = None
+    callback = req.GET('callback', False)
+    noresponse_keys = ['callback', 'delay']
+
     for key, value in req.GET.items():
-        if key == 'callback':
-            callback = value
-        else:
+        if key not in noresponse_keys:
             response.update({key: value})
 
     response = simplejson.dumps(response)
