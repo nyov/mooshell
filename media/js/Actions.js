@@ -100,6 +100,10 @@ var MooShellActions = new Class({
 		// actions run if shell loaded
 		
 		this.form = document.id(this.options.formId);
+
+        this.form.addEvent('submit', function() {
+          console.log('form submit called');
+        });
 		
 		if (this.options.exampleURL) {
 		//	this.run();
@@ -228,7 +232,7 @@ var MooShellActions = new Class({
         console.log('html before encoding ' + $('id_code_html').get('value'));
 		Layout.updateFromMirror();
         console.log('html after encoding ' + $('id_code_html').get('value'));
-		document.id(this.options.formId).submit();
+		this.form.submit();
         console.log('html after submit, before decoding ' + 
             $('id_code_html').get('value'));
 		this.fireEvent('run');
