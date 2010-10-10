@@ -1,45 +1,3 @@
-// doesn't clear the message in IE6 - help?
-
-(function() {
-
-this.InputPlaceholder = new Class({
-    Implements: Options,
-    options: {
-        placeholderClass: 'placeholder'
-    },
-    initialize: function(element, options) {
-
-        if ('placeholder' in document.createElement('input')) return;
-
-        this.setOptions(options);
-        this.element = $(element);
-        this.labelText = this.element.get('placeholder');
-        var self = this;
-        var clear = function() {
-            if (self.element.get('value') === self.labelText) {
-                self.element.set('value', '');
-                self.element.removeClass(self.options.placeholderClass);
-            }
-        };
-        var set = function() {
-            if (!self.element.get('value')) {
-                self.element.set('value', self.labelText);
-                self.element.addClass(self.options.placeholderClass);
-            }
-        };
-        this.element.addEvents({
-            focus: clear,
-            blur: set
-        });
-        var form = this.element.getParent('form');
-        console.log(form);
-        if (form) form.addEvent('submit', function() {clear(), alert('xxx');});
-        set();
-    }
-});
-
-})();
-
 // TODO: refactor 
 var DiscussionWindow = new Class({
 	initialize: function(){
@@ -267,8 +225,12 @@ var MooShellActions = new Class({
 	// run - submit the form (targets to the iframe)
 	run: function(e) {
 		e.stop(); 
+        console.log('html before encoding ' + $('id_code_html').get('value'));
 		Layout.updateFromMirror();
+        console.log('html after encoding ' + $('id_code_html').get('value'));
 		document.id(this.options.formId).submit();
+        console.log('html after submit, before decoding ' + 
+            $('id_code_html').get('value'));
 		this.fireEvent('run');
 	},
 	// clean all entries, rename example to default value
