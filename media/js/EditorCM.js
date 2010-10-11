@@ -73,17 +73,11 @@ var MooShellEditor = new Class({
 		return this.getWindow().getElement('.window_label');
 	},
 	b64decode: function() {
-        if (this.element.get('id') == 'id_code_html') 
-            console.log('should still be encoded ' + this.element.get('value'));
 		this.element.set('value', this.before_decode);
 	},
 	updateFromMirror: function() {
-        if (this.element.get('id') == 'id_code_html') 
-            console.log('encoding ' + this.element.get('value'));
 		this.before_decode = this.editor.getCode();
 		if (this.editor) this.element.set('value', Base64.encode(this.before_decode));
-        if (this.element.get('id') == 'id_code_html') 
-            console.log('encoded ' + this.element.get('value'));
 	},
 	clean: function() {
 		this.element.set('value','');
