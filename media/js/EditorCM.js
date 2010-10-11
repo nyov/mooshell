@@ -36,6 +36,12 @@ var MooShellEditor = new Class({
 			if (!this.options.codeMirrorOptions.path) {
 				this.options.codeMirrorOptions.path = codemirrorpath + 'js/';
 			}
+			if (!this.options.codeMirrorOptions.initCallback) {
+                var code = this.element.get('value');
+				this.options.codeMirrorOptions.initCallback = function() {
+                  this.editor.setCode(code);
+                }.bind(this);
+			}
 			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);
 			this.element.hide();
 		}
