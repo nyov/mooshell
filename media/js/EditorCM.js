@@ -36,7 +36,7 @@ var MooShellEditor = new Class({
 			if (!this.options.codeMirrorOptions.path) {
 				this.options.codeMirrorOptions.path = codemirrorpath + 'js/';
 			}
-			this.editor = CodeMirror.fromTextArea(this.element, this.options.codeMirrorOptions);
+			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);
 			this.element.hide();
 		}
 		this.getWindow().addEvents({
