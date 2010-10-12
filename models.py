@@ -64,15 +64,20 @@ class JSLibrary(models.Model):
 
     objects = JSLibraryManager()
 
-    def __unicode__(self):
+    def get_name(self):
         return ' '.join((self.library_group.name, self.version))
+
+    def __unicode__(self):
+        return '%s / %s' % (self.get_name(),
+                            'active' if self.active else '-')
 
     class Admin:
         pass
 
     class Meta:
         verbose_name_plural = "JS Library versions"
-        ordering = ["version"]
+        ordering = ['active','library_group','version']
+
 
 
 class JSDependency(models.Model):
@@ -98,7 +103,7 @@ class JSDependency(models.Model):
     class Meta:
         verbose_name_plural = "JS Dependencies"
         # highest number on top
-        ordering = ["-ord"]
+        ordering = ['library', '-ord']
 
 
 class ExternalResource(models.Model):
@@ -215,6 +220,7 @@ class Pastie(models.Model):
 
     class Meta:
         verbose_name_plural = "Pasties"
+        ordering = ['example', '-created_at']
 
 def make_slug_on_create(instance, **kwargs):
     if kwargs.get('raw',False): return
@@ -370,6 +376,9 @@ class Shell(models.Model):
     def set_next_version(self):
         self.version = self.get_next_version()
 
+    def get_slug(self):
+        return self.pastie.slug
+
     def get_name(self):
         past = ''
         if self.id != self.pastie.favourite.id:
@@ -378,7 +387,7 @@ class Shell(models.Model):
         return pre + past
 
     class Meta:
-        ordering = ["-version", "revision"]
+        ordering = ["pastie__created_at", "-version", "revision"]
         unique_together = ['pastie', 'version']
 
     class Admin:
