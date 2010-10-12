@@ -300,12 +300,12 @@ class Shell(models.Model):
         past = ''
         if self.id != self.pastie.favourite.id:
             past += '-%i' % self.version
-        if self.code_js:
-            past += ': %s' % self.code_js[:20]
-        elif self.code_html:
-            past += ': %s' % self.code_html[:20]
-        elif self.code_css:
-            past += ': %s' % self.code_css[:20]
+        #if self.code_js:
+        #    past += ': %s' % self.code_js[:20]
+        #elif self.code_html:
+        #    past += ': %s' % self.code_html[:20]
+        #elif self.code_css:
+        #    past += ': %s' % self.code_css[:20]
         pre = self.title + ' - ' if self.title else ''
         return pre + self.pastie.slug + past
 
@@ -390,7 +390,7 @@ class Shell(models.Model):
         return pre + past
 
     class Meta:
-        ordering = ["pastie__created_at", "-version", "revision"]
+        ordering = ["pastie", "-version", "revision"]
         unique_together = ['pastie', 'version']
 
     class Admin:
