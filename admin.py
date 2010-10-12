@@ -24,12 +24,18 @@ admin.site.register(JSDependency, JSDependencyAdmin)
 
 class PastieAdmin(admin.ModelAdmin):
     list_display = ('get_title', 'slug', 'author', 'example')
+    fieldsets = (
+        (None, {
+            'fields': ('slug', 'author')
+        })
+    )
 admin.site.register(Pastie, PastieAdmin)
 
 
 class ShellAdmin(admin.ModelAdmin):
     search_fields = ['pastie__slug', 'author__username', 'description', 'code_css', 'code_html', 'code_js']
     list_display = ('title', 'get_slug', 'version', 'displayed', 'created_at')
+
 admin.site.register(Shell, ShellAdmin)
 
 
