@@ -21,13 +21,11 @@ var MooShellEditor = new Class({
 		// switch off CodeMirror for IE
 		//if (Browser.Engine.trident) options.useCodeMirror = false;
 		this.element = $(el);
-		this.element.hide();
 		if (this.occlude()) return this.occluded;
 		this.setOptions(options);
 
-		this.editorLabelFX = new Fx.Tween(this.getLabel(), {property: 'opacity', link: 'cancel'});
-
-		if (this.options.useCodeMirror) {
+		if (this.options.useCodeMirror && CodeMirror.isProbablySupported()) {
+            this.element.hide();
 			if (!this.options.codeMirrorOptions.stylesheet && this.options.stylesheet) {
 				this.options.codeMirrorOptions.stylesheet = this.options.stylesheet.map( function(path) {
 					return mediapath + path;
@@ -46,8 +44,8 @@ var MooShellEditor = new Class({
               this.options.codeMirrorOptions.content = this.element.get('value'); 
             }
 			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);
-			this.element.hide();
 		}
+		this.editorLabelFX = new Fx.Tween(this.getLabel(), {property: 'opacity', link: 'cancel'});
 		this.getWindow().addEvents({
 			mouseenter: function() {
 				this.editorLabelFX.start(0);
@@ -78,8 +76,11 @@ var MooShellEditor = new Class({
 	b64decode: function() {
 		this.element.set('value', this.before_decode);
 	},
+    getCode: function() {
+      return (this.editor) ? this.editor.getCode() : this.element.get('value');
+    },
 	updateFromMirror: function() {
-		this.before_decode = this.editor.getCode();
+		this.before_decode = this.getCode(); 
 		if (this.editor) this.element.set('value', Base64.encode(this.before_decode));
 	},
 	clean: function() {
