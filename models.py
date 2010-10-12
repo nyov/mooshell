@@ -296,7 +296,7 @@ class Shell(models.Model):
                 or (self.pastie.favourite \
                 and self.pastie.favourite_id == self.id)
 
-    def __str__(self):
+    def __unicode__(self):
         past = ''
         if self.id != self.pastie.favourite.id:
             past += '-%i' % self.version
@@ -307,7 +307,7 @@ class Shell(models.Model):
         #elif self.code_css:
         #    past += ': %s' % self.code_css[:20]
         pre = self.title + ' - ' if self.title else ''
-        return pre + self.pastie.slug + past
+        return pre + past
 
 
     @models.permalink
