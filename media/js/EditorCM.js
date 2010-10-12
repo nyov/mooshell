@@ -26,7 +26,7 @@ var MooShellEditor = new Class({
 		if (this.occlude()) return this.occluded;
 		this.setOptions(options);
         var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
-		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && is_disallowed) {
+		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && !is_disallowed) {
             this.element.hide();
 			if (!this.options.codeMirrorOptions.stylesheet && this.options.stylesheet) {
 				this.options.codeMirrorOptions.stylesheet = this.options.stylesheet.map( function(path) {
