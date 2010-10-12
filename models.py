@@ -223,7 +223,7 @@ class Pastie(models.Model):
 
     class Meta:
         verbose_name_plural = "Pasties"
-        ordering = ['example', '-created_at']
+        ordering = ['-example', '-created_at']
 
 def make_slug_on_create(instance, **kwargs):
     if kwargs.get('raw',False): return
@@ -296,7 +296,7 @@ class Shell(models.Model):
                 or (self.pastie.favourite \
                 and self.pastie.favourite_id == self.id)
 
-    def __unicode__(self):
+    def __str__(self):
         past = ''
         if self.id != self.pastie.favourite.id:
             past += '-%i' % self.version
@@ -307,7 +307,7 @@ class Shell(models.Model):
         #elif self.code_css:
         #    past += ': %s' % self.code_css[:20]
         pre = self.title + ' - ' if self.title else ''
-        return pre + past
+        return pre + self.pastie.slug + past
 
 
     @models.permalink
