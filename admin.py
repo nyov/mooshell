@@ -23,6 +23,7 @@ admin.site.register(JSDependency, JSDependencyAdmin)
 
 
 class PastieAdmin(admin.ModelAdmin):
+    search_fields = ['slug', 'author__username']
     list_display = ('get_title', 'slug', 'author', 'example')
     list_display_links = ('get_title', 'slug')
     fieldsets = (
