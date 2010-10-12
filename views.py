@@ -618,8 +618,6 @@ def ajax_html_javascript_response(req):
 @cache_page(CACHE_TIME)
 def serve_static(request, path, media='media', mimetype=None):
     " static pages are cached "
-    if path == 'favicon':
-        path = 'favicon.png'
     return base_serve_static(request, path, media, mimetype)
 
 
