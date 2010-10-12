@@ -76,7 +76,7 @@ class JSLibrary(models.Model):
 
     class Meta:
         verbose_name_plural = "JS Library versions"
-        ordering = ['active','library_group','version']
+        ordering = ['-active','library_group','version']
 
 
 
@@ -103,7 +103,7 @@ class JSDependency(models.Model):
     class Meta:
         verbose_name_plural = "JS Dependencies"
         # highest number on top
-        ordering = ['library', '-ord']
+        ordering = ['-active', 'library', '-ord']
 
 
 class ExternalResource(models.Model):
