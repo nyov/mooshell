@@ -103,7 +103,7 @@ class JSDependency(models.Model):
     class Meta:
         verbose_name_plural = "JS Dependencies"
         # highest number on top
-        ordering = ['-active', '-library__library_group__pk', 'library', '-ord']
+        ordering = ['-active', '-library', '-ord']
 
 
 class ExternalResource(models.Model):
@@ -214,6 +214,9 @@ class Pastie(models.Model):
 
     def get_delete_confirmation_url(self):
         return reverse('pastie_delete_confirmation', args=[self.slug])
+
+    def get_title(self):
+        return self.favourite.title
 
     class Admin:
         pass

@@ -23,7 +23,7 @@ admin.site.register(JSDependency, JSDependencyAdmin)
 
 
 class PastieAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'author', 'example')
+    list_display = ('get_title', 'slug', 'author', 'example')
 admin.site.register(Pastie, PastieAdmin)
 
 
