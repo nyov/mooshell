@@ -4,7 +4,7 @@
  http://marijn.haverbeke.nl/codemirror/index.html
  */
 
-var disallowedPlatforms = ['ios', 'android'];
+var disallowedPlatforms = ['ios', 'android', 'ipod'];
 
 var MooShellEditor = new Class({
 	Implements: [Options, Events, Class.Occlude],
@@ -26,7 +26,7 @@ var MooShellEditor = new Class({
 		if (this.occlude()) return this.occluded;
 		this.setOptions(options);
         var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
-		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && !is_disallowed) {
+		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && is_disallowed) {
             this.element.hide();
 			if (!this.options.codeMirrorOptions.stylesheet && this.options.stylesheet) {
 				this.options.codeMirrorOptions.stylesheet = this.options.stylesheet.map( function(path) {
@@ -83,7 +83,7 @@ var MooShellEditor = new Class({
     },
 	updateFromMirror: function() {
 		this.before_decode = this.getCode(); 
-		if (this.editor) this.element.set('value', Base64.encode(this.before_decode));
+		this.element.set('value', Base64.encode(this.before_decode));
 	},
 	clean: function() {
 		this.element.set('value','');
