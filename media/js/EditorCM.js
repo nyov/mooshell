@@ -4,6 +4,8 @@
  http://marijn.haverbeke.nl/codemirror/index.html
  */
 
+var disallowedPlatforms = ['ios', 'android'];
+
 var MooShellEditor = new Class({
 	Implements: [Options, Events, Class.Occlude],
 	parameter: "Editor",
@@ -23,8 +25,8 @@ var MooShellEditor = new Class({
 		this.element = $(el);
 		if (this.occlude()) return this.occluded;
 		this.setOptions(options);
-
-		if (this.options.useCodeMirror && CodeMirror.isProbablySupported()) {
+        var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
+		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && !is_disallowed) {
             this.element.hide();
 			if (!this.options.codeMirrorOptions.stylesheet && this.options.stylesheet) {
 				this.options.codeMirrorOptions.stylesheet = this.options.stylesheet.map( function(path) {
