@@ -230,7 +230,7 @@ def pastie_save(req, nosave=False, skin=None):
                     external_resources.append(
                         ExternalResource.objects.get(id=int(ext_id)))
                 except:
-                    log_to_file('called a nin existing external resource')
+                    log_to_file('.    %s' % req.POST.get('slug', '-'))
 
             if nosave:
                 # get page

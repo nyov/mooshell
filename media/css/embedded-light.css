@@ -43,22 +43,22 @@ a {
 	background-position: 0 0;
 	background-repeat: repeat-x;
 	position: relative;
-	height: 44px;
+	height: 30px;
 	overflow: hidden;
 }
 
 	#head h1 {
 		float: left;
-		height: 44px;
+		height: 30px;
 		width: 138px;
 		margin: 0 0 0 10px;
 	}
 	
 		#head h1 a {
 			float: left;
-			height: 44px;
+			height: 30px;
 			width: 138px;
-			background-position: 100% -105px;
+			background-position: 100% -112px;
 			text-indent: -9999em;
 		}
 
@@ -68,15 +68,15 @@ a {
 
 	#actions li {
 		float: left;
-		height: 44px;
+		height: 30px;
 		background-position: 0 -47px;
 		background-repeat: no-repeat;
 	}
 	
 		#actions li a {
 			display: block;
-			height: 44px;
-			line-height: 42px;
+			height: 30px;
+			line-height: 28px;
 			padding: 0 14px;
 			
 		}
@@ -94,27 +94,27 @@ a {
 
 #triggers {
 	float: right;
-	padding: 0 14px;
+	padding: 0 4px;
 	background-position: 0 -47px;
 }
 
 	#triggers li {
 		float: left;
-		height: 44px;
+		height: 30px;
 		background-repeat: no-repeat;
 	}
 
 	#triggers li.tRun a {
-		background-position: 0 -105px;
+		background-position: 0 -112px;
 	}
 
 	#triggers li.tEdit a {
-		background-position: -31px -105px;
+		background-position: -31px -112px;
 	}
 
 		#triggers li a {
 			display: block;
-			height: 44px;
+			height: 30px;
 			text-indent: -9000em;
 			width: 31px;
 		}
