@@ -13,6 +13,10 @@ body, ul, ol, li, p, pre, div, a {
 	color: #fff;
 }
 
+#tabs pre {
+    color: #444;
+}
+
 a {
 	outline: none;
 	font-weight: bold;
