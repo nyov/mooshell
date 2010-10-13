@@ -547,7 +547,7 @@ def echo_jsonp(req):
         time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
 
     response = {}
-    callback = req.GET('callback', False)
+    callback = req.GET.get('callback', False)
     noresponse_keys = ['callback', 'delay']
 
     for key, value in req.GET.items():
