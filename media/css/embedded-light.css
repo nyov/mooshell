@@ -10,7 +10,7 @@ body, ul, ol, li, p, pre, div, a {
 	margin: 0;
 	list-style: none;
 	text-decoration: none;
-	color: #fff;
+	color: #333;
 }
 
 #tabs pre {
@@ -82,7 +82,7 @@ a {
 			height: 30px;
 			line-height: 28px;
 			padding: 0 14px;
-			
+			color: #fff;
 		}
 		
 	#actions li.active {
