@@ -12,7 +12,7 @@ var MooShellEditor = new Class({
 	initialize: function(el,options) {
 		this.setOptions(options);
 		this.tab = this.options.tab;
-		this.parent(el,this.options);
+		this.parent(el, this.options);
 		this.editorLabelFX = new Fx.Tween(this.element.getParent('p').getElement('.editor_label'), {property: 'opacity'});
 		//this.add_fullscreen_button();
 		this.element.addEvents({

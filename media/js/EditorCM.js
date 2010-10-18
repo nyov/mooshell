@@ -45,6 +45,8 @@ var MooShellEditor = new Class({
                   Layout.routeReservedKey.bind(Layout), 
                   Layout.isReservedKey.bind(Layout)
                 );
+                Layout.current_editor = this.options.name;
+                this.editor.focus();
               }.bind(this)
             }
 			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);

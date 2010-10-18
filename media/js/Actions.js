@@ -229,7 +229,24 @@ var MooShellActions = new Class({
 		this.form.submit();
 		this.fireEvent('run');
 	},
-	// clean all entries, rename example to default value
+    switchTo: function(index) {
+      Layout.current_editor = Layout.editors_order[index];
+      Layout.editors[Layout.current_editor].editor.focus();
+    },
+    switchNext: function() {
+      // find current and switch to the next
+      var index = Layout.editors_order.indexOf(Layout.current_editor);
+      var nextindex = (index + 1) % 3;
+      this.switchTo(nextindex);
+    },
+    switchPrev: function() {
+      // find current and switch to previous
+      var index = Layout.editors_order.indexOf(Layout.current_editor);
+      var nextindex = (index - 1) % 3;
+      if (nextindex < 0) nextindex = 2;
+      this.switchTo(nextindex);
+    },
+    // clean all entries, rename example to default value
 	cleanEntries: function(e) {
 		e.stop();
 		

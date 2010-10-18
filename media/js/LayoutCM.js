@@ -21,11 +21,14 @@ Element.implement({
 
 var Layout = {
 	editors: $H({}),
+    editors_order: ['html', 'css', 'js'],
     
     reservedKeys: [ // list of [modifier,keycode,callbackname]
-      ['ctrlKey', 13, 'run'], ['control', 13, 'run']   // c+ret+run'
-    ],
+      ['ctrlKey', 13, 'run'], ['control', 13, 'run'],   // c+ret+run
+      ['ctrlKey', 38, 'switchPrev'],                    // next editor
+      ['ctrlKey', 40, 'switchNext']                     // prev editor
 
+    ],
     render: function () {
 		// instantiate sidebar
 		this.sidebar = new Sidebar({
