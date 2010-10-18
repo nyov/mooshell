@@ -27,7 +27,9 @@ var MooShellEditor = new Class({
 		this.setOptions(options);
         var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
 		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && !is_disallowed) {
+            // hide textarea
             this.element.hide();
+            // prepare settings
 			if (!this.options.codeMirrorOptions.stylesheet && this.options.stylesheet) {
 				this.options.codeMirrorOptions.stylesheet = this.options.stylesheet.map( function(path) {
 					return mediapath + path;
@@ -39,14 +41,24 @@ var MooShellEditor = new Class({
             if (!this.options.codeMirrorOptions.content) {
               this.options.codeMirrorOptions.content = this.element.get('value'); 
             }
+            // run this after initialization
             if (!this.options.codeMirrorOptions.initCallback) {
               this.options.codeMirrorOptions.initCallback = function(){
+                // grab some keys
                 this.editor.grabKeys(
                   Layout.routeReservedKey.bind(Layout), 
                   Layout.isReservedKey.bind(Layout)
                 );
-                Layout.current_editor = this.options.name;
-                this.editor.focus();
+                if (this.options.focus) {
+                  // set current editor
+                  Layout.current_editor = this.options.name;
+                  // grab focus
+                  this.editor.focus();
+                }
+                // set current editor if user focuses by mouse
+                this.editor.win.addEventHandler(this.editor.win, 'focus', function() {
+                  Layout.current_editor = this.options.name;
+                }.bind(this));
               }.bind(this)
             }
 			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);
@@ -132,6 +144,7 @@ MooShellEditor.JS = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'js',
+        focus: true,
 		useCodeMirror: true,
 		flexibleHeight: true,
 		stylesheet: [
