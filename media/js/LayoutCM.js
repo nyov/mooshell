@@ -22,8 +22,8 @@ Element.implement({
 var Layout = {
 	editors: $H({}),
     
-    reservedKeys: [ // list of [modifier,keyCode,callbackName]
-      ['ctrl', 13, 'run']   // C+ret+run'
+    reservedKeys: [ // list of [modifier,keycode,callbackname]
+      ['ctrlKey', 13, 'run'], ['control', 13, 'run']   // c+ret+run'
     ],
 
     render: function () {
@@ -31,7 +31,14 @@ var Layout = {
 		this.sidebar = new Sidebar({
 			DOM: 'sidebar'
 		});
-		window.addEvent('resize', this.resize.bind(this));
+		window.addEvents({
+          'resize': this.resize.bind(this),
+          'keydown': function(keyEvent) {
+            if (this.isReservedKey(false, keyEvent)) {
+              this.routeReservedKey(keyEvent);
+            }
+          }.bind(this)
+        });
 		this.sidebar.addEvents({
 			'accordion_resized': this.resize.bind(this)
 		});
@@ -64,13 +71,9 @@ var Layout = {
     matchKey: function(keyEvent, keyDef) {
       var pass = true;
       if (keyDef.length > 1) {
-        pass = keyEvent[keyDef[0] + 'Key'];
+        pass = keyEvent[keyDef[0]];
       }
-      pass = pass && keyDef.contains(keyEvent['keyCode']);
-      if (pass) 
-        return keyDef;
-      else
-        return false;
+      return pass && (keyDef.contains(keyEvent['keyCode']) || keyDef.contains(keyEvent['code']));
     },
 
     isReservedKey: function(keyCode, keyEvent) {
