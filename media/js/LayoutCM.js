@@ -21,8 +21,12 @@ Element.implement({
 
 var Layout = {
 	editors: $H({}),
-	render: function () {
+    
+    reservedKeys: [ // list of [modifier,keyCode,callbackName]
+      ['ctrl', 13, 'run']   // C+ret+run'
+    ],
 
+    render: function () {
 		// instantiate sidebar
 		this.sidebar = new Sidebar({
 			DOM: 'sidebar'
@@ -31,7 +35,6 @@ var Layout = {
 		this.sidebar.addEvents({
 			'accordion_resized': this.resize.bind(this)
 		});
-
 		// set editor labels
 		var result = document.id('result');
 		$$('.window_label').setStyle('opacity', 0.8);
@@ -39,16 +42,43 @@ var Layout = {
 			result.getElement('.window_label').setStyle('opacity', 0.3);
 			this.result = result.getElement('iframe');
 		}
-
-		this.resize();
-		this.resize.bind(this).delay(20);
-
+        // resize
+		this.resize(); 
+        this.resize.bind(this).delay(20);
+        // change behaviour for IE
 		if (!Browser.Engine.trident4) {
 			this.createDragInstances();
 		}
-
+        // send an event
 		this.fireEvent('ready');
 	},
+
+    routeReservedKey: function(keyEvent) {
+      this.reservedKeys.each(function(keyDef){
+        if (this.matchKey(keyEvent, keyDef)) {
+          mooshell[keyDef.getLast()].bind(mooshell).call();
+        }
+      }, this);
+    },
+    
+    matchKey: function(keyEvent, keyDef) {
+      var pass = true;
+      if (keyDef.length > 1) {
+        pass = keyEvent[keyDef[0] + 'Key'];
+      }
+      pass = pass && keyDef.contains(keyEvent['keyCode']);
+      if (pass) 
+        return keyDef;
+      else
+        return false;
+    },
+
+    isReservedKey: function(keyCode, keyEvent) {
+      return (this.reservedKeys.some(function(keyDef) {
+        return this.matchKey(keyEvent, keyDef)
+      }, this));
+    },
+
 	findLayoutElements: function() {
 		// look up some elements, and cache the findings
 		this.content = document.id('content');
@@ -61,25 +91,30 @@ var Layout = {
 			'right': this.columns[1].getElement('.handler_horizontal')
 		});
 	},
+
 	registerEditor: function( editor ) {
 		this.editors[editor.options.name] = editor;
 		this.resize();
 	},
+
 	decodeEditors: function() {
 		this.editors.each( function(ed) {
 			ed.b64decode();
 		});
 	},
+
 	updateFromMirror: function() {
 		this.editors.each( function(ed) {
 			ed.updateFromMirror();
 		});
 	},
+
 	cleanMirrors: function() {
 		this.editors.each( function(ed) {
 			ed.clean();
 		});
 	},
+
 	createDragInstances: function() {
 		var onDrag_horizontal = function(h) {
 			var windows = h.getParent().getElements('.window');

@@ -224,7 +224,7 @@ var MooShellActions = new Class({
 	},
 	// run - submit the form (targets to the iframe)
 	run: function(e) {
-		e.stop(); 
+		if (e) e.stop(); 
 		Layout.updateFromMirror();
 		this.form.submit();
 		this.fireEvent('run');

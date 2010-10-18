@@ -36,14 +36,16 @@ var MooShellEditor = new Class({
 			if (!this.options.codeMirrorOptions.path) {
 				this.options.codeMirrorOptions.path = codemirrorpath + 'js/';
 			}
-			//if (!this.options.codeMirrorOptions.initCallback) {
-            //    var code = this.element.get('value');
-			//	this.options.codeMirrorOptions.initCallback = function() {
-            //      this.editor.setCode(code);
-            //    }.bind(this);
-			//}
             if (!this.options.codeMirrorOptions.content) {
               this.options.codeMirrorOptions.content = this.element.get('value'); 
+            }
+            if (!this.options.codeMirrorOptions.initCallback) {
+              this.options.codeMirrorOptions.initCallback = function(){
+                this.editor.grabKeys(
+                  Layout.routeReservedKey.bind(Layout), 
+                  Layout.isReservedKey.bind(Layout)
+                );
+              }.bind(this)
             }
 			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);
 		}
