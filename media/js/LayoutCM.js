@@ -19,15 +19,25 @@ Element.implement({
 	}
 });
 
+var keyMods = {
+  'shift': false,
+  'shiftKey': false,
+  'control': false,
+  'ctrlKey': false
+}; // these mods will be checked
+
 var Layout = {
 	editors: $H({}),
     editors_order: ['html', 'css', 'js'],
     
     reservedKeys: [ // list of [modifier,keycode,callbackname]
       ['ctrlKey', 13, 'run'], ['control', 13, 'run'],   // c+ret+run
-      ['ctrlKey', 38, 'switchPrev'],                    // next editor
-      ['ctrlKey', 40, 'switchNext']                     // prev editor
-
+      ['ctrlKey', 38, 'switchPrev'],                    // c+upArrow
+      ['ctrlKey', 40, 'switchNext'],                     // c+dnArrow
+      // future
+      ['ctrlKey+shiftKey', 13, 'loadDraft'], ['control+shift', 13, 'loadDraft']
+      // ['ctrlKey', f, 'searchBox'], ['control', f, 'searchBox']
+      // ['ctrlKey', s, 'saveRevision'], ['control', s, 'saveRevision']
     ],
     render: function () {
 		// instantiate sidebar
@@ -74,7 +84,18 @@ var Layout = {
     matchKey: function(keyEvent, keyDef) {
       var pass = true;
       if (keyDef.length > 1) {
-        pass = keyEvent[keyDef[0]];
+        var mods = {};
+        keyDef[0].split('+').each(function(mod) {
+          mods[mod] = true;
+        });
+        // adding other mods
+        $each(keyMods, function(value, mod) {
+          if (!mods[mod]) mods[mod] = false;
+        });
+        // check all possibilities
+        $each(mods, function(required, mod) {
+          if (!!keyEvent[mod] != required) pass = false;
+        });
       }
       return pass && (keyDef.contains(keyEvent['keyCode']) || keyDef.contains(keyEvent['code']));
     },

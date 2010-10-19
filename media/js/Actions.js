@@ -229,6 +229,14 @@ var MooShellActions = new Class({
 		this.form.submit();
 		this.fireEvent('run');
 	},
+    loadDraft: function(e) {
+      if (e) e.stop();
+      if (username) {
+        window.open('/draft/', 'jsfiddle_draft');
+      } else {
+        window.location = '/user/login/';
+      }
+    },
     switchTo: function(index) {
       Layout.current_editor = Layout.editors_order[index];
       Layout.editors[Layout.current_editor].editor.focus();
