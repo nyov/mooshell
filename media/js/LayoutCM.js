@@ -82,6 +82,7 @@ var Layout = {
     },
     
     matchKey: function(keyEvent, keyDef) {
+      if (!keyEvent) return false;
       var key = keyEvent['keyCode'] || keyEvent['code'];
       // check if the right key is pressed
       if (!keyDef.contains(key)) return false;
