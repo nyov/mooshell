@@ -82,6 +82,10 @@ var Layout = {
     },
     
     matchKey: function(keyEvent, keyDef) {
+      var key = keyEvent['keyCode'] || keyEvent['code'];
+      // check if the right key is pressed
+      if (!keyDef.contains(key)) return false;
+      // check for the modifications
       var pass = true;
       if (keyDef.length > 1) {
         var mods = {};
@@ -97,7 +101,7 @@ var Layout = {
           if (!!keyEvent[mod] != required) pass = false;
         });
       }
-      return pass && (keyDef.contains(keyEvent['keyCode']) || keyDef.contains(keyEvent['code']));
+      return pass;
     },
 
     isReservedKey: function(keyCode, keyEvent) {
