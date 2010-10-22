@@ -1,37 +1,46 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 <html lang="en">
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<title>{{ shell.title }} - jsFiddle demo{% if shell.author %} by {{ shell.author }}{% endif %}</title>
-	<script type='text/javascript' src='{{ shell.js_lib.href }}'{% if shell.js_lib_option %} {{ shell.js_lib_option|safe }}{% endif %}></script>
-	{% for js in dependencies %}<script type="text/javascript" src="{{ js.url }}"></script>
-	{% endfor %}
-	<link rel="stylesheet" type="text/css" href="{% url mooshell_css "normalize.css" %}">
-	{% if skin %}<link rel="stylesheet" type="text/css" href="{{ skin_css }}">{% endif %}
-	{% for res in resources %}
-		{% ifequal res.extension "css" %}
-			<link rel="stylesheet" type="text/css" href="{{ res.url|safe }}">
-		{% endifequal %}
-		{% ifequal res.extension "js" %}
-			<script type='text/javascript' src="{{ res.url|safe }}"></script>
-		{% endifequal %}
-	{% endfor %}
-	<style type='text/css'>
-		body {
-			background-color: transparent;
-			padding: 10px;
-		}
-		{{ shell.code_css|safe }}
-	</style>
-	<script type='text/javascript'>
-	//<![CDATA[ 
-	{{ wrap.code_start|safe }}
-		{{ shell.code_js|safe }}
-	{{ wrap.code_end|safe }}
-	//]]> 
-	</script>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>{{ shell.title }} - jsFiddle demo{% if shell.author %} by {{ shell.author }}{% endif %}</title>
+  <script type='text/javascript' src='{{ shell.js_lib.href }}'{% if shell.js_lib_option %} {{ shell.js_lib_option|safe }}{% endif %}></script>
+  {% for js in dependencies %}<script type="text/javascript" src="{{ js.url }}"></script>
+  {% endfor %}
+  <link rel="stylesheet" type="text/css" href="{% url mooshell_css "normalize.css" %}">
+  {% if skin %}<link rel="stylesheet" type="text/css" href="{{ skin_css }}">{% endif %}
+  {% for res in resources %}
+    {% ifequal res.extension "css" %}
+      <link rel="stylesheet" type="text/css" href="{{ res.url|safe }}">
+    {% endifequal %}
+    {% ifequal res.extension "js" %}
+      <script type='text/javascript' src="{{ res.url|safe }}"></script>
+    {% endifequal %}
+  {% endfor %}
+  <style type='text/css'>
+    body {
+      background-color: transparent;
+      padding: 10px;
+    }
+    {{ shell.code_css|safe }}
+  </style>
+  {% ifnotequal shell.js_wrap "b" %}
+  <script type='text/javascript'>
+  //<![CDATA[ 
+  {{ wrap.code_start|safe }}
+  {{ shell.code_js|safe }}
+  {{ wrap.code_end|safe }}
+  //]]> 
+  </script>
+  {% endifnotequal %}
 </head>
 {{ shell.body_tag|default:"<frameset>"|safe }}
-	{{ shell.code_html|safe }}
+  {{ shell.code_html|safe }}
+  {% ifequal shell.js_wrap "b" %}
+  <script type='text/javascript'>
+  //<![CDATA[ 
+  {{ shell.code_js|safe }}
+  //]]> 
+  </script>
+  {% endifequal %}
 </frameset>
 </html>
