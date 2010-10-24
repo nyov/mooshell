@@ -161,10 +161,10 @@ var MooShellActions = new Class({
 					'</div></div>';
 		} else {
 			html = 	html.substitute({title: 'Valid!'})+
-					'<p>Your JS code is valid.</p></div</div>';
+					'<p>Your JS code is valid.</p></div></div>';
 		}
 		new StickyWin({
-			content: html,		
+			content: html,
 			relativeTo: $(document.body),
 			position: 'center',
 			edge: 'center',
@@ -224,12 +224,37 @@ var MooShellActions = new Class({
 	},
 	// run - submit the form (targets to the iframe)
 	run: function(e) {
-		e.stop(); 
+		if (e) e.stop(); 
 		Layout.updateFromMirror();
 		this.form.submit();
 		this.fireEvent('run');
 	},
-	// clean all entries, rename example to default value
+    loadDraft: function(e) {
+      if (e) e.stop();
+      if (username) {
+        window.open('/draft/', 'jsfiddle_draft');
+      } else {
+        window.location = '/user/login/';
+      }
+    },
+    switchTo: function(index) {
+      Layout.current_editor = Layout.editors_order[index];
+      Layout.editors[Layout.current_editor].editor.focus();
+    },
+    switchNext: function() {
+      // find current and switch to the next
+      var index = Layout.editors_order.indexOf(Layout.current_editor);
+      var nextindex = (index + 1) % 3;
+      this.switchTo(nextindex);
+    },
+    switchPrev: function() {
+      // find current and switch to previous
+      var index = Layout.editors_order.indexOf(Layout.current_editor);
+      var nextindex = (index - 1) % 3;
+      if (nextindex < 0) nextindex = 2;
+      this.switchTo(nextindex);
+    },
+    // clean all entries, rename example to default value
 	cleanEntries: function(e) {
 		e.stop();
 		
@@ -448,7 +473,6 @@ var Base64 = {
  
 };
 
-
 var Dropdown = new Class({
 	
 	initialize: function(){
@@ -496,3 +520,39 @@ var Dropdown = new Class({
 	}
 });
 
+// Modal with the keyboard shortuts - noclass
+window.addEvents({
+	load: function(){
+		$$('a.keyActions').addEvents({
+
+			click: function(event){
+				event.stop();
+
+				var html = '<div class="modalWrap modal_kbd">' +
+							'<div class="modalHeading"><h3>Keyboard shortctus</h3><span class="close">Close window</span></div>'+
+							'<div id="kbd" class="modalBody">' +
+							'<ul>' +
+							'<li><kbd>Control</kbd> + <kbd>Return</kbd> <span>Run fiddle</span></li>' +
+							'<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> <span>Load draft</span></li>' +
+							'<li><kbd>Control</kbd> + <kbd>↑</kbd> or <kbd>Control</kbd> + <kbd>↓</kbd> <span>Switch editor windows</span></li>' +
+							'</ul>' +
+							'</div></div>';
+
+				new StickyWin({
+					content: html,
+					relativeTo: $(document.body),
+					position: 'center',
+					edge: 'center',
+					closeClassName: 'close',
+					draggable: true,
+					dragHandleSelector: 'h3',
+					closeOnEsc: true,
+					destroyOnClose: true,
+					allowMultiple: false
+				}).show();
+
+			}
+
+		});
+	}
+});

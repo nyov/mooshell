@@ -144,7 +144,8 @@ class ExternalResource(models.Model):
 
 
 WRAPCHOICE = (
-    ('', 'none'),
+    ('h', 'no Wrap (HEAD)'),
+    ('b', 'no Wrap (BODY)'),
     ('d', 'onDomready'),
     ('l', 'onLoad'),
 )

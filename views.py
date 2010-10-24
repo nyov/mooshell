@@ -230,7 +230,7 @@ def pastie_save(req, nosave=False, skin=None):
                     external_resources.append(
                         ExternalResource.objects.get(id=int(ext_id)))
                 except:
-                    log_to_file('called a nin existing external resource')
+                    log_to_file('.    %s' % req.POST.get('slug', '-'))
 
             if nosave:
                 # get page
@@ -547,7 +547,7 @@ def echo_jsonp(req):
         time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
 
     response = {}
-    callback = req.GET('callback', False)
+    callback = req.GET.get('callback', False)
     noresponse_keys = ['callback', 'delay']
 
     for key, value in req.GET.items():

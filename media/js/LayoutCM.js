@@ -19,19 +19,42 @@ Element.implement({
 	}
 });
 
+var keyMods = {
+  'shift': false,
+  'shiftKey': false,
+  'control': false,
+  'ctrlKey': false
+}; // these mods will be checked
+
 var Layout = {
 	editors: $H({}),
-	render: function () {
-
+    editors_order: ['html', 'css', 'js'],
+    
+    reservedKeys: [ // list of [modifier,keycode,callbackname]
+      ['ctrlKey', 13, 'run'], ['control', 13, 'run'],   // c+ret+run
+      ['ctrlKey', 38, 'switchPrev'],                    // c+upArrow
+      ['ctrlKey', 40, 'switchNext'],                     // c+dnArrow
+      // future
+      ['ctrlKey+shiftKey', 13, 'loadDraft'], ['control+shift', 13, 'loadDraft']
+      // ['ctrlKey', f, 'searchBox'], ['control', f, 'searchBox']
+      // ['ctrlKey', s, 'saveRevision'], ['control', s, 'saveRevision']
+    ],
+    render: function () {
 		// instantiate sidebar
 		this.sidebar = new Sidebar({
 			DOM: 'sidebar'
 		});
-		window.addEvent('resize', this.resize.bind(this));
+		window.addEvents({
+          'resize': this.resize.bind(this),
+          'keydown': function(keyEvent) {
+            if (this.isReservedKey(false, keyEvent)) {
+              this.routeReservedKey(keyEvent);
+            }
+          }.bind(this)
+        });
 		this.sidebar.addEvents({
 			'accordion_resized': this.resize.bind(this)
 		});
-
 		// set editor labels
 		var result = document.id('result');
 		$$('.window_label').setStyle('opacity', 0.8);
@@ -39,16 +62,55 @@ var Layout = {
 			result.getElement('.window_label').setStyle('opacity', 0.3);
 			this.result = result.getElement('iframe');
 		}
-
-		this.resize();
-		this.resize.bind(this).delay(20);
-
+        // resize
+		this.resize(); 
+        this.resize.bind(this).delay(20);
+        // change behaviour for IE
 		if (!Browser.Engine.trident4) {
 			this.createDragInstances();
 		}
-
+        // send an event
 		this.fireEvent('ready');
 	},
+
+    routeReservedKey: function(keyEvent) {
+      this.reservedKeys.each(function(keyDef){
+        if (this.matchKey(keyEvent, keyDef)) {
+          mooshell[keyDef.getLast()].bind(mooshell).call();
+        }
+      }, this);
+    },
+    
+    matchKey: function(keyEvent, keyDef) {
+      if (!keyEvent) return false;
+      var key = keyEvent['keyCode'] || keyEvent['code'];
+      // check if the right key is pressed
+      if (!keyDef.contains(key)) return false;
+      // check for the modifications
+      var pass = true;
+      if (keyDef.length > 1) {
+        var mods = {};
+        keyDef[0].split('+').each(function(mod) {
+          mods[mod] = true;
+        });
+        // adding other mods
+        $each(keyMods, function(value, mod) {
+          if (!mods[mod]) mods[mod] = false;
+        });
+        // check all possibilities
+        $each(mods, function(required, mod) {
+          if (!!keyEvent[mod] != required) pass = false;
+        });
+      }
+      return pass;
+    },
+
+    isReservedKey: function(keyCode, keyEvent) {
+      return (this.reservedKeys.some(function(keyDef) {
+        return this.matchKey(keyEvent, keyDef)
+      }, this));
+    },
+
 	findLayoutElements: function() {
 		// look up some elements, and cache the findings
 		this.content = document.id('content');
@@ -61,25 +123,30 @@ var Layout = {
 			'right': this.columns[1].getElement('.handler_horizontal')
 		});
 	},
+
 	registerEditor: function( editor ) {
 		this.editors[editor.options.name] = editor;
 		this.resize();
 	},
+
 	decodeEditors: function() {
 		this.editors.each( function(ed) {
 			ed.b64decode();
 		});
 	},
+
 	updateFromMirror: function() {
 		this.editors.each( function(ed) {
 			ed.updateFromMirror();
 		});
 	},
+
 	cleanMirrors: function() {
 		this.editors.each( function(ed) {
 			ed.clean();
 		});
 	},
+
 	createDragInstances: function() {
 		var onDrag_horizontal = function(h) {
 			var windows = h.getParent().getElements('.window');

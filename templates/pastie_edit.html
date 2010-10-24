@@ -1,13 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-  <meta name="description" edit="{{ SEO_DESCRIPTION }}">
-  <meta name="keywords" edit="{{ SEO_KEYWORDS }}">
-  <meta name="robots" edit="all">
+  <meta name="description" edit="{{ SEO_DESCRIPTION }}"/>
+  <meta name="keywords" edit="{{ SEO_KEYWORDS }}"/>
+  <meta name="robots" edit="all"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
 
   <title>{{ seo_title_head }}{{ title }}{{ title_separator }}{{ project_name }}{{ seo_title_tail }}</title>
   {% if GOOGLE_VERIFICATION_META_TAG %}{{ GOOGLE_VERIFICATION_META_TAG|safe }}{% endif %}
-  <meta name="author" edit="Piotr Zalewa">
+  <meta name="author" edit="Piotr Zalewa"/>
   <meta name='copyright' content='share alike'/>
   <script type="text/javascript" src="/js/jslint.min.js"></script>
   {% for js in js_libs %}<script type="text/javascript" src="{{ js }}"></script>{% endfor %}
@@ -30,6 +31,7 @@
       codemirrorpath = "{% url codemirror "" %}",
       makefavouritepath = "{% url make_favourite %}",
       example_server = "{{ web_server }}",
+      username = "{{ user.username }}",
       mooshell;
     Layout.skin = "{{ skin }}"
     window.addEvent('domready', function() {
@@ -88,6 +90,7 @@
             Read our <a href="http://doc.jsfiddle.net" target="_doc">documentation</a>
         </div>
       </div>
+      <a class="keyActions" href="#keyboard">Keyboard shortcuts</a>
     </div>
     <div id="content">    
       {# <p class='serious_warning'></p>#}
