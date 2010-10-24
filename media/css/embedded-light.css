@@ -10,7 +10,7 @@ body, ul, ol, li, p, pre, div, a {
 	margin: 0;
 	list-style: none;
 	text-decoration: none;
-	color: #fff;
+	color: #333;
 }
 
 a {
@@ -78,7 +78,7 @@ a {
 			height: 44px;
 			line-height: 42px;
 			padding: 0 14px;
-			
+			color: #fff;
 		}
 		
 	#actions li.active {
