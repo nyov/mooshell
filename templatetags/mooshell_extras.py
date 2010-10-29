@@ -6,7 +6,8 @@ register = template.Library()
 
 
 @register.inclusion_tag('_js_library_groups.html')
-def get_js_library_groups(shell=None, current_group=None, current_lib=None):
+def get_js_library_groups(shell=None, current_group=None, current_lib=None,
+        preset_dependencies=None):
 	"return a list of possible library groups if more than one"
 	if not current_group:
 		current_group = shell.js_lib.library_group if shell else None
@@ -33,7 +34,8 @@ def get_js_library_groups(shell=None, current_group=None, current_lib=None):
 		'groups': groups,
 		'current_group': current_group,
 		'current_lib': current_lib,
-		'shell': shell
+		'shell': shell,
+        'preset_dependencies': preset_dependencies
 		}
 
 def prepare_js_libraries(group_name, shell=None):
@@ -53,21 +55,21 @@ def prepare_js_libraries(group_name, shell=None):
 	# if something went wrong ...
 	if lib and not current_lib :
 		current_lib = lib
-			
-	return { 
+
+	return {
 		'libraries': libraries,
 		'group_name': group_name,
 		'current_lib': current_lib,
 		'shell': shell
 	}
-	
+
 
 @register.inclusion_tag('_js_libraries_options.html')
 def get_js_libraries(group_name, shell=None):
 	return prepare_js_libraries(group_name, shell)
-	
+
 @register.inclusion_tag('_js_dependencies_choice.html')
-def get_js_dependencies(js_lib, shell=None):
+def get_js_dependencies(js_lib, shell=None, preset_dependencies=None):
 	" return a list of all possible dependencies for a js_lib "
 	dependencies = list(JSDependency.objects.filter(active=True,library__id=js_lib.id))
 	if shell:
@@ -77,13 +79,16 @@ def get_js_dependencies(js_lib, shell=None):
 		selected = shell.js_dependency.all()
 	else:
 		selected = [dep for dep in dependencies if dep.selected]
-	
+
 	for dep in dependencies:
 		if dep in selected:
 			dep.current = True
-			
+        for pre_dep in preset_dependencies or []:
+            if pre_dep.lower().find(dep.name.lower()):
+                dep.current = True
+
 	return {
 		'dependencies': dependencies,
 		'js_lib': js_lib
 	}
-	
+

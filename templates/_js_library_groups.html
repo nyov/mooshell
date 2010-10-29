@@ -10,5 +10,5 @@
 </select>
 
 <ul id='js_dependency'>
-	{% if current_lib %}{% get_js_dependencies current_lib shell %}{% endif %}
+	{% if current_lib %}{% get_js_dependencies current_lib shell preset_dependencies %}{% endif %}
 </ul>
