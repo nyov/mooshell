@@ -84,7 +84,7 @@ def get_js_dependencies(js_lib, shell=None, preset_dependencies=None):
         if dep in selected:
             dep.current = True
         for pre_dep in preset_dependencies or []:
-            if pre_dep.lower().find(dep.name.lower()):
+            if dep.name.lower().find(pre_dep.lower()) >= 0:
                 dep.current = True
 
     return {
