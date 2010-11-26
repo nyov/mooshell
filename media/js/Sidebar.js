@@ -5,7 +5,8 @@ var Sidebar = new Class({
 	Implements: [Options, Class.Occlude, Events],
 	parameter: "Sidebar",
 	options: {
-		DOM: ''
+		DOM: '',
+		toggleSidebar: 'toggleSidebar',
 	},
 	initialize: function (options) {
 		this.setOptions(options);
@@ -30,10 +31,29 @@ var Sidebar = new Class({
 				// 700 ms after launch the animation should be finished...
 				this.fireEvent('accordion_resized',[],700);
 			}.bind(this));
+            if ($(this.options.toggleSidebar)) {
+              $(this.options.toggleSidebar).addEvent('click',
+                  this.toggle.bind(this));
+            }
 		}
 	},
 	resize: function () {
 		this.element.setStyle('min-height',window.getSize().y - this.element.getPosition().y - 8);
 	},
-	toElement: function() { return this.element; }
+	toElement: function() { return this.element; },
+    hide: function() {
+      this.element.hide();
+      this.contentMargin = $('content').getStyle('marginLeft');
+      $('content').setStyle('marginLeft', 10);
+      this.hidden = true;
+    },
+    show: function() {
+      $('content').setStyle('marginLeft', this.contentMargin);
+      this.element.show();
+      this.hidden = false;
+    },
+    toggle: function() {
+      if (this.hidden) return this.show();
+      return this.hide();
+    }
 });
