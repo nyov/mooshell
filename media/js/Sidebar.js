@@ -52,7 +52,10 @@ var Sidebar = new Class({
       this.element.show();
       this.hidden = false;
     },
-    toggle: function() {
+    toggle: function(ev) {
+      if (ev) {
+        ev.stop();
+      }
       if (this.hidden) return this.show();
       return this.hide();
     }
