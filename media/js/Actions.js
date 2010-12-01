@@ -270,7 +270,7 @@ var MooShellActions = new Class({
 				document.id(this.options.resultLabel).set('text', this.resultText);
 			}
 
-			if ($(this.options.saveAndReloadId)) $(this.options.saveAndReloadId).destroy();
+			if ($(this.options.saveAndReloadId)) $(this.options.saveAndReloadId).getParent('li').destroy();
 
 	 		this.fireEvent('clean');
 		}
