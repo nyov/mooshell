@@ -34,8 +34,10 @@ var Layout = {
       ['ctrlKey', 13, 'run'], ['control', 13, 'run'],   // c+ret+run
       ['ctrlKey', 38, 'switchPrev'],                    // c+upArrow
       ['ctrlKey', 40, 'switchNext'],                     // c+dnArrow
+      ['ctrlKey+shiftKey', 13, 'loadDraft'], ['control+shift', 13, 'loadDraft'],
+      ['ctrlKey+shiftKey', 38, 'toggleSidebar'], ['control+shift', 38, 'toggleSidebar'],
+      ['ctrlKey+shiftKey', 76, 'showShortcutDialog'], ['control+shift', 76, 'showShortcutDialog']
       // future
-      ['ctrlKey+shiftKey', 13, 'loadDraft'], ['control+shift', 13, 'loadDraft']
       // ['ctrlKey', f, 'searchBox'], ['control', f, 'searchBox']
       // ['ctrlKey', s, 'saveRevision'], ['control', s, 'saveRevision']
     ],

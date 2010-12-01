@@ -89,6 +89,11 @@ var MooShellActions = new Class({
 		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
 		addBinded(this.options.favId, this.makeFavourite, this);
 		addBinded(this.options.disqusId, this.showDisqusWindow, this);
+		$$('a.keyActions').addEvents({
+			click: function(e){
+                this.showShortcutDialog(e);
+			}.bind(this)
+		});
 
 		var share = $$(this.options.shareSelector);
 		if (share.length > 0) {
@@ -236,6 +241,37 @@ var MooShellActions = new Class({
       } else {
         window.location = '/user/login/';
       }
+    },
+    toggleSidebar: function(e) {
+      if (e) e.stop();
+      Layout.sidebar.toggle();
+    },
+    showShortcutDialog: function(e) {
+      if (e) e.stop();
+      var html = '<div class="modalWrap modal_kbd">' +
+                  '<div class="modalHeading"><h3>Keyboard shortctus</h3><span class="close">Close window</span></div>'+
+                  '<div id="kbd" class="modalBody">' +
+                  '<ul>' +
+                  '<li><kbd>Control</kbd> + <kbd>Return</kbd> <span>Run fiddle</span></li>' +
+                  '<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> <span>Load draft</span></li>' +
+                  '<li><kbd>Control</kbd> + <kbd>&uarr;</kbd> or <kbd>Control</kbd> + <kbd>&darr;</kbd> <span>Switch editor windows</span></li>' +
+                  '<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>&uarr;</kbd> <span>Toggle sidebar</span></li>' +
+                  '</ul>' +
+                  '</div></div>';
+
+      new StickyWin({
+          content: html,
+          relativeTo: $(document.body),
+          position: 'center',
+          edge: 'center',
+          closeClassName: 'close',
+          draggable: true,
+          dragHandleSelector: 'h3',
+          closeOnEsc: true,
+          destroyOnClose: true,
+          allowMultiple: false
+      }).show();
+
     },
     switchTo: function(index) {
       Layout.current_editor = Layout.editors_order[index];
@@ -520,39 +556,3 @@ var Dropdown = new Class({
 	}
 });
 
-// Modal with the keyboard shortuts - noclass
-window.addEvents({
-	load: function(){
-		$$('a.keyActions').addEvents({
-
-			click: function(event){
-				event.stop();
-
-				var html = '<div class="modalWrap modal_kbd">' +
-							'<div class="modalHeading"><h3>Keyboard shortctus</h3><span class="close">Close window</span></div>'+
-							'<div id="kbd" class="modalBody">' +
-							'<ul>' +
-							'<li><kbd>Control</kbd> + <kbd>Return</kbd> <span>Run fiddle</span></li>' +
-							'<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> <span>Load draft</span></li>' +
-							'<li><kbd>Control</kbd> + <kbd>↑</kbd> or <kbd>Control</kbd> + <kbd>↓</kbd> <span>Switch editor windows</span></li>' +
-							'</ul>' +
-							'</div></div>';
-
-				new StickyWin({
-					content: html,
-					relativeTo: $(document.body),
-					position: 'center',
-					edge: 'center',
-					closeClassName: 'close',
-					draggable: true,
-					dragHandleSelector: 'h3',
-					closeOnEsc: true,
-					destroyOnClose: true,
-					allowMultiple: false
-				}).show();
-
-			}
-
-		});
-	}
-});
