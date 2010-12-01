@@ -6,7 +6,7 @@ var Sidebar = new Class({
 	parameter: "Sidebar",
 	options: {
 		DOM: '',
-		toggleSidebar: 'toggleSidebar',
+		toggleSidebar: 'toggleSidebar'
 	},
 	initialize: function (options) {
 		this.setOptions(options);
