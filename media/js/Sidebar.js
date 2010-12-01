@@ -46,11 +46,13 @@ var Sidebar = new Class({
       this.contentMargin = $('content').getStyle('marginLeft');
       $('content').setStyle('marginLeft', 10);
       this.hidden = true;
+      Layout.resize();
     },
     show: function() {
       $('content').setStyle('marginLeft', this.contentMargin);
       this.element.show();
       this.hidden = false;
+      Layout.resize();
     },
     toggle: function(ev) {
       if (ev) {
