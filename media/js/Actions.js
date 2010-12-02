@@ -26,7 +26,8 @@ var DiscussionWindow = new Class({
 			dragHandleSelector: 'h3',
 			closeOnEsc: true,
 			destroyOnClose: true,
-			allowMultiple: false
+            allowMultiple: false,
+            onDisplay: this.showModalFx
 		});
 		
 		this.modal.show();
@@ -178,7 +179,8 @@ var MooShellActions = new Class({
 			dragHandleSelector: 'h3',
 			closeOnEsc: true,
 			destroyOnClose: true,
-			allowMultiple: false
+            allowMultiple: false,
+            onDisplay: this.showModalFx
 		}).show()
 	},
 	// mark shell as favourite
@@ -259,19 +261,23 @@ var MooShellActions = new Class({
                   '</ul>' +
                   '</div></div>';
 
-      new StickyWin({
-          content: html,
-          relativeTo: $(document.body),
-          position: 'center',
-          edge: 'center',
-          closeClassName: 'close',
-          draggable: true,
-          dragHandleSelector: 'h3',
-          closeOnEsc: true,
-          destroyOnClose: true,
-          allowMultiple: false
-      }).show();
+        new StickyWin({
+            content: html,
+            relativeTo: $(document.body),
+            position: 'center',
+            edge: 'center',
+            closeClassName: 'close',
+            draggable: true,
+            dragHandleSelector: 'h3',
+            closeOnEsc: true,
+            destroyOnClose: true,
+            allowMultiple: false,
+            onDisplay: this.showModalFx
+        }).show();
 
+    },
+    showModalFx: function(){
+        $$('.modalWrap')[0].addClass('show');
     },
     switchTo: function(index) {
       Layout.current_editor = Layout.editors_order[index];
