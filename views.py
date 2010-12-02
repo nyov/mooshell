@@ -207,9 +207,18 @@ def pastie_save(req, nosave=False, skin=None):
             shell = shellform.save(commit=False)
 
             " Base64 decode "
-            shell.code_js = base64.b64decode(shell.code_js)
-            shell.code_html = base64.b64decode(shell.code_html)
-            shell.code_css = base64.b64decode(shell.code_css)
+            try:
+                shell.code_js = base64.b64decode(shell.code_js)
+            except:
+                pass
+            try:
+                shell.code_html = base64.b64decode(shell.code_html)
+            except:
+                pass
+            try:
+                shell.code_css = base64.b64decode(shell.code_css)
+            except:
+                pass
 
             " Connect shell with pastie "
             shell.pastie = pastie
