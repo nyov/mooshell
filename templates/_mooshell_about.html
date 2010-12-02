@@ -1,48 +1,48 @@
 <h3 id='about_toggler' class='toggler'>Info</h3>
 <div class='element'>
-	<div class="elementBody">
-		<div class="ebCont">		
-			<p>
-				<label>
-					Title
-					{{ shellform.title }}
-				</label>
-			</p>
-			<p>
-				<label>				
-					Description
-					{{ shellform.description }}
-				</label>
-			</p>
-			<p>
-				<label>				
-					Body Tag
-					{{ shellform.body_tag }}
-				</label>
-			</p>
-			<p>
-				<label>DTD
-				<select name='doctype'>{% for doctype in doctypes %}
-					<option {% if shell %}{% if doctype.current %}selected {% endif %}{% else %}{% if doctype.selected %}selected {% endif %}{% endif %}id="dtd_{{ doctype.name }}" value="{{ doctype.id }}">{{ doctype.name }}</option>
-			{% endfor %}</select></label></p>
-		</div>	
-	</div>	
+  <div class="elementBody">
+    <div class="ebCont">    
+      <p>
+        <label>
+          Title
+          {{ shellform.title }}
+        </label>
+      </p>
+      <p>
+        <label>        
+          Description
+          {{ shellform.description }}
+        </label>
+      </p>
+      <p>
+        <label>        
+          Body Tag
+          {{ shellform.body_tag }}
+        </label>
+      </p>
+      <p>
+      <label>DTD
+        <select name='doctype'>{% for doctype in doctypes %}
+          <option {% ifequal force_doctype_pk doctype.pk %}selected {% endifequal %}{% if shell %}{% if doctype.current %}selected {% endif %}{% else %}{% if doctype.selected %}selected {% endif %}{% endif %}id="dtd_{{ doctype.name }}" value="{{ doctype.id }}">{{ doctype.name }}</option>
+      {% endfor %}</select></label></p>
+    </div>  
+  </div>  
 </div>
 
 <h3 class='toggler'>Testing Ajax requests</h3>
 <div class='element'>
-	<div class="elementBody">
-		<div class="ebCont">
-		
-			<p>Echo apis are created to simulate Ajax calls:
-				<code>{% url echo_json %}</code> for JSON, 
-				<code>{{ web_server }}{% url echo_jsonp %}</code> for JSONP,  
-				<code>{% url echo_html %}</code> for HTML and
-				<code>{% url echo_xml %}</code> for XML.
-			</p>
-			<p>Please <a href="http://doc.jsfiddle.net/use/echo.html" target="_new">read API documentation</a> and follow
-				<a onclick='Layout.sidebar.accordion.display(Layout.sidebar.accordion.togglers.indexOf($("examples_toggler")))' href="#">examples</a>.
-			</p>
-		</div>
-	</div>
+  <div class="elementBody">
+    <div class="ebCont">
+    
+      <p>Echo apis are created to simulate Ajax calls:
+        <code>{% url echo_json %}</code> for JSON, 
+        <code>{{ web_server }}{% url echo_jsonp %}</code> for JSONP,  
+        <code>{% url echo_html %}</code> for HTML and
+        <code>{% url echo_xml %}</code> for XML.
+      </p>
+      <p>Please <a href="http://doc.jsfiddle.net/use/echo.html" target="_new">read API documentation</a> and follow
+        <a onclick='Layout.sidebar.accordion.display(Layout.sidebar.accordion.togglers.indexOf($("examples_toggler")))' href="#">examples</a>.
+      </p>
+    </div>
+  </div>
 </div>
