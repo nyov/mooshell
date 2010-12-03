@@ -60,7 +60,7 @@ var MooShellActions = new Class({
 		jslintId: 'jslint',
 		tidyId: 'tidy',
 		disqusId: 'discussion',
-		shareSelector: '#share_link_dropdown, #share_embedded_dropdown',
+		shareSelector: '#share_link_dropdown, #share_embedded_dropdown, #share_result_dropdown',
 		favId: 'mark_favourite',
 		entriesSelector: 'textarea',
 		resultLabel: 'result_label',
