@@ -3,6 +3,10 @@ var DiscussionWindow = new Class({
 	initialize: function(){
 		this.modal;
 	},
+	
+	showModalFx: function(){
+		$$('.modalWrap')[0].addClass('show');
+	},
 
 	create: function(subs){
 		var discussionHtml = '';

@@ -65,6 +65,10 @@ var List = new Class({
 		}, this);
 	},
 	
+	showModalFx: function(){
+		$$('.modalWrap')[0].addClass('show');
+	},
+	
 	showModal: function(shell){
 		var html = '<div class="modalWrap modal_confirmation">' +
 					'<div class="modalHeading"><h3>Are you certain?</h3><span class="close">Close window</span></div>'+
@@ -83,7 +87,8 @@ var List = new Class({
 			dragHandleSelector: 'h3',
 			closeOnEsc: true,
 			destroyOnClose: true,
-			allowMultiple: false
+			allowMultiple: false,
+			onDisplay: this.showModalFx
 		})
 		
 		this.currentSticky.show();
@@ -93,6 +98,4 @@ var List = new Class({
 
 window.addEvent('domready', function(){
 	new List();
-	
-
 });
