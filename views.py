@@ -377,6 +377,7 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None,
              skin=None):
     " display embeddable version of the shell "
 
+    allowed_tabs = ('js', 'html', 'css', 'result', 'resources')
     key = get_embedded_key(req, slug, version, revision, author, tabs, skin)
     if cache.get(key, None):
         context = cache.get(key)
@@ -409,11 +410,13 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None,
                 shell__id=shell.id)
             external_resources = [res.resource for res in resources]
 
+        if [x for x in tabs_order if x not in allowed_tabs]:
+            return HttpResponseNotAllowed('Tab name not allowed')
         tabs = []
         for t in tabs_order:
-            tab = {    'type': t,
-                            'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
-                        }
+            tab = { 'type': t,
+                    'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
+                  }
             if not t in ["result", "resources"]:
                 tab['code'] = getattr(shell,'code_'+t)
             tabs.append(tab)
