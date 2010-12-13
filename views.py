@@ -4,7 +4,7 @@ import base64
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseNotAllowed
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.template import RequestContext
@@ -765,15 +765,17 @@ def api_get_users_pasties(req, author, method='json'):
 def add_external_resource(req):
     " add external url "
     url = req.POST.get('url')
+    if not url:
+        return HttpResponseNotAllowed('Please provide url')
     try:
         # check if url already in models
         resource = ExternalResource.objects.get(url=url)
-        log_to_file('resource %s chosen' % resource.filename)
+        #log_to_file('resource %s chosen' % resource.filename)
     except:
         # else create resource
         resource = ExternalResource(url=url)
         resource.save()
-        log_to_file('resource %s created' % resource.filename)
+        #log_to_file('resource %s created' % resource.filename)
 
     return HttpResponse(simplejson.dumps({
             'id': resource.id,
