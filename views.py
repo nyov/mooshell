@@ -264,7 +264,11 @@ def pastie_save(req, nosave=False, skin=None):
             if req.user.is_authenticated():
                 shell.author = req.user
 
-            shell.save()
+            try:
+                shell.save()
+            except Exception, err:
+                log_to_file("Error saving shell %s" % str(err))
+                return HttpResponseNotAllowed('Error saving shell')
 
             # add saved dependencies
             for dep in dependencies:
