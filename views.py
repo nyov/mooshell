@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import MultipleObjectsReturned
 
 from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
         ExternalResource, DocType, ShellExternalResource
@@ -94,8 +95,13 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                 user = get_object_or_404(User,
                                          username=author) if author else None
                 # if shell has an author, username has to be provided in url
-                shell = get_object_or_404(Shell, pastie__slug=slug,
+                try:
+                    shell = get_object_or_404(Shell, pastie__slug=slug,
                                           version=version, author=user)
+                except MultipleObjectsReturned:
+                    log_to_file('Multiple shells: %s, %d' % (slug, version))
+                    shell = list(Shell.objects.filter(pastie__slug=slug,
+                                            version=version, author=user))[0]
 
             external_resources = ShellExternalResource.objects.filter(
                 shell__id=shell.id)
@@ -379,9 +385,15 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None,
 
     allowed_tabs = ('js', 'html', 'css', 'result', 'resources')
     key = get_embedded_key(req, slug, version, revision, author, tabs, skin)
-    if cache.get(key, None):
-        context = cache.get(key)
-    else:
+
+    context = None
+    try:
+        context = cache.get(key, None)
+    except Exception:
+        log_to_file('Error in cache - key: %s' % key)
+        return HttpResponseNotAllowed('Error in cache')
+
+    if not context:
         pastie = get_object_or_404(Pastie,slug=slug)
         if version == None:
             shell = pastie.favourite
