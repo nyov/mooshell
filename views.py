@@ -99,7 +99,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                     shell = get_object_or_404(Shell, pastie__slug=slug,
                                           version=version, author=user)
                 except MultipleObjectsReturned:
-                    log_to_file('Multiple shells: %s, %s' % (slug, version))
+                    log_to_file('Multiple shells in pastie_edit: %s, %s'
+                                % (slug, version))
                     shell = list(Shell.objects.filter(pastie__slug=slug,
                                             version=version, author=user))[0]
 
@@ -492,6 +493,14 @@ def pastie_show(req, slug, version=None, author=None, skin=None):
             user = get_object_or_404(User,username=author) if author else None
             shell = get_object_or_404(Shell, pastie__slug=slug,
                                       version=version, author=user)
+            try:
+                shell = get_object_or_404(Shell, pastie__slug=slug,
+                                      version=version, author=user)
+            except MultipleObjectsReturned:
+                log_to_file('Multiple shells in pastie_show: %s, %s'
+                            % (slug, version))
+                shell = list(Shell.objects.filter(pastie__slug=slug,
+                                        version=version, author=user))[0]
         cache.set(key, shell)
 
     if not skin: skin = req.GET.get('skin', settings.MOOSHELL_DEFAULT_SKIN)
