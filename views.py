@@ -99,7 +99,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                     shell = get_object_or_404(Shell, pastie__slug=slug,
                                           version=version, author=user)
                 except MultipleObjectsReturned:
-                    log_to_file('Multiple shells: %s, %d' % (slug, version))
+                    log_to_file('Multiple shells: %s, %s' % (slug, version))
                     shell = list(Shell.objects.filter(pastie__slug=slug,
                                             version=version, author=user))[0]
 
