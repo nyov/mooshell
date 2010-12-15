@@ -338,7 +338,7 @@ def display_draft(req):
     try:
         return HttpResponse(req.user.draft.all()[0].html)
     except:
-        raise HttpResponse("You've got no draft saved")
+        return HttpResponse("You've got no draft saved")
 
 
 def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
