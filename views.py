@@ -241,12 +241,13 @@ def pastie_save(req, nosave=False, skin=None):
             external_resources = []
             ext_ids = req.POST.get('add_external_resources', '').split(',')
             for ext_id in ext_ids:
-                try:
-                    external_resources.append(
-                        ExternalResource.objects.get(id=int(ext_id)))
-                except:
-                    log_to_file('.    %s %s' % (
-                        req.POST.get('slug', '-'), ext_id))
+                if ext_id:
+                    try:
+                        external_resources.append(
+                            ExternalResource.objects.get(id=int(ext_id)))
+                    except:
+                        log_to_file('.    %s %s' % (
+                            req.POST.get('slug', '-'), ext_id))
 
             if nosave:
                 # get page
