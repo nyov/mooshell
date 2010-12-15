@@ -491,8 +491,6 @@ def pastie_show(req, slug, version=None, author=None, skin=None):
             shell = pastie.favourite
         else:
             user = get_object_or_404(User,username=author) if author else None
-            shell = get_object_or_404(Shell, pastie__slug=slug,
-                                      version=version, author=user)
             try:
                 shell = get_object_or_404(Shell, pastie__slug=slug,
                                       version=version, author=user)
