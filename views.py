@@ -60,9 +60,10 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
     # build the cache key on the basis of url and user
     try:
         key = get_pastie_edit_key(req, slug, version, revision, author, skin)
-    except:
-        log_to_file("Error generating key in pastie_edit: %s" % str(
-            slug, version, revision, author, skin))
+    except Exception, err:
+        log_to_file("Error generating key in pastie_edit\n"
+                "vars: %s\nerror: %s" % (
+                    str( slug, version, revision, author, skin), str(err)))
         return HttpResponseNotAllowed()
 
     if cache.get(key, None):
