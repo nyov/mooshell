@@ -710,7 +710,12 @@ def expire_path(r, path):
 def make_favourite(req):
     " set the base version "
     shell_id = req.POST.get('shell_id')
-    shell = Shell.objects.get(id=shell_id)
+    try:
+        shell = Shell.objects.get(id=shell_id)
+    except DoesNotExist, err:
+        log_to_file("make_favourite: Shell doesn't exist id: %d\n %s" % (
+            shell_id, str(err)))
+        return HttpResponseNotAllowed()
 
     if not req.user.is_authenticated() \
         or req.user.id != shell.pastie.author.id:
