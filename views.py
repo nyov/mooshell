@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
         ExternalResource, DocType, ShellExternalResource
@@ -712,7 +712,7 @@ def make_favourite(req):
     shell_id = req.POST.get('shell_id')
     try:
         shell = Shell.objects.get(id=shell_id)
-    except DoesNotExist, err:
+    except ObjectDoesNotExist, err:
         log_to_file("make_favourite: Shell doesn't exist id: %d\n %s" % (
             shell_id, str(err)))
         return HttpResponseNotAllowed()
