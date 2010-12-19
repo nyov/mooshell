@@ -710,6 +710,12 @@ def expire_path(r, path):
 def make_favourite(req):
     " set the base version "
     shell_id = req.POST.get('shell_id')
+    if not shell_id:
+        log_to_file('make_favourite: no shell_id')
+        return HttpResponse("<p>No shell id - if you think it is an error."
+                "please <a href='support@jsfiddle.net'>email us</a>.</p>"
+                "<p>The error has been logged</p>")
+
     try:
         shell = Shell.objects.get(id=shell_id)
     except ObjectDoesNotExist, err:
