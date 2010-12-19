@@ -713,8 +713,8 @@ def make_favourite(req):
     try:
         shell = Shell.objects.get(id=shell_id)
     except ObjectDoesNotExist, err:
-        log_to_file("make_favourite: Shell doesn't exist id: %d\n %s" % (
-            shell_id, str(err)))
+        log_to_file("make_favourite: Shell doesn't exist id: %s\n %s" % (
+            str(shell_id), str(err)))
         return HttpResponseNotAllowed()
 
     if not req.user.is_authenticated() \
