@@ -66,9 +66,11 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                     str(list(slug, version, revision, author)), str(err)))
         return HttpResponseNotAllowed()
 
+    c = None
     if cache.get(key, None):
         c = cache.get(key)
-    else:
+
+    if not c:
         shell = None
         c = {}
 
