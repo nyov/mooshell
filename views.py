@@ -63,7 +63,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
     except Exception, err:
         log_to_file("Error generating key in pastie_edit\n"
                 "vars: %s\nerror: %s" % (
-                    str(list(slug, version, revision, author)), str(err)))
+                    str([slug, version, revision, author]), str(err)))
         return HttpResponseNotAllowed()
 
     c = None
