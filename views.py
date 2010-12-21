@@ -64,7 +64,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         log_to_file("Error generating key in pastie_edit\n"
                 "vars: %s\nerror: %s" % (
                     str([slug, version, revision, author]), str(err)))
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed("Error in generating the key")
 
     c = None
     if cache.get(key, None):
