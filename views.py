@@ -718,26 +718,31 @@ def expire_path(r, path):
 
 def make_favourite(req):
     " set the base version "
-    shell_id = req.POST.get('shell_id')
+    shell_id = req.POST.get('shell_id', None)
+    log_to_file('DEBUG: set as base - %s' % str(shell_id))
     if not shell_id:
         log_to_file('make_favourite: no shell_id')
-        return HttpResponse("<p>No shell id - if you think it is an error."
-                "please <a href='support@jsfiddle.net'>email us</a>.</p>"
-                "<p>The error has been logged</p>")
+        return HttpResponse(
+                simplejson.dumps({
+                    'error': "<p>No shell id - if you think it is an error."
+                    "please <a href='support@jsfiddle.net'>email us</a>.</p>"
+                    "<p>The error has been logged</p>"}))
 
     try:
         shell = Shell.objects.get(id=shell_id)
     except ObjectDoesNotExist, err:
-        log_to_file("make_favourite: Shell doesn't exist id: %s\n %s" % (
+        log_to_file("set as base: Shell doesn't exist id: %s\n %s" % (
             str(shell_id), str(err)))
-        return HttpResponseNotAllowed()
+        raise Http404
 
     if not req.user.is_authenticated() \
         or req.user.id != shell.pastie.author.id:
-        raise Http404
+        return HttpResponseNotAllowed()
 
     shell.pastie.favourite = shell
     shell.pastie.save()
+
+    log_to_file('DEBUG: set as base - Pastie saved')
 
     delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
     keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
@@ -745,14 +750,17 @@ def make_favourite(req):
                                 version=shell.version),
             get_embedded_key(req, shell.pastie.slug, author=shell.author)
             ]
+    keys_deleted = []
     for key in keys:
         if cache.has_key(key):
-            log_to_file('deleting cache after setting base version')
+            keys_deleted.append(key)
             cache.delete(key)
+    log_to_file('DEBUG: deleting keys %s\n%s' % (
+        str(keys_deleted), str(keys)))
 
     return HttpResponse(simplejson.dumps({
-            'message':'saved as favourite',
-            'url':shell.pastie.get_absolute_url()
+            'message': 'saved as favourite',
+            'url': shell.pastie.get_absolute_url()
         }), mimetype="application/javascript")
 
 
