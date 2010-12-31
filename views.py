@@ -719,7 +719,8 @@ def expire_path(r, path):
 def make_favourite(req):
     " set the base version "
     shell_id = req.POST.get('shell_id', None)
-    log_to_file('DEBUG: set as base - %s' % str(shell_id))
+    log_to_file('DEBUG: set as base - '
+            'user: %s, shell id: %s' % (str(req.user), str(shell_id)))
     if not shell_id:
         log_to_file('make_favourite: no shell_id')
         return HttpResponse(
