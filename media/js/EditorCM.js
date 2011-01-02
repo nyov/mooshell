@@ -45,10 +45,17 @@ var MooShellEditor = new Class({
             if (!this.options.codeMirrorOptions.initCallback) {
               this.options.codeMirrorOptions.initCallback = function(){
                 // grab some keys
-                this.editor.grabKeys(
-                  Layout.routeReservedKey.bind(Layout), 
-                  Layout.isReservedKey.bind(Layout)
-                );
+              	
+              	// if there's a Zen Coding module, route all events through it
+              	if (window.zen_editor) {
+              	  zen_editor.bind(this.editor);
+              	} else {
+	              this.editor.grabKeys(
+	                Layout.routeReservedKey.bind(Layout), 
+	                Layout.isReservedKey.bind(Layout)
+	              );
+              	}
+              	
                 if (this.options.focus) {
                   // set current editor
                   Layout.current_editor = this.options.name;
@@ -179,7 +186,9 @@ MooShellEditor.CSS = new Class({
 		codeMirrorOptions: {
 			iframeClass: 'css',
 			parserfile: ["parsecss.js"]
-		}
+		},
+		
+		syntax: 'css' // Zen Coding stuff
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
@@ -203,7 +212,10 @@ MooShellEditor.HTML = new Class({
 		codeMirrorOptions: {
 			iframeClass: 'html',
 			parserfile: ["parsexml.js"]
-		}
+		},
+		
+		syntax: 'html', // Zen Coding stuff
+		profile: 'xhtml'
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
