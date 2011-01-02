@@ -143,6 +143,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         js_libs = [
             reverse('mooshell_js', args=[moo]),
             reverse('mooshell_js', args=[settings.MOOTOOLS_MORE]),
+            reverse("mooshell_js", args=["lib/zen_codemirror.min.js"]),
             reverse('codemirror', args=['js/codemirror.js']),
             reverse('codemirror', args=['js/mirrorframe.js']),
             reverse("mooshell_js", args=["Sidebar.js"]),
@@ -489,10 +490,14 @@ def get_pastie_show_key(slug, version=None, author=None, obj=None):
 
 def delete_pastie_show_keys(slug, version=None, author=None):
     " deletes cache for the pastie show "
-    for obj in ['shell','resources','dependencies']:
-        key = get_pastie_show_key(slug, version, author, obj)
+    keys = [get_pastie_show_key(slug, version, author, obj)
+            for obj in ['shell','resources','dependencies']]
+    keys_deleted = []
+    for key in keys:
         if cache.has_key(key):
+            keys_deleted.append(key)
             cache.delete(key)
+    return keys_deleted
 
 def pastie_show(req, slug, version=None, author=None, skin=None):
     " render the shell only "
@@ -722,7 +727,7 @@ def make_favourite(req):
     log_to_file('DEBUG: set as base - '
             'user: %s, shell id: %s' % (str(req.user), str(shell_id)))
     if not shell_id:
-        log_to_file('make_favourite: no shell_id')
+        log_to_file('ERROR: make_favourite: no shell_id')
         return HttpResponse(
                 simplejson.dumps({
                     'error': "<p>No shell id - if you think it is an error."
@@ -732,31 +737,35 @@ def make_favourite(req):
     try:
         shell = Shell.objects.get(id=shell_id)
     except ObjectDoesNotExist, err:
-        log_to_file("set as base: Shell doesn't exist id: %s\n %s" % (
+        log_to_file("ERROR: set as base: Shell doesn't exist id: %s\n %s" % (
             str(shell_id), str(err)))
         raise Http404
 
     if not req.user.is_authenticated() \
-        or req.user.id != shell.pastie.author.id:
-        return HttpResponseNotAllowed()
+            or req.user.id != shell.pastie.author.id:
+        log_to_file("User %s is not the author of the pastie %s" % (
+            str(req.user), shell.pastie.slug))
+        return HttpResponseNotAllowed("You're not the author!")
 
     shell.pastie.favourite = shell
     shell.pastie.save()
 
-    log_to_file('DEBUG: set as base - Pastie saved')
+    log_to_file(
+            'DEBUG: set as base - Version %d saved as base in Pastie %s' % (
+                shell.version, shell.pastie.slug))
 
-    delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
+    keys_deleted = delete_pastie_show_keys(
+            shell.pastie.slug, author=shell.author)
     keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
-            get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
-                                version=shell.version),
+            #get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
+            #                    version=shell.version),
             get_embedded_key(req, shell.pastie.slug, author=shell.author)
             ]
-    keys_deleted = []
     for key in keys:
         if cache.has_key(key):
             keys_deleted.append(key)
             cache.delete(key)
-    log_to_file('DEBUG: deleting keys %s\n%s' % (
+    log_to_file('DEBUG: deleting keys %s\nfrom %s' % (
         str(keys_deleted), str(keys)))
 
     return HttpResponse(simplejson.dumps({
