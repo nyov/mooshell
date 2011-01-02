@@ -62,8 +62,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         key = get_pastie_edit_key(req, slug, version, revision, author, skin)
     except Exception, err:
         log_to_file("ERROR: pastie_edit: "
-                "generating key in pastie_edit fauiled\n"
-                "vars: %s\nerror: %s" % (
+                "generating key failed, vars: %s %s" % (
                     str([slug, version, revision, author]), str(err)))
         return HttpResponseNotAllowed("Error in generating the key")
 
@@ -108,9 +107,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                     shell = get_object_or_404(Shell, pastie__slug=slug,
                                           version=version, author=user)
                 except MultipleObjectsReturned:
-                    log_to_file('WARNING: pastie_edit: "
-                            "Multiple shells: %s, %s'
-                                % (slug, version))
+                    log_to_file('WARNING: pastie_edit: '
+                            "Multiple shells: %s, %s" % (slug, version))
                     shell = list(Shell.objects.filter(pastie__slug=slug,
                                             version=version, author=user))[0]
 
@@ -178,7 +176,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
             cache.set(key, c)
         except Exception, err:
             log_to_file("WARNING: pastie_edit: "
-                    "Saving cache failed, key: %s\n" % (
+                    "Saving cache failed, %s %s" % (
                         str(key), str(err)))
 
     if slug:
@@ -282,7 +280,7 @@ def pastie_save(req, nosave=False, skin=None):
                 shell.save()
             except Exception, err:
                 log_to_file("ERROR: pastie_edit: "
-                        "saving shell failed \n%s" % str(err))
+                        "saving shell failed %s" % str(err))
                 return HttpResponseNotAllowed('Error saving shell')
 
             # add saved dependencies
@@ -518,8 +516,8 @@ def pastie_show(req, slug, version=None, author=None, skin=None):
                 shell = get_object_or_404(Shell, pastie__slug=slug,
                                       version=version, author=user)
             except MultipleObjectsReturned:
-                log_to_file('WARNING: pastie_show: "
-                        "Multiple shells in pastie_show: %s, %s'
+                log_to_file('WARNING: pastie_show: '
+                        'Multiple shells in pastie_show: %s, %s'
                             % (slug, version))
                 shell = list(Shell.objects.filter(pastie__slug=slug,
                                         version=version, author=user))[0]
@@ -741,15 +739,15 @@ def make_favourite(req):
     try:
         shell = Shell.objects.get(id=shell_id)
     except ObjectDoesNotExist, err:
-        log_to_file("ERROR: make_favourite: Shell doesn't exist id: %s\n %s" % (
-            str(shell_id), str(err)))
+        log_to_file("ERROR: make_favourite: Shell doesn't exist "
+                "%s" % str(shell_id))
         raise Http404
 
     if not req.user.is_authenticated() \
             or req.user.id != shell.pastie.author.id:
-            log_to_file("ERROR: make_favourite: "
-                        "User %s is not the author of the pastie %s" % (
-            str(req.user), shell.pastie.slug))
+        log_to_file("ERROR: make_favourite: "
+                    "User %s is not the author of the pastie %s" % (
+                            str(req.user), shell.pastie.slug))
         return HttpResponseNotAllowed("You're not the author!")
 
     shell.pastie.favourite = shell
@@ -768,10 +766,9 @@ def make_favourite(req):
             ]
     for key in keys:
         if cache.has_key(key):
-            keys_deleted.append(key)
             cache.delete(key)
-    log_to_file('DEBUG: deleting keys %s\nfrom %s' % (
-        str(keys_deleted), str(keys)))
+    keys_deleted.extend(keys)
+    log_to_file('DEBUG: deleting keys %s' % str(keys_deleted))
 
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',
