@@ -61,7 +61,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
     try:
         key = get_pastie_edit_key(req, slug, version, revision, author, skin)
     except Exception, err:
-        log_to_file("Error generating key in pastie_edit\n"
+        log_to_file("ERROR: pastie_edit: "
+                "generating key in pastie_edit fauiled\n"
                 "vars: %s\nerror: %s" % (
                     str([slug, version, revision, author]), str(err)))
         return HttpResponseNotAllowed("Error in generating the key")
@@ -107,7 +108,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                     shell = get_object_or_404(Shell, pastie__slug=slug,
                                           version=version, author=user)
                 except MultipleObjectsReturned:
-                    log_to_file('Multiple shells in pastie_edit: %s, %s'
+                    log_to_file('WARNING: pastie_edit: "
+                            "Multiple shells: %s, %s'
                                 % (slug, version))
                     shell = list(Shell.objects.filter(pastie__slug=slug,
                                             version=version, author=user))[0]
@@ -172,13 +174,12 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                                     args=["group_id"]).replace(
                                         'group_id','{group_id}'),
         })
-        #log_to_file('context generated')
         try:
             cache.set(key, c)
-            #log_to_file('context saved in cache')
         except Exception, err:
-            log_to_file(err.__str__())
-            #log_to_file(c)
+            log_to_file("WARNING: pastie_edit: "
+                    "Saving cache failed, key: %s\n" % (
+                        str(key), str(err)))
 
     if slug:
         shellform = ShellForm(instance=c['shell'])
@@ -255,8 +256,9 @@ def pastie_save(req, nosave=False, skin=None):
                     try:
                         external_resources.append(
                             ExternalResource.objects.get(id=int(ext_id)))
-                    except:
-                        log_to_file('.    %s %s' % (
+                    except Exception, err:
+                        log_to_file('WARNING: pastie_save: '
+                                'No external resource: %s %s' % (
                             req.POST.get('slug', '-'), ext_id))
 
             if nosave:
@@ -279,7 +281,8 @@ def pastie_save(req, nosave=False, skin=None):
             try:
                 shell.save()
             except Exception, err:
-                log_to_file("Error saving shell %s" % str(err))
+                log_to_file("ERROR: pastie_edit: "
+                        "saving shell failed \n%s" % str(err))
                 return HttpResponseNotAllowed('Error saving shell')
 
             # add saved dependencies
@@ -408,7 +411,7 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None,
     try:
         context = cache.get(key, None)
     except Exception:
-        log_to_file('Error in cache - key: %s' % key)
+        log_to_file('ERROR: embedded: Getting cache key failed: %s' % key)
         return HttpResponseNotAllowed('Error in cache')
 
     if not context:
@@ -515,7 +518,8 @@ def pastie_show(req, slug, version=None, author=None, skin=None):
                 shell = get_object_or_404(Shell, pastie__slug=slug,
                                       version=version, author=user)
             except MultipleObjectsReturned:
-                log_to_file('Multiple shells in pastie_show: %s, %s'
+                log_to_file('WARNING: pastie_show: "
+                        "Multiple shells in pastie_show: %s, %s'
                             % (slug, version))
                 shell = list(Shell.objects.filter(pastie__slug=slug,
                                         version=version, author=user))[0]
@@ -737,13 +741,14 @@ def make_favourite(req):
     try:
         shell = Shell.objects.get(id=shell_id)
     except ObjectDoesNotExist, err:
-        log_to_file("ERROR: set as base: Shell doesn't exist id: %s\n %s" % (
+        log_to_file("ERROR: make_favourite: Shell doesn't exist id: %s\n %s" % (
             str(shell_id), str(err)))
         raise Http404
 
     if not req.user.is_authenticated() \
             or req.user.id != shell.pastie.author.id:
-        log_to_file("User %s is not the author of the pastie %s" % (
+            log_to_file("ERROR: make_favourite: "
+                        "User %s is not the author of the pastie %s" % (
             str(req.user), shell.pastie.slug))
         return HttpResponseNotAllowed("You're not the author!")
 
