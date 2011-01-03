@@ -7,7 +7,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed
 from django.core.urlresolvers import reverse
 from django.utils import simplejson
-from django.template import RequestContext
+from django.template import RequestContext, TemplateDoesNotExist
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
@@ -826,14 +826,19 @@ def api_get_users_pasties(req, author, method='json'):
     except:
         server = 'http://%s' % req.META['SERVER_NAME']
 
-    return render_to_response('api/pasties.%s' % method, {
-            'pasties': pasties,
-            'server': server,
-            'callback': callback,
-            'overallResultSetCount': overall_result_set_count
-        },
-        context_instance=RequestContext(req),
-        mimetype="application/javascript")
+    try:
+        return render_to_response('api/pasties.%s' % method, {
+                'pasties': pasties,
+                'server': server,
+                'callback': callback,
+                'overallResultSetCount': overall_result_set_count
+            },
+            context_instance=RequestContext(req),
+            mimetype="application/javascript")
+    except TemplateDoesNotExist:
+        log_to_file('WARNING: api_get_users_pasties: no such type: '
+                '%s' % method)
+        raise Http404()
 
 
 def add_external_resource(req):
