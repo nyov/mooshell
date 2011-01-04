@@ -19,7 +19,7 @@
   for (var i = 0, il = shortcuts.length; i < il; i++) {
     s = shortcuts[i];
     // register mooshell's action as Zen Coding's one
-    core.registerAction('app_' + s[2], createBinding(s[2]));
+    core.registerAction('app_' + s[2].toLowerCase(), createBinding(s[2]));
     
     // register keyboard shortcut
     zen_editor.shortcut(s[0], s[1], 'app_' + s[2]);
@@ -27,7 +27,6 @@
   
   function createBinding(action_name) {
     return function() {
-      console.log(action_name)
       mooshell[action_name].bind(mooshell).call();
     }
   }
