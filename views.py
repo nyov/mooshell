@@ -728,7 +728,7 @@ def expire_path(r, path):
 def make_favourite(req):
     " set the base version "
     shell_id = req.POST.get('shell_id', None)
-    log_to_file('DEBUG: set as base - '
+    log_to_file('DEBUG: make_favourite - '
             'user: %s, shell id: %s' % (str(req.user), str(shell_id)))
     if not shell_id:
         log_to_file('ERROR: make_favourite: no shell_id')
@@ -756,7 +756,7 @@ def make_favourite(req):
     shell.pastie.save()
 
     log_to_file(
-            'DEBUG: set as base - Version %d saved as base in Pastie %s' % (
+            'DEBUG: make_favourite - Version %d saved as base in Pastie %s' % (
                 shell.version, shell.pastie.slug))
 
     keys_deleted = delete_pastie_show_keys(
@@ -770,7 +770,7 @@ def make_favourite(req):
         if cache.has_key(key):
             cache.delete(key)
     keys_deleted.extend(keys)
-    log_to_file('DEBUG: deleting keys %s' % str(keys_deleted))
+    log_to_file('DEBUG: make_favourite: deleting keys %s' % str(keys_deleted))
 
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',
