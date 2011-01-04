@@ -560,6 +560,14 @@ def show_part(req, slug, part, version=None, author=None):
     return render_to_response('show_part.html',
                                 {'content': getattr(shell, 'code_'+part)})
 
+def _delay(request):
+    """ wait request.POST.get('delay') miliseconds """
+    try:
+        delay = float(request.POST.get('delay', 0))
+    except:
+        delay = None
+    if delay and delay > 0.0:
+        time.sleep(min(MAX_DELAY, delay))
 
 def echo_js(req):
     " respond JS from GET['js']"
@@ -578,9 +586,7 @@ def echo_js(req):
 
 def echo_json(req):
     " respond with POST['json'] "
-    if req.POST.get('delay', False):
-        time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
-
+    _delay(req)
     try:
         response = simplejson.dumps(
             simplejson.loads(req.POST.get('json', '{}')))
@@ -595,16 +601,13 @@ def echo_json(req):
 
 def echo_html(req):
     " respond with POST['html'] "
-    if req.POST.get('delay', False):
-        time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
+    _delay(req)
     return HttpResponse(req.POST.get('html', ''))
 
 
 def echo_jsonp(req):
     " respond what provided via GET "
-    if req.GET.get('delay', False):
-        time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
-
+    _delay(req)
     response = {}
     callback = req.GET.get('callback', False)
     noresponse_keys = ['callback', 'delay']
@@ -623,8 +626,7 @@ def echo_jsonp(req):
 
 def echo_xml(req):
     " respond with POST['xml'] "
-    if req.POST.get('delay'):
-        time.sleep(min(MAX_DELAY, float(req.POST.get('delay'))))
+    _delay(req)
     return HttpResponse(req.POST.get('xml', ''), mimetype='text/xml')
 
 
