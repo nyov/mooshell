@@ -18,14 +18,12 @@ from models import Pastie, Draft, Shell, JSLibrary, JSDependency, \
         ExternalResource, DocType, ShellExternalResource
 from forms import ShellForm
 from base.views import serve_static as base_serve_static
-from base.utils import log_to_file, is_referer_allowed  # , separate_log
+from base.utils import log_to_file, is_referer_allowed, delay
 from mooshell.helpers import expire_page
 from person.views import delete_dashboard_keys
 
 
 CACHE_TIME = settings.CACHE_MIDDLEWARE_SECONDS
-# max delay for echo
-MAX_DELAY = 15.0
 # sort choices for the fiddles JS API
 SORT_CHOICES = {
     'alphabetical': 'favourite__title',
@@ -560,15 +558,6 @@ def show_part(req, slug, part, version=None, author=None):
     return render_to_response('show_part.html',
                                 {'content': getattr(shell, 'code_'+part)})
 
-def _delay(request):
-    """ wait request.POST.get('delay') miliseconds """
-    try:
-        delay = float(request.POST.get('delay', 0))
-    except:
-        delay = None
-    if delay and delay > 0.0:
-        time.sleep(min(MAX_DELAY, delay))
-
 def echo_js(req):
     " respond JS from GET['js']"
 
@@ -576,23 +565,19 @@ def echo_js(req):
             if hasattr(settings, 'MOOSHELL_FORCE_SHOW_SERVER') else False
     if not is_referer_allowed(req, referer):
         raise Http404
-
-    if req.GET.get('delay', False):
-        time.sleep(min(MAX_DELAY, float(req.GET.get('delay'))))
-
+    delay(req)
     return HttpResponse(req.GET.get('js', ''),
                       mimetype='application/javascript')
 
 
 def echo_json(req):
     " respond with POST['json'] "
-    _delay(req)
+    delay(req)
     try:
         response = simplejson.dumps(
             simplejson.loads(req.POST.get('json', '{}')))
     except Exception, e:
         response = simplejson.dumps({'error': str(e)})
-
     return HttpResponse(
         response,
         mimetype='application/javascript'
@@ -601,13 +586,13 @@ def echo_json(req):
 
 def echo_html(req):
     " respond with POST['html'] "
-    _delay(req)
+    delay(req)
     return HttpResponse(req.POST.get('html', ''))
 
 
 def echo_jsonp(req):
     " respond what provided via GET "
-    _delay(req)
+    delay(req)
     response = {}
     callback = req.GET.get('callback', False)
     noresponse_keys = ['callback', 'delay']
@@ -626,7 +611,7 @@ def echo_jsonp(req):
 
 def echo_xml(req):
     " respond with POST['xml'] "
-    _delay(req)
+    delay(req)
     return HttpResponse(req.POST.get('xml', ''), mimetype='text/xml')
 
 
