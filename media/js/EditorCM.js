@@ -17,6 +17,9 @@ var MooShellEditor = new Class({
 			indentUnit: 4,
 			tabMode: 'shift',
 			height: ""
+          // ZEN CODING
+          // syntax: js/html/css 
+          // profile: 'xhtml' 
 		}
 	},
 	initialize: function(el, options) {
@@ -160,8 +163,9 @@ MooShellEditor.JS = new Class({
 		],
 		codeMirrorOptions: {
 			iframeClass: 'js',
-			parserfile: ["tokenizejavascript.js", "parsejavascript.js"]
-		}
+			parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
+            syntax: 'js' // ZEn Coding
+		},
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
@@ -185,10 +189,10 @@ MooShellEditor.CSS = new Class({
 		],
 		codeMirrorOptions: {
 			iframeClass: 'css',
-			parserfile: ["parsecss.js"]
+			parserfile: ["parsecss.js"],
+            syntax: 'css' // Zen Coding stuff
 		},
 		
-		syntax: 'css' // Zen Coding stuff
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
@@ -211,11 +215,11 @@ MooShellEditor.HTML = new Class({
 		],
 		codeMirrorOptions: {
 			iframeClass: 'html',
-			parserfile: ["parsexml.js"]
+			parserfile: ["parsexml.js"],
+            syntax: 'html', // Zen Coding 
+            profile: 'xhtml'
 		},
 		
-		syntax: 'html', // Zen Coding stuff
-		profile: 'xhtml'
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
