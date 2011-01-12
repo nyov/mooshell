@@ -82,6 +82,7 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         doctypes = DocType.objects.all()
         external_resources = []
         disqus_url = ''.join([server, '/'])
+        user = None
         if slug:
             if skin:
                 # important as {user}/{slug} is indistingushable from
@@ -97,8 +98,13 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
             if version == None:
                 # shell is the base version of the fiddle
                 shell = pastie.favourite
+                # validate the author exists if provided
+                if not user:
+                    user = get_object_or_404(User,
+                                         username=author) if author else None
             else:
-                user = get_object_or_404(User,
+                if not user:
+                    user = get_object_or_404(User,
                                          username=author) if author else None
                 # if shell has an author, username has to be provided in url
                 try:
@@ -419,6 +425,7 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None,
                 shell = Shell.objects.get(pastie__slug=slug, version=version,
                                       author=user)
             except MultipleObjectsReturned:
+                # MySQL created some duplicate Shells
                 shell = Shell.objects.filter(pastie__slug=slug,
                         version=version, author=user)[0]
             except ObjectDoesNotExist:
