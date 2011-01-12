@@ -160,9 +160,10 @@ class DocType(models.Model):
     template = models.CharField(max_length=100, default='xhtml.1.0.strict.html',
                                 blank=True)
     selected = models.BooleanField(default=False, blank=True)
+    mimetype = models.CharField(max_length=255, blank=True, default='text/html')
 
     def __unicode__(self):
-        return self.code
+        return self.name
 
     class Admin:
         pass

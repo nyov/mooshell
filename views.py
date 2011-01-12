@@ -374,6 +374,7 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
     if not skin:
         skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
 
+    # determine MIME type from shell's dtd field
     page = render_to_response('pastie_show.html', {
         'shell': shell,
         'dependencies': dependencies,
@@ -382,7 +383,7 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
         'wrap': wrap,
         'skin': skin,
         'skin_css': reverse("mooshell_css", args=['result-%s.css' % skin])
-    })
+    }, mimetype=shell.doctype.mimetype if shell.doctype else 'text/html')
     return page
 
 
