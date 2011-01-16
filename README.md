@@ -1,4 +1,9 @@
-MooShell
+Be warned: Dead code
 ===
 
-**Be warned: This code is not longer maintained.**
+No point to bother to contribute.
+
+This will be soon replaced by beta version which is written from scratch.
+
+Thanks,
+The JsFiddle Team
