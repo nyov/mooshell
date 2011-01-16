@@ -1,15 +1,69 @@
 <div id="actions">
-	<a id="run"><span>Run</span></a>
-	
-	{% if shell %}<a class="collapsedActions" id="update"><strong><span>Update</span></strong></a>{% endif %}	
-	<a class="collapsedActions" id="savenew"><strong><span>Save New</span></strong></a> 
-	<a class="collapsedActions" id="clean"><strong><span>Clean</span></strong></a>
-	
-	{% if is_author %}
-		{% if shell.is_favourite %}
-			<a class="collapsedActions" id="is_favourite"><strong><span>Base</span></strong></a>
+	<ul class="actionCont">
+		<li class="actionItem"><a class="aiButton" id="run" title="Run" href="#run"><span>Run</span></a></li>
+	</ul>
+
+	<ul class="actionCont collapsed">
+		{% if shell %}
+			<li class="actionItem"><a class="aiButton" id="update" title="Update" href="#update"><span>Update</span></a></li>
+			<li class="actionItem"><a class="aiButton" id="savenew" title="Fork to new Fiddle" href="#save"><span>Fork</span></a></li>
 		{% else %}
-			<a class="collapsedActions" id="mark_favourite" onClick='mooshell.makeFavourite({{ shell.id }})'><strong><span>Set as base</span></strong></a>
+			<li class="actionItem"><a class="aiButton" id="savenew" title="Save new Fiddle" href="#save"><span>Save</span></a></li>
 		{% endif %}
-	{% endif %}	
+		<li class="actionItem"><a class="aiButton" id="clean" title="Reset all fields" href="#clear"><span>Reset</span></a></li>
+		{% if is_author %}
+			<li class="actionItem">
+				{% if shell.is_favourite %}
+					<a class="aiButton" id="is_favourite" title="This is the base version" href="#base"><span>Base</span></a>
+				{% else %}
+					<a class="aiButton" id="mark_favourite" title="Set as base version" href="#set-as-base"><span>Set as base</span></a>
+				{% endif %}
+			</li>
+		{% endif %}	
+	</ul>
+	
+	<ul class="actionCont collapsed">
+		<li class="actionItem"><a class="aiButton" id="tidy" title="Re-indent messy code" href="#tidy"><span>TidyUp</span></a></li>
+		<li class="actionItem"><a class="aiButton" id="jslint" title="Run jsLint on the code" href="#jslint"><span>JSLint</span></a></li>
+        {% if shell %}<li class="actionItem"><a class="aiButton" id="discussion" title="Discussion" href="#disqus"><span>Discuss <strong>(0)</strong></span></a></li>{% endif %}
+	</ul>
+	
+	{% if example_url %}	
+	<ul class="actionCont dropdown">
+		<li class="actionItem">
+			<a class="aiButton" id="share" title="Share this Fiddle" href="#share"><span>Share</span></a>
+			<div class="dropdownCont">
+				<div class="dcWrapper">
+					{% load mooshell_extras %}
+					<div id="share_links_dropdown">
+						<p>
+							<label for="share_link_dropdown">Share link</label>
+							<input id="share_link_dropdown" type="text" class="share" value="{{ example_url }}" />
+						</p>
+						<p>
+							<label for="share_result_dropdown">Share full screen result</label>
+							<input id="share_result_dropdown" type="text" class="share" value="{{ example_url }}embedded/result/" />
+						</p>
+						<p>
+							<label for="share_embedded_dropdown">Embed on your page</label>
+							<input id="share_embedded_dropdown" type="text" class="share" value='<iframe style="width: 100%; height: 300px" src="{{ embedded_url }}"></iframe>' />
+						</p>
+					</div>
+					
+					<ul id="share-social">
+						<li class="ssItem twitter"><a href="http://twitter.com/home?status=You should check this out! -{% if shell.title %} {{ shell.title|urlencode }} -{% endif %} {{ example_url }}" title="Click to send this page to Twitter!" target="_blank">Share on Twitter</a></li>
+						<li class="ssItem facebook"><a href="javascript:var%20d=document,f='http://www.facebook.com/share',l=d.location,e=encodeURIComponent,p='.php?src=bm&amp;v=4&amp;i=1244125276&amp;u='+e(l.href)+'&amp;t='+e(d.title);1;try%7Bif%20(!/%5E(.*%5C.)?facebook%5C.%5B%5E.%5D*$/.test(l.host))throw(0);share_internal_bookmarklet(p)%7Dcatch(z)%20%7Ba=function()%20%7Bif%20(!window.open(f+'r'+p,'sharer','toolbar=0,status=0,resizable=1,width=626,height=436'))l.href=f+p%7D;if%20(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else%7Ba()%7D%7Dvoid(0)" title="Post to Facebook">Post to Facebook</a></li>
+					</ul>
+				</div>
+			</div>
+		</li>
+	</ul>
+	{% endif %}
+    {% comment %}
+	<ul class="actionCont collapsed">
+		<li class="actionItem noIcon"><a class="aiButton" id="toggleSidebar" title="Show or hide sidebar" href="#toggle-sidebar"><span>&larr;&rarr;</span></a></li>
+    </ul>
+    {% endcomment %}
+	{% include "_user_menu.html" %}
 </div>
+

@@ -1,0 +1,19 @@
+<script src="{% url mooshell_media "js/clientcide.2.2.0.js" %}" type="text/javascript" charset="utf-8"></script>
+
+{% if shell %}
+<script type="text/javascript" charset="utf-8">
+	
+	// switch this to false once on production
+	var disqus_developer = false;
+	
+	// uniqie shell ID
+	var disqus_identifier = '{{ shell.pastie.slug }}';
+	
+	// title
+	var disqus_title = '{% if shell.title %}{{ shell.title|urlencode }}{% endif %}';
+
+</script>
+{% endif %}
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-touch-fullscreen" content="yes" />

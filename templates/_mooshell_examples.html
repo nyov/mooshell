@@ -4,11 +4,10 @@
 	<div class="elementBody">
 		<div class="ebCont">		
 			{% for group, group_examples in examples.items %}
+			<h3>{{ group }}</h3>
 			<p>
 				{% for ex in group_examples %}
-					<a href='{{ ex.favourite.get_absolute_url }}'>
-						{{ ex.favourite.title }}
-					</a>{% if not forloop.last %},{% endif %}
+					<a title="{{ ex.favourite.title }}" href="{{ ex.favourite.get_absolute_url }}">{{ ex.favourite.title }}</a>{% if not forloop.last %},{% endif %}
 				{% endfor %}
 			</p>
 		{% endfor %}</div>
