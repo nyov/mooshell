@@ -1,0 +1,369 @@
+body {
+	overflow: auto;
+	background-image: none;
+}
+
+a {
+	color: #5AA4D7;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+p.clear { 
+    clear: both;
+}
+
+#content em {
+    font-style: italic;
+    font-family: Times;
+}
+
+/* sidebar
+ ================================================================ */
+#sidebar {
+	display: none;
+}
+
+.pageContainer {
+	padding: 15px;
+	clear: both;
+}
+
+/* 
+ ================================================================ */
+#common-form {
+	clear: both;
+	width: 318px;
+}
+
+#common-form.formSide {
+    float: left;
+}
+
+	#common-form p {
+		padding-bottom: 10px;
+		color: #A7A7A7;
+		font-size: .9em;
+	}
+	
+		#common-form p label {
+			display: block;
+			padding-bottom: 3px;
+		}
+		
+		#common-form p input {
+			width: 300px;
+			display: block;
+			padding: 8px 8px;
+			border: solid 1px #ccc;
+			font-size: 1.3em;
+			font-family: Helvetica, Arial, Verdana, sans-serif;
+			color: #7E7E7E;
+			outline: none;
+			margin-bottom: 3px;
+			
+			box-shadow: 0 1px 2px #E3E3E3;
+			-moz-box-shadow: 0 1px 2px #E3E3E3;
+			-webkit-box-shadow: 0 1px 2px #E3E3E3;
+			-webkit-transition: all 0.3s;
+		}
+		
+		#common-form p input:focus {
+			border: solid 1px #598C28;
+			color: #434343;
+			
+			box-shadow: 0 0 4px #7FC666;
+			-moz-box-shadow: 0 0 4px #7FC666;
+			-webkit-box-shadow: 0 0 4px #7FC666;
+		}
+
+	#common-form .submitCont {
+		height: 100%;
+		overflow: hidden;
+		width: 100%;
+		padding-top: 10px;
+	}
+
+	#common-form .errorlist li {
+        padding-top: 3px;
+		color: #b41;
+        font-weight: bold;
+	}
+	
+    /* paragraph after an error */
+    /*
+	#common-form .errorlist + p {
+        background-color: #FFFADB;
+        margin-bottom: 6px;
+        padding-bottom: 3px;
+	}
+    */
+	#common-form .errorlist + p input {
+        background-color: #fffbec;
+    }
+
+/* 
+ ================================================================ */
+#content {
+	margin: 10px;
+	background: #fff;
+	font-size: 12px;
+	
+}
+
+	#content .pageHeader,
+    #content .pageContainer div.formSide {
+		font-family: Helvetica, Arial, Verdana, sans-serif;
+		float: left;
+	}
+	
+	#content .pageHeader {
+		padding: 15px;
+		color: #434343;
+		width: 600px;
+    }
+
+    #content .pageContainer div.formSide {
+        padding-top: 15px;
+        width: 400px;
+        margin-left: 50px;
+        color: #555;
+    }
+	
+	#content .pageHeader h2,
+    #content .pageContainer div.formSide h2 {
+		font-size: 2em;
+		margin-bottom: 5px;
+	}
+	
+	#content .pageContainer .quickInfo h3,
+	#content .pageContainer div.formSide h3 {
+		font-size: 1.4em;
+		margin-bottom: 5px;
+		color: #434343;
+	}
+	
+	#content .pageContainer .quickInfo p,
+	#content .pageContainer div.formSide p {
+        margin-bottom: 25px;
+		line-height: 140%;
+	}
+	
+/* 
+ ================================================================ */
+#user-page {
+	font-family: Helvetica, Arial, Verdana, sans-serif;
+	color: #434343;
+}
+
+/* 
+ ================================================================ */
+#list-fiddles {
+	clear: both;
+}
+
+	#list-fiddles li.lfItem {
+		padding: 15px;
+		overflow: hidden;
+		height: 100%;
+	}
+	
+	#list-fiddles li.odd {
+		background: #F7F8F7;
+	}
+	
+		#list-fiddles li.lfItem .lfiCont {
+			float: left;
+			width: 70%;
+		}
+
+			#list-fiddles li.lfItem a {
+				font-size: 1.2em;
+			}
+		
+				#list-fiddles li.lfItem a:hover {
+					text-decoration: underline;
+				}
+		
+			#list-fiddles li.lfItem .details {
+				font-size: .95em;
+				color: #ADADAD;
+				margin-left: 10px;
+			}
+			
+				#list-fiddles li.lfItem .details a {
+					font-size: 1em;
+				}
+			
+				#list-fiddles li.lfItem .details .deleteFiddle {
+					margin-left: 10px;
+					color: #E24D41;
+					display: none;
+				}
+		
+			#list-fiddles li.lfItem .description {
+				margin-top: 8px;
+			}
+		
+				#list-fiddles li.lfItem .description pre {
+					padding: 0 2px 2px;
+					font-family: "Monaco", "Inconsolata", "Andale Mono", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+					font-size: .9em;
+					overflow: auto;
+				}
+
+#list-fiddles ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+#list-fiddles ::-webkit-scrollbar-button:start:decrement,
+#list-fiddles ::-webkit-scrollbar-button:end:increment {
+    display: none;
+}
+
+#list-fiddles ::-webkit-scrollbar-button:horizontal:increment {
+    background-color: #fff;
+}
+
+#list-fiddles ::-webkit-scrollbar-track-piece {
+    background-color: rgba(0, 0, 0, 0.05);
+    -webkit-border-radius: 4px;
+}
+
+#list-fiddles ::-webkit-scrollbar-thumb:horizontal {
+    width: 50px;
+    background-color: rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 4px;
+}
+
+
+.listActions {
+	border: solid 1px #ccc;
+	width: 200px;
+	height: 42px;
+	background: #fff;
+	float: right;
+	box-shadow: 0 1px 2px #E3E3E3;
+	-moz-box-shadow: 0 1px 2px #E3E3E3;
+	-webkit-box-shadow: 0 1px 2px #E3E3E3;
+	border-radius: 3px;
+}
+	
+	.listActions li {
+		padding: 0;
+		margin: 0;
+		border-left: solid 1px #E6E5E5;
+		float: left;
+		width: 66px;
+		height: 42px;
+	}
+	
+		.listActions li a {
+			text-align: center;
+			display: block;
+			height: 42px;
+			color: #868686;
+		}
+		
+			.listActions li a strong {
+				display: block;
+				font-size: 1.1em;
+				margin-top: 6px;
+			}
+		
+			.listActions li a span {
+				display: block;
+				font-size: .7em;
+			}
+			
+		#list-fiddles .listActions li a:hover {
+			text-decoration: none;
+		}
+		
+			.listActions li a:hover strong {
+				color: #5AA4D7;
+			}
+				
+	.listActions li:first-child {
+		border-left: none;
+	}
+
+/* 
+ ================================================================ */
+.paginator {
+	padding: 15px;
+}
+
+	.paginator li {
+		display: inline;
+		font-size: 1.0em;
+		padding-right: 5px;
+	}
+	
+	.paginator li.current {
+	}
+	
+/* 
+ ================================================================ */
+.actionButton {
+    text-decoration: none;
+}
+
+.actionButton {
+    border: solid 1px #3C5222;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    background: url(../img/action-button-n.png);
+}
+
+.actionButton span,
+.actionButton input {
+    display: block;
+    padding: 10px;
+	background: none;
+	border: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-weight: bold;
+    font-family: 'Lucida Grande';
+    font-size: 12px;
+}
+
+.actionButton:hover {
+	text-decoration: none;
+}
+
+.actionButton:active {
+    background: url(../img/action-button-a.png);
+}
+
+.actionButton:active span,
+.actionButton:active input {
+}
+
+/* -------------------------------------------- */
+.createNew {
+	margin: 15px;
+	float: right;
+}
+
+	a.createNew span {
+	    padding-left: 33px;
+	    background: url(../img/new-fiddle-icon.png) 10px 50% no-repeat;
+	}
+
+/* -------------------------------------------- */
+.submit {
+	float: left;
+}
+
+.actionsCont {
+	padding-top: 15px;
+	height: 40px;
+}
+
+	.actionsCont .submit {
+	}

@@ -1,41 +1,79 @@
 {% load mooshell_extras %}
-{% if shell.title %}
-	<h3 class='title'>{{ shell.title }}</h3>
+{% if not user.is_authenticated %}
+<div id="info">
+  Please read the <a href="http://doc.jsfiddle.net/" target="_new">documentation</a>.<br/>
+  For updates please follow <a href="http://blog.jsfiddle.net/">our blog</a>, 
+  <a href="http://twitter.com/js_fiddle/" target="_new">tweets</a>
+  or <a href="http://www.facebook.com/pages/jsFiddle/183790024998" target="_new">become a fan</a>.
+  <a id="info-close" title="Close" href="#">Close</a>
+</div>
 {% endif %}
-<h3 class='toggler' id='settings_toggler'>Choose Version</h3>
-<div class='element' id='shell_settings'>
-	<div class="elementBody">
-		<div class="ebCont">
-	
-			<select name='js_wrap' id='js_wrap'>
-				<option value=''{% if shell %}{% if not shell.js_wrap %} selected='1'{% endif %}{% endif %}>no wrap</option>
-				<option value='d'{% ifequal shell.js_wrap "d" %} selected='1'{% endifequal %}>onDomReady</option>
-				<option value='l'{% ifequal shell.js_wrap "l" %} selected='1'{% endifequal %}{% if not shell %} selected='1'{% endif %}>onLoad</option>
-			</select>
-	
-			{% if default_library_group %}{% get_js_libraries default_library_group shell %}
-			{% else %}{% get_js_library_groups shell %}
-			{% endif %}
-	
-			{% if SHOW_LIB_OPTION %}
-				<p class="libraryTagAttributes">
-					<label>
-						Library tag attributes
-						{{ shellform.js_lib_option }}
-					</label>
-				</p>
-			{% endif %}
-		</div>
-	</div>
+<script type="text/javascript">
+  var DP;
+
+  window.addEvent('domready', function(){
+    var infoBox = $('info'),
+      closeBox = $('info-close');
+    
+    if (infoBox) {
+      if (!Cookie.read('infoBoxStatus')){
+        infoBox.setStyle('display', 'block');
+      }
+      
+      closeBox.addEvent('click', function(e){
+        e.stop();
+        
+        Cookie.write('infoBoxStatus', 'hide', {
+          domain: 'jsfiddle.net',
+          duration: '5'
+        });
+        infoBox.dissolve();
+      });
+      
+    }
+      DP = new Dropdown();
+  });
+</script>
+
+<h3 class="toggler" id="settings_toggler">Choose Framework</h3>
+<div class="element" id="shell_settings">
+  <div class="elementBody">
+    <div class="ebCont">
+      <select name="js_wrap" id="js_wrap">
+        <option value='h'{% ifequal shell.js_wrap "h" %} selected="1"{% endifequal %}{% if preloaded %} selected="1"{% endif %}>no wrap (head)</option>
+        <option value='b'{% ifequal shell.js_wrap "b" %} selected="1"{% endifequal %}>no wrap (body)</option>
+        <option value="d"{% ifequal shell.js_wrap "d" %} selected="1"{% endifequal %}>onDomReady</option>
+        <option value="l"{% ifequal shell.js_wrap "l" %} selected="1"{% endifequal %}{% if not shell and not preloaded %} selected="1"{% endif %}>onLoad</option>
+      </select>
+
+      {% if default_library_group %}{% get_js_libraries default_library_group shell %}
+      {% else %}
+        {% if preloaded %}
+          {% get_js_library_groups shell current_group current_lib preset_dependencies %}
+        {% else %}
+          {% get_js_library_groups shell %}
+        {% endif %}
+      {% endif %}
+
+      {% if SHOW_LIB_OPTION %}
+      <p class="libraryTagAttributes">
+        <label>
+          Library tag attributes
+          {{ shellform.js_lib_option }}
+        </label>
+      </p>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
-<script type='text/javascript'>
-	window.addEvent('load', function() {
-		$('js_lib').addEvent('change', function() {
-			mooshell.loadDependencies(this.value);
-		})
-		if ($('library_group')) $('library_group').addEvent('change', function() {
-			mooshell.loadLibraryVersions(this.value);
-		})
-	});
+<script type="text/javascript">
+  window.addEvent('load', function() {
+    $('js_lib').addEvent('change', function() {
+      mooshell.loadDependencies(this.value);
+    })
+    if ($('library_group')) $('library_group').addEvent('change', function() {
+      mooshell.loadLibraryVersions(this.value);
+    })
+  });
 </script>

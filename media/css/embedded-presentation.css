@@ -1,0 +1,158 @@
+body {
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 0.7em;
+  margin: 0;
+  padding: 0;
+}
+
+body, ul, ol, li, p, pre, div, a {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  text-decoration: none;
+  color: #333;
+}
+
+#tabs pre {
+    color: #333;
+}
+
+a {
+  outline: none;
+  font-weight: bold;
+  text-shadow: 0 1px 0 #000;
+  cursor: pointer;
+}
+
+#tabs a {
+  text-shadow: 0 1px 0 #999;
+}
+#tabs #resources a {
+  font-size: 1.3em;
+}
+
+.tCont {
+  font-size: 1em;
+  font-family: "Monaco", Helvetica, Arial, sans-serif;
+}
+
+#wrapper {
+  overflow: hidden;
+}
+
+#head,
+#triggers,
+#actions li,
+#triggers li a,
+#actions li.active,
+#actions li.active a,
+#head h1 a {
+  background-image: url(../img/mooshell-frame.sprite.png);
+}
+
+#head {
+  background-position: 0 0;
+  background-repeat: repeat-x;
+  position: relative;
+  height: 30px;
+  overflow: hidden;
+}
+
+  #head h1 {
+    float: left;
+    height: 30px;
+    width: 138px;
+    margin: 0 0 0 10px;
+  }
+  
+    #head h1 a {
+      float: left;
+      height: 30px;
+      width: 138px;
+      background-position: 100% -112px;
+      text-indent: -9999em;
+    }
+
+#actions {
+  float: right;  
+}
+
+  #actions li {
+    float: left;
+    height: 30px;
+    background-position: 0 -47px;
+    background-repeat: no-repeat;
+  }
+  
+    #actions li a {
+      display: block;
+      height: 30px;
+      line-height: 28px;
+      padding: 0 14px;
+      color: #fff;
+    }
+    
+  #actions li.active {
+    background-position: 0 -173px;
+  }
+
+    #actions li.active a {
+      background-position: 100% -173px;
+      color: #333;
+      text-shadow: none;
+      
+    }
+
+#triggers {
+  float: right;
+  padding: 0 4px;
+  background-position: 0 -47px;
+}
+
+  #triggers li {
+    float: left;
+    height: 30px;
+    background-repeat: no-repeat;
+  }
+
+  #triggers li.tRun a {
+    background-position: 0 -112px;
+  }
+
+  #triggers li.tEdit a {
+    background-position: -31px -112px;
+  }
+
+    #triggers li a {
+      display: block;
+      height: 30px;
+      text-indent: -9000em;
+      width: 31px;
+    }
+    
+#tabs {
+  background: #fff;
+  position: relative;
+}
+
+  #tabs .tCont {
+    padding: 10px;
+    margin: 0;
+    display: none;
+    overflow: auto;
+  }
+  
+  #tabs .active {
+    display: block;
+  }
+
+#result iframe {
+  width: 100%;
+  border: none;
+}
+
+
+#tabs .standardLighter {
+  font-size: 1.5em;
+  font-family: "Monaco", Inconsolata, Helvetica, Arial, sans-serif;
+}
