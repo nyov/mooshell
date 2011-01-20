@@ -502,6 +502,10 @@ def delete_pastie_show_keys(slug, version=None, author=None):
         if cache.has_key(key):
             keys_deleted.append(key)
             cache.delete(key)
+    log_to_file('DEBUG: delete_pastie_show_keys: to check '
+            '%s' % ', '.join(keys))
+    log_to_file('DEBUG: delete_pastie_show_keys: deleted '
+            '%s' % ', '.join(keys_deleted)
     return keys_deleted
 
 def pastie_show(req, slug, version=None, author=None, skin=None):
@@ -750,18 +754,18 @@ def make_favourite(req):
             'DEBUG: make_favourite - Version %d saved as base in Pastie %s' % (
                 shell.version, shell.pastie.slug))
 
-    keys_deleted = delete_pastie_show_keys(
-            shell.pastie.slug, author=shell.author)
+    delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
     keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
-            #get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
-            #                    version=shell.version),
-            get_embedded_key(req, shell.pastie.slug, author=shell.author)
-            ]
+            get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
+                                version=shell.version),
+            get_embedded_key(req, shell.pastie.slug, author=shell.author)]
+    keys_deleted = []
     for key in keys:
         if cache.has_key(key):
             cache.delete(key)
-    keys_deleted.extend(keys)
-    log_to_file('DEBUG: make_favourite: deleting keys %s' % str(keys_deleted))
+            keys_deleted.append(key)
+    log_to_file('DEBUG: make_favourite: keys to delete %s' % str(keys))
+    log_to_file('DEBUG: make_favourite: keys deleted %s' % str(keys_deleted))
 
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',
