@@ -764,8 +764,10 @@ def make_favourite(req):
         if cache.has_key(key):
             cache.delete(key)
             keys_deleted.append(key)
-    log_to_file('DEBUG: make_favourite: keys to delete %s' % str(keys))
-    log_to_file('DEBUG: make_favourite: keys deleted %s' % str(keys_deleted))
+    log_to_file('DEBUG: make_favourite: keys to delete '
+            '%s' % ', '.join(keys))
+    log_to_file('DEBUG: make_favourite: keys deleted '
+            '%s' % ', '.join(keys_deleted))
 
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',
