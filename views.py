@@ -505,7 +505,7 @@ def delete_pastie_show_keys(slug, version=None, author=None):
     log_to_file('DEBUG: delete_pastie_show_keys: to check '
             '%s' % ', '.join(keys))
     log_to_file('DEBUG: delete_pastie_show_keys: deleted '
-            '%s' % ', '.join(keys_deleted)
+            '%s' % ', '.join(keys_deleted))
     return keys_deleted
 
 def pastie_show(req, slug, version=None, author=None, skin=None):
