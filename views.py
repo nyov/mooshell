@@ -46,7 +46,7 @@ def get_pastie_edit_key(req, slug=None, version=None, revision=None,
     if revision: key = "%s:%d" % (key, revision)
     if author: key = "%s:%s" % (key, author)
     if skin: key = "%s:%s" % (key, skin)
-    if author == req.user.username:
+    if author:
         log_to_file("DEBUG: get_pastie_edit_key: %s" % key)
     return key
 
