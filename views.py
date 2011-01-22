@@ -45,9 +45,7 @@ def get_pastie_edit_key(req, slug=None, version=None, revision=None,
     if version: key = "%s:%s" % (key, version)
     if revision: key = "%s:%d" % (key, revision)
     if author: key = "%s:%s" % (key, author)
-    if skin: key = "%s:%s" % (key, skin)
-    if author:
-        log_to_file("DEBUG: get_pastie_edit_key: %s" % key)
+    #if skin: key = "%s:%s" % (key, skin)
     return key
 
 def pastie_edit(req, slug=None, version=None, revision=None, author=None,
@@ -70,6 +68,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         c = cache.get(key)
 
     if not c:
+        if author:
+            log_to_file("DEBUG: pastie_edit - storing the key: %s" % key)
         shell = None
         c = {}
 
