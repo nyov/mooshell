@@ -66,10 +66,12 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
     c = None
     if cache.get(key, None):
         c = cache.get(key)
+        if author:
+            log_to_file("DEBUG: pastie_edit - reading from: %s" % key)
 
     if not c:
         if author:
-            log_to_file("DEBUG: pastie_edit - storing the key: %s" % key)
+            log_to_file("DEBUG: pastie_edit - storing: %s" % key)
         shell = None
         c = {}
 
