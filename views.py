@@ -64,14 +64,16 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         return HttpResponseNotAllowed("Error in generating the key")
 
     c = None
+    to_log = "%s\nslug: %s, version: %s, rev: %s, author: %s, skin: %s" % (
+            key, slug, str(version), str(revision), str(author), str(skin))
     if cache.get(key, None):
         c = cache.get(key)
         if author or skin:
-            log_to_file("DEBUG: pastie_edit - reading: %s" % key)
+            log_to_file("DEBUG: pastie_edit - reading: %s" % to_log)
 
     if not c:
         if author or skin:
-            log_to_file("DEBUG: pastie_edit - storing: %s" % key)
+            log_to_file("DEBUG: pastie_edit - storing: %s" % to_log)
         shell = None
         c = {}
 
@@ -759,6 +761,7 @@ def make_favourite(req):
 
     delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
     keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
+            get_pastie_edit_key(req, shell.author, skin=shell.pastie.slug),
             get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
                                 version=shell.version),
             get_embedded_key(req, shell.pastie.slug, author=shell.author)]
