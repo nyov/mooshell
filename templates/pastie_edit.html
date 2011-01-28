@@ -32,7 +32,8 @@
       makefavouritepath = "{% url make_favourite %}",
       example_server = "{{ web_server }}",
       username = "{{ user.username }}",
-      mooshell;
+      mooshell,
+      preload_resources;
     {% if preload_resources %}var preload_resources = {{ preload_resources|safe }}{% endif %}
     Layout.skin = "";// "{{ skin }}"
     window.addEvent('domready', function() {
