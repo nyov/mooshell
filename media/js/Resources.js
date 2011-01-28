@@ -23,7 +23,7 @@ var remove_resource = function(value) {
 	
 };
 var submit_external_resource = function(e) {
-	e.stop();
+	if (e) e.stop();
 	// save url, after success update current list of resources and clean up the input
 	var url = $('external_resource').value;
 	if (url && url != $('external_resource').retrieve('default_value') && $('external_resource').value.length > 7) {
@@ -62,7 +62,7 @@ var submit_external_resource = function(e) {
 				}
 				var inp = $('external_resource');
 				inp.value = '';
-				if (e.target.get('tag') != 'input') { 
+				if (e && e.target.get('tag') != 'input') { 
 					set_default_input_value.bind($('external_resource'))();
 				}
 			}
@@ -105,4 +105,10 @@ window.addEvent('domready', function() {
 		'submit': submit_external_resource
 	});
 	$('add_external_resource').addEvent('click', submit_external_resource);
+    if (preload_resources) {
+        preload_resources.each(function(res){
+            $('external_resource').set('value',res);
+            submit_external_resource();
+        })
+    }
 });
