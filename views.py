@@ -305,7 +305,7 @@ def pastie_save(req, nosave=False, skin=None):
             " return json with pastie url "
             return HttpResponse(simplejson.dumps({
                     'pastie_url_relative': shell.get_absolute_url()
-                    }),mimetype='application/javascript'
+                    }),mimetype='application/json'
                 )
         else:
             error = "Shell form does not validate"
@@ -317,7 +317,7 @@ def pastie_save(req, nosave=False, skin=None):
 
     # Report errors
     return HttpResponse(simplejson.dumps({'error': error}),
-                    mimetype='application/javascript')
+                    mimetype='application/json')
 
 
 @login_required
@@ -346,7 +346,7 @@ def pastie_delete(req, slug, confirmation=False):
         delete_dashboard_keys(req)
 
     return HttpResponse(simplejson.dumps(response),
-                       mimetype='application/javascript')
+                       mimetype='application/json')
 
 
 
@@ -595,7 +595,7 @@ def echo_json(req):
         response = simplejson.dumps({'error': str(e)})
     return HttpResponse(
         response,
-        mimetype='application/javascript'
+        mimetype='application/json'
     )
 
 
@@ -621,7 +621,7 @@ def echo_jsonp(req):
     if callback:
         response = '%s(%s);' % (callback, response)
 
-    return HttpResponse(response, mimetype='application/javascript')
+    return HttpResponse(response, mimetype='application/json')
 
 
 def echo_xml(req):
@@ -639,7 +639,7 @@ def ajax_json_echo(req, delay=True):
         c['get_response'].update({key: value})
     for key, value in req.POST.items():
         c['post_response'].update({key: value})
-    return HttpResponse(simplejson.dumps(c),mimetype='application/javascript')
+    return HttpResponse(simplejson.dumps(c),mimetype='application/json')
 
 
 def ajax_html_echo(req, delay=True):
@@ -667,7 +667,7 @@ def ajax_json_response(req):
             'array': ['This','is',['an','array'],1,2,3],
             'object': {'key': 'value'}
         }),
-        mimetype='application/javascript'
+        mimetype='application/json'
     )
 
 
@@ -700,14 +700,14 @@ def get_library_versions(request, group_id):
     if selected:
         selected = selected[0]
         c['dependencies'] = get_dependencies_dict(selected.id)
-    return HttpResponse(simplejson.dumps(c),mimetype='application/javascript')
+    return HttpResponse(simplejson.dumps(c),mimetype='application/json')
 
 
 @cache_page(CACHE_TIME)
 def get_dependencies(request, lib_id):
     " get dependencies for current library version "
     return HttpResponse(simplejson.dumps(get_dependencies_dict(lib_id)),
-                        mimetype='application/javascript')
+                        mimetype='application/json')
 
 def get_dependencies_dict(lib_id):
     " returns a dict of dependencies for given library version "
@@ -722,7 +722,7 @@ def expire_path(r, path):
     expire_page(path)
     return HttpResponse(simplejson.dumps(
         {'message':'path expired', 'path':path}
-    ), mimetype="application/javascript")
+    ), mimetype="application/json")
 
 
 def make_favourite(req):
@@ -774,7 +774,7 @@ def make_favourite(req):
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',
             'url': shell.pastie.get_absolute_url()
-        }), mimetype="application/javascript")
+        }), mimetype="application/json")
 
 
 @cache_page(CACHE_TIME)
@@ -862,4 +862,4 @@ def add_external_resource(req):
             'url': resource.url,
             'filename': resource.filename,
             'extension': resource.extension
-        }), mimetype="application/javascript")
+        }), mimetype="application/json")
