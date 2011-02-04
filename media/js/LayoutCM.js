@@ -36,10 +36,10 @@ var Layout = {
       ['ctrlKey', 40, 'switchNext'],                     // c+dnArrow
       ['ctrlKey+shiftKey', 13, 'loadDraft'], ['control+shift', 13, 'loadDraft'],
       ['ctrlKey+shiftKey', 38, 'toggleSidebar'], ['control+shift', 38, 'toggleSidebar'],
-      ['ctrlKey+shiftKey', 76, 'showShortcutDialog'], ['control+shift', 76, 'showShortcutDialog']
+      ['ctrlKey+shiftKey', 76, 'showShortcutDialog'], ['control+shift', 76, 'showShortcutDialog'],
+      ['ctrlKey', 83, 'saveAndReload'], ['control', 83, 'saveAndReload']
       // future
       // ['ctrlKey', f, 'searchBox'], ['control', f, 'searchBox']
-      // ['ctrlKey', s, 'saveRevision'], ['control', s, 'saveRevision']
     ],
     render: function () {
 		// instantiate sidebar

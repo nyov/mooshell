@@ -222,7 +222,7 @@ var MooShellActions = new Class({
 	},
 	// update existing (create shell with new version)
 	saveAndReload: function(e) {
-		e.stop(); 
+		if (e) e.stop(); 
 		Layout.updateFromMirror();
 		new Request.JSON({
 			'url': this.options.exampleSaveUrl,
@@ -259,6 +259,7 @@ var MooShellActions = new Class({
                   '<div id="kbd" class="modalBody">' +
                   '<ul>' +
                   '<li><kbd>Control</kbd> + <kbd>Return</kbd> <span>Run fiddle</span></li>' +
+                  '<li><kbd>Control</kbd> + <kbd>s</kbd> <span>Save fiddle (Save or Update)</span></li>' +
                   '<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> <span>Load draft</span></li>' +
                   '<li><kbd>Control</kbd> + <kbd>&uarr;</kbd> or <kbd>Control</kbd> + <kbd>&darr;</kbd> <span>Switch editor windows</span></li>' +
                   '<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>&uarr;</kbd> <span>Toggle sidebar</span></li>' +
