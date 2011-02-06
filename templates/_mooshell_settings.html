@@ -63,6 +63,11 @@
         </label>
       </p>
       {% endif %}
+
+      <p id="normalize_check">
+        <label for="normalize_css">Normalized CSS</label>
+        <input type="checkbox" name="normalize_css" id="normalize_css" {% if shell.normalize_css %}checked=checked{% endif %}>
+      </p>
     </div>
   </div>
 </div>
