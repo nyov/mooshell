@@ -276,7 +276,7 @@ class Shell(models.Model):
     # is it proposed to be an example
     proposed_example = models.BooleanField(default=False, blank=True)
     #: normalize CSS
-    normalize_css = models.BooleanField(default=False, blank=True)
+    normalize_css = models.BooleanField(default=True, blank=True)
     # loaded library
     js_lib = models.ForeignKey(JSLibrary)
     js_lib_option = models.CharField(max_length=255, null=True, blank=True)
