@@ -69,11 +69,11 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
     if cache.get(key, None):
         c = cache.get(key)
         if skin and skin != 'light':
-            log_to_file("SKIN --- STORING!: %s" % to_log)
+            log_to_file("SKIN     READING!: %s" % to_log)
 
     if not c:
         if skin and skin != 'light':
-            log_to_file("SKIN +++ READING!: %s" % to_log)
+            log_to_file("SKIN +++ STORING!: %s" % to_log)
         shell = None
         c = {}
 
