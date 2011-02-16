@@ -764,6 +764,7 @@ def make_favourite(req):
             get_pastie_edit_key(req, shell.author, skin=shell.pastie.slug),
             get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
                                 version=shell.version),
+            get_pastie_edit_key(req, shell.pastie.slug, author=shell.author),
             get_embedded_key(req, shell.pastie.slug, author=shell.author)]
     keys_deleted = []
     for key in keys:
