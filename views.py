@@ -68,16 +68,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
             key, slug, str(version), str(revision), str(author), str(skin))
     if cache.get(key, None):
         c = cache.get(key)
-        if skin and skin != 'light':
-            log_to_file("SKIN     reading cache: %s" % to_log)
-        elif not version and slug:
-            log_to_file("BASE     reading cache: %s" % to_log)
 
     if not c:
-        if skin and skin != 'light':
-            log_to_file("SKIN +++ storing cache: %s" % to_log)
-        elif not version and slug:
-            log_to_file("BASE +++ storing cache: %s" % to_log)
         shell = None
         c = {}
 
@@ -511,10 +503,6 @@ def delete_pastie_show_keys(slug, version=None, author=None):
         if cache.has_key(key):
             keys_deleted.append(key)
             cache.delete(key)
-    log_to_file('DEBUG: delete_pastie_show_keys: to check '
-            '%s' % ', '.join(keys))
-    log_to_file('DEBUG: delete_pastie_show_keys: deleted '
-            '%s' % ', '.join(keys_deleted))
     return keys_deleted
 
 def pastie_show(req, slug, version=None, author=None, skin=None):
@@ -719,21 +707,18 @@ def get_dependencies_dict(lib_id):
     return [{'id': d.id, 'name': d.name, 'selected': d.selected} \
             for d in dependencies ]
 
-def expire_path(r, path):
-    " make the path expire - used with base version (I think) "
-    log_to_file('DEBUG: expire_path used')
-    path = '%s' % path
-    expire_page(path)
-    return HttpResponse(simplejson.dumps(
-        {'message':'path expired', 'path':path}
-    ), mimetype="application/json")
+#def expire_path(r, path):
+#    " make the path expire - used with base version (I think) "
+#    path = '%s' % path
+#    expire_page(path)
+#    return HttpResponse(simplejson.dumps(
+#        {'message':'path expired', 'path':path}
+#    ), mimetype="application/json")
 
 
 def make_favourite(req):
     " set the base version "
     shell_id = req.POST.get('shell_id', None)
-    log_to_file('DEBUG: make_favourite - '
-            'user: %s, shell id: %s' % (str(req.user), str(shell_id)))
     if not shell_id:
         log_to_file('ERROR: make_favourite: no shell_id')
         return HttpResponse(
@@ -771,10 +756,6 @@ def make_favourite(req):
         if cache.has_key(key):
             cache.delete(key)
             keys_deleted.append(key)
-    log_to_file('DEBUG: make_favourite: keys to delete '
-            '%s' % ', '.join(keys))
-    log_to_file('DEBUG: make_favourite: keys deleted '
-            '%s' % ', '.join(keys_deleted))
 
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',

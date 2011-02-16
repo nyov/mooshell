@@ -38,7 +38,7 @@ urlpatterns = patterns(
     url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
 
     # expire
-    url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
+    #url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
 
     # compatibility with old mooshell/* urls DO NOT USE THEM
     url(r'^mooshell/ajax_json_response/$','ajax_json_response', name='old_ajax_json_response'),
