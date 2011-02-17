@@ -65,8 +65,8 @@
       {% endif %}
 
       <p id="normalize_check">
-        <input type="checkbox" name="normalize_css" id="normalize_css" {% if shell.normalize_css or not shell %}checked=checked{% endif %}>
-        <label for="normalize_css">Normalized CSS</label>
+          {{ shellform.normalize_css }}
+          <label for="normalize_css">Normalized CSS</label>
       </p>
     </div>
   </div>
