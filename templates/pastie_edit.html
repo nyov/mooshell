@@ -36,7 +36,7 @@
       username = "{{ user.username }}",
       mooshell,
       preload_resources;
-    {% if preload_resources %}var preload_resources = {{ preload_resources|safe }}{% endif %}
+    {% if preload_resources %}preload_resources = {{ preload_resources|safe }}{% endif %}
     Layout.skin = "";// "{{ skin }}"
     window.addEvent('domready', function() {
       $extend(Layout, new Events());
