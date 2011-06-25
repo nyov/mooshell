@@ -20,12 +20,6 @@ urlpatterns = patterns(
     url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
     url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
 
-    # Echo
-    url(r'^echo/js/$','echo_js', name='echo_js'),
-    url(r'^echo/json/$','echo_json', name='echo_json'),
-    url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
-    url(r'^echo/html/$','echo_html', name='echo_html'),
-    url(r'^echo/xml/$','echo_xml', name='echo_xml'),
 
     # OLD ECHO
     url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),

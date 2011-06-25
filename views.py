@@ -565,63 +565,6 @@ def show_part(req, slug, part, version=None, author=None):
     return render_to_response('show_part.html',
                                 {'content': getattr(shell, 'code_'+part)})
 
-def echo_js(req):
-    " respond JS from GET['js']"
-
-    referer = (settings.MOOSHELL_FORCE_SHOW_SERVER,) \
-            if hasattr(settings, 'MOOSHELL_FORCE_SHOW_SERVER') else False
-    if not is_referer_allowed(req, referer):
-        raise Http404
-    delay(req)
-    return HttpResponse(req.GET.get('js', ''),
-                      mimetype='application/javascript')
-
-
-def echo_json(req):
-    " respond with POST['json'] "
-    delay(req)
-    try:
-        response = simplejson.dumps(
-            simplejson.loads(req.POST.get('json', '{}')))
-    except Exception, e:
-        response = simplejson.dumps({'error': str(e)})
-    return HttpResponse(
-        response,
-        mimetype='application/json'
-    )
-
-
-def echo_html(req):
-    " respond with POST['html'] "
-    delay(req)
-    return HttpResponse(req.POST.get('html', ''))
-
-
-def echo_jsonp(req):
-    " respond what provided via GET "
-    delay(req)
-    response = {}
-    callback = req.GET.get('callback', False)
-    noresponse_keys = ['callback', 'delay']
-
-    for key, value in req.GET.items():
-        if key not in noresponse_keys:
-            response.update({key: value})
-
-    response = simplejson.dumps(response)
-
-    if callback:
-        response = '%s(%s);' % (callback, response)
-
-    return HttpResponse(response, mimetype='application/json')
-
-
-def echo_xml(req):
-    " respond with POST['xml'] "
-    delay(req)
-    return HttpResponse(req.POST.get('xml', ''), mimetype='text/xml')
-
-
 def ajax_json_echo(req, delay=True):
     " OLD: echo GET and POST via JSON "
     if delay:
