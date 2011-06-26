@@ -249,6 +249,8 @@ def pastie_save(req, nosave=False, skin=None):
             for dep_id in dependency_ids:
                 dep = JSDependency.objects.get(id=dep_id)
                 dependencies.append(dep)
+            dependencies = sorted(
+                    dependencies, key=lambda d: d.ord, reverse=True)
 
             # append external resources
             external_resources = []
