@@ -17,8 +17,8 @@ urlpatterns = patterns(
     url(r'^_confirm_delete/(?P<slug>[a-zA-Z0-9]{5})/$','pastie_delete', {'confirmation': True}, name='pastie_delete_confirmation'),
     url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
     url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
-    url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
-    url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
+    url(r'^_get_dependencies/(?P<lib_id>\w+)/$','get_dependencies', name='_get_dependencies'),
+    url(r'^_get_library_versions/(?P<group_id>\w+)/$','get_library_versions', name='_get_library_versions'),
 
 
     # OLD ECHO

@@ -643,14 +643,20 @@ def get_library_versions(request, group_id):
 @cache_page(CACHE_TIME)
 def get_dependencies(request, lib_id):
     " get dependencies for current library version "
+    try:
+        lib_id = int(lib_id)
+    except:
+        log_to_file("ERROR: get_dependencies called with lib_id: %s" % lib_id)
+        raise Http404
     return HttpResponse(simplejson.dumps(get_dependencies_dict(lib_id)),
                         mimetype='application/json')
 
 def get_dependencies_dict(lib_id):
     " returns a dict of dependencies for given library version "
     dependencies = JSDependency.objects.filter(active=True,library__id=lib_id)
-    return [{'id': d.id, 'name': d.name, 'selected': d.selected} \
-            for d in dependencies ]
+    return [{'id': d.id,
+             'name': d.name,
+             'selected': d.selected} for d in dependencies]
 
 #def expire_path(r, path):
 #    " make the path expire - used with base version (I think) "
