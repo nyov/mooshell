@@ -622,6 +622,12 @@ def serve_static(request, path, media='media', mimetype=None):
 @cache_page(CACHE_TIME)
 def get_library_versions(request, group_id):
     " get library versions for current framework "
+    try:
+        group_id = int(group_id)
+    except:
+        log_to_file("ERROR: get_library_versions called with group_id:"
+                " %s" % group_id)
+        raise Http404
     libraries = JSLibrary.objects.filter(library_group__id=group_id)
     c = {'libraries': [
             {
