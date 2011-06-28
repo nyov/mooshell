@@ -90,11 +90,13 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                 # {slug}/{skin} "
                 try:
                     user = User.objects.get(username=slug)
+                except:
+                    pass
+                else:
                     author = slug
                     slug = skin
                     skin = None
-                except:
-                    pass
+
             pastie = get_object_or_404(Pastie, slug=slug)
             if version == None:
                 # shell is the base version of the fiddle
@@ -116,6 +118,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                             "Multiple shells: %s, %s" % (slug, version))
                     shell = list(Shell.objects.filter(pastie__slug=slug,
                                             version=version, author=user))[0]
+                except:
+                    raise
 
             external_resources = ShellExternalResource.objects.filter(
                 shell__id=shell.id)
