@@ -283,14 +283,15 @@ def pastie_save(req, nosave=False, skin=None):
                     Draft.objects.make(req.POST.get('username'), display_page)
 
                 if draftonly:
+                    draft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
+                            reverse('mooshell_draft'))
+                    mdraft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
+                            reverse('mdraft'))
                     return HttpResponse(
                             ('<p>Please load result '
                                 'in <a target="_draft" href="%s">%s</a> '
                                 'or <a target="_draft" href="%s">%s</a></p>'
-                            ) % (
-                                reverse('mooshell_draft'),
-                                reverse('mooshell_draft'),
-                                reverse('mdraft'), reverse('mdraft')))
+                            ) % (draft_url, draft_url, mdraft_url, mdraft_url))
                 return display_page
 
             # add user to shell if anyone logged in
