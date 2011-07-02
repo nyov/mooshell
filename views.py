@@ -222,6 +222,8 @@ def pastie_save(req, nosave=False, skin=None):
                     pastie.author = req.user
                 pastie.save()
 
+        draftonly=req.POST.get('draftonly', False)
+
         shellform = ShellForm(req.POST)
 
         if shellform.is_valid():
@@ -280,6 +282,15 @@ def pastie_save(req, nosave=False, skin=None):
                 if req.POST.get('username', False):
                     Draft.objects.make(req.POST.get('username'), display_page)
 
+                if draftonly:
+                    return HttpResponse(
+                            ('<p>Please load result '
+                                'in <a target="_draft" href="%s">%s</a> '
+                                'or <a target="_draft" href="%s">%s</a></p>'
+                            ) % (
+                                reverse('mooshell_draft'),
+                                reverse('mooshell_draft'),
+                                reverse('mdraft'), reverse('mdraft')))
                 return display_page
 
             # add user to shell if anyone logged in
@@ -353,10 +364,16 @@ def pastie_delete(req, slug, confirmation=False):
 
 
 @login_required
-def display_draft(req):
+def display_draft(req, debug=False):
     " return the draft as saved in user's files "
     try:
-        return HttpResponse(req.user.draft.all()[0].html)
+        draft = req.user.draft.all()[0].html
+        if debug:
+            draft = draft.replace("</head>",
+                    ('<script src="'
+                    'http://debug.phonegap.com/target/target-script-min.js#jsf_%s"'
+                    '></script></head>') % req.user.username)
+        return HttpResponse(draft)
     except:
         return HttpResponse("<p>You've got no draft saved</p>"
                 "<p>Please hit [Run] after logging in</p>"

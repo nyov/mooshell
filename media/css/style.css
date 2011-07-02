@@ -243,6 +243,13 @@ body {
 			font-size: 11px;
 			background-color: #45719B;
 		}
+
+        #actions li.actionItem #m {
+            background-image: 0;
+        }
+            #actions li.actionItem #m span {
+                padding: 0 8px;
+            }
 		
 			#actions li.actionItem a.aiButton span {
 				display: block;

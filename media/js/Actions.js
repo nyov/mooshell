@@ -56,6 +56,7 @@ var MooShellActions = new Class({
 		saveAndReloadId: 'update',
 		saveAsNewId: 'savenew',
 		runId: 'run',
+		draftId: 'm',
 		cleanId: 'clean',
 		jslintId: 'jslint',
 		tidyId: 'tidy',
@@ -89,6 +90,7 @@ var MooShellActions = new Class({
 		addBinded(this.options.saveAndReloadId, this.saveAndReload, this);
 		addBinded(this.options.saveAsNewId, this.saveAsNew, this);
 		addBinded(this.options.runId, this.run, this);
+		addBinded(this.options.draftId, this.run, this);
 		addBinded(this.options.cleanId, this.cleanEntries, this);
 		addBinded(this.options.jslintId, this.jsLint, this);
 		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
@@ -235,9 +237,23 @@ var MooShellActions = new Class({
 	},
 	// run - submit the form (targets to the iframe)
 	run: function(e) {
+        var draftonly = false;
 		if (e) e.stop(); 
+        if (e && e.target.getParent().get('id') == 'm') {
+            var draftonly = new Element('input', {
+                'hidden': true,
+                'name': 'draftonly',
+                'id': 'draftonly',
+                'value': true
+            })
+            draftonly.inject(this.form);
+        }
 		Layout.updateFromMirror();
 		this.form.submit();
+        if (draftonly) {
+            console.log(draftonly)
+            draftonly.destroy();
+        }
 		this.fireEvent('run');
 	},
     loadDraft: function(e) {
