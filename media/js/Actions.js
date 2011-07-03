@@ -245,14 +245,21 @@ var MooShellActions = new Class({
                 'name': 'draftonly',
                 'id': 'draftonly',
                 'value': true
-            })
+            });
+            var draftusername = new Element('input', {
+                'hidden': true,
+                'name': 'draftusername',
+                'id': 'draftusername',
+                'value': username
+            });
             draftonly.inject(this.form);
+            draftusername.inject(this.form);
         }
 		Layout.updateFromMirror();
 		this.form.submit();
-        if (draftonly) {
-            console.log(draftonly)
+        if (draftonly && draftusername) {
             draftonly.destroy();
+            draftusername.destroy();
         }
 		this.fireEvent('run');
 	},

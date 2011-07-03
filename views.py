@@ -287,13 +287,11 @@ def pastie_save(req, nosave=False, skin=None):
                             reverse('mooshell_draft'))
                     mdraft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
                             reverse('mdraft'))
-                    return HttpResponse(
-                            ('<p>Please load result '
-                                '<a target="_draft" href="%s">%s</a> '
-                                'on mobile and <a target="_debugger" '
-                                'href="http://debug.phonegap.com/client/'
-                                '#jsf_%s">debugger</a> on the desktop.</p>'
-                            ) % (mdraft_url, mdraft_url, req.user.username))
+                    return HttpResponse("""
+<p>Please load result <a target="_draft" href="%s">%s</a> on mobile and
+<a href="http://debug.phonegap.com/client/#jsf_%s">debugger</a>
+on the desktop.</p>""" % (mdraft_url, mdraft_url,
+                        req.POST.get('draftusername', 'ERROR')))
                 return display_page
 
             # add user to shell if anyone logged in
