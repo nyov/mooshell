@@ -294,7 +294,7 @@ def pastie_save(req, nosave=False, skin=None):
 <p>Please load result <a target="_draft" href="%s">%s</a> on mobile and
 <a href="http://debug.phonegap.com/client/#jsf_%s">
 debugger</a>
-on the desktop.</p>
+on the desktop (Chrome, Safari, weinre app)</p>
 <p><a target="_blank" href="http://pmuellr.github.com/weinre/">weinre</a>
 service provided by
 <a target="_blank" href="http://phonegap.com/">PhoneGap</p>""" % (
