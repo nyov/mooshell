@@ -285,9 +285,8 @@ def pastie_save(req, nosave=False, skin=None):
                     Draft.objects.make(req.POST.get('username'), display_page)
 
                 if draftonly:
-                    hashtag = ''.join([choice(
-                        'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-                        ) for i in range(3)])
+                    hashtag = ''.join(
+                        [choice('abcdefghjkmnpqrstuvwxyz') for i in range(3)])
                     mdraft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
                             reverse('mdraft', args=[hashtag]))
                     return HttpResponse("""
