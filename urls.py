@@ -4,7 +4,7 @@ urlpatterns = patterns(
     'mooshell.views',
     # draft
     url(r'^draft/$','display_draft', name='mooshell_draft'),
-    url(r'^m/$','display_draft', {'debug': True}, name='mdraft'),
+    url(r'^m/(?P<hashtag>[a-zA-z0-9]{3})/$','display_draft', name='mdraft'),
 
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
     url(r'^css/(?P<path>.*)$', 'serve_static', {'mimetype': 'css'}, name='mooshell_css'),

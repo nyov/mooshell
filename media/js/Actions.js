@@ -246,14 +246,7 @@ var MooShellActions = new Class({
                 'id': 'draftonly',
                 'value': true
             });
-            var draftusername = new Element('input', {
-                'hidden': true,
-                'name': 'draftusername',
-                'id': 'draftusername',
-                'value': username
-            });
             draftonly.inject(this.form);
-            draftusername.inject(this.form);
         }
 		Layout.updateFromMirror();
 		this.form.submit();

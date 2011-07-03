@@ -2,6 +2,8 @@ import random
 import time
 import base64
 
+from random import choice
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed
@@ -283,16 +285,16 @@ def pastie_save(req, nosave=False, skin=None):
                     Draft.objects.make(req.POST.get('username'), display_page)
 
                 if draftonly:
-                    draft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
-                            reverse('mooshell_draft'))
+                    hashtag = ''.join([choice(
+                        'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+                        ) for i in range(3)])
                     mdraft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
-                            reverse('mdraft'))
+                            reverse('mdraft', args=[hashtag]))
                     return HttpResponse("""
 <p>Please load result <a target="_draft" href="%s">%s</a> on mobile and
-<a target="_debugger" href="http://debug.phonegap.com/client/#jsf_%s">
+<a href="http://debug.phonegap.com/client/#jsf_%s">
 debugger</a>
-on the desktop.</p>""" % (mdraft_url, mdraft_url,
-                        req.POST.get('draftusername', 'ERROR')))
+on the desktop.</p>""" % (mdraft_url, mdraft_url, hashtag))
                 return display_page
 
             # add user to shell if anyone logged in
@@ -366,15 +368,15 @@ def pastie_delete(req, slug, confirmation=False):
 
 
 @login_required
-def display_draft(req, debug=False):
+def display_draft(req, hashtag=False):
     " return the draft as saved in user's files "
     try:
         draft = req.user.draft.all()[0].html
-        if debug:
+        if hashtag:
             draft = draft.replace("</head>",
                     ('<script src="'
                     'http://debug.phonegap.com/target/target-script-min.js#jsf_%s"'
-                    '></script></head>') % req.user.username)
+                    '></script></head>') % hashtag)
         return HttpResponse(draft)
     except:
         return HttpResponse("<p>You've got no draft saved</p>"
