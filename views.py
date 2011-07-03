@@ -291,10 +291,15 @@ def pastie_save(req, nosave=False, skin=None):
                     mdraft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
                             reverse('mdraft', args=[hashtag]))
                     return HttpResponse("""
+<p>EXPERIMENTAL</p>
 <p>Please load result <a target="_draft" href="%s">%s</a> on mobile and
 <a href="http://debug.phonegap.com/client/#jsf_%s">
 debugger</a>
-on the desktop.</p>""" % (mdraft_url, mdraft_url, hashtag))
+on the desktop.</p>
+<p><a target="_blank" href="http://pmuellr.github.com/weinre/">weinre</a>
+service provided by
+<a target="_blank" href="http://phonegap.com/">PhoneGap</p>""" % (
+    mdraft_url, mdraft_url, hashtag))
                 return display_page
 
             # add user to shell if anyone logged in
