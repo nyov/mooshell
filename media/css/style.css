@@ -305,11 +305,11 @@ body {
 		}
 
 	#actions #run span {
-		background-position: 6px -66px;
+		background-position: 6px -100px;
 	}
 
 	#actions #update span {
-		background-position: 6px -100px;
+		background-position: 6px -66px;
 	}
 
 	#actions #savenew span {
