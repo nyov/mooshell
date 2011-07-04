@@ -250,9 +250,8 @@ var MooShellActions = new Class({
         }
 		Layout.updateFromMirror();
 		this.form.submit();
-        if (draftonly && draftusername) {
+        if (draftonly) {
             draftonly.destroy();
-            draftusername.destroy();
         }
 		this.fireEvent('run');
 	},

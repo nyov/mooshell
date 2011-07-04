@@ -245,10 +245,13 @@ body {
 		}
 
         #actions li.actionItem #m {
-            background-image: 0;
+
         }
             #actions li.actionItem #m span {
+                background-position: 6px -372px;
                 padding: 0 8px;
+                text-indent: -9999px;
+                width: 10px;
             }
 		
 			#actions li.actionItem a.aiButton span {
