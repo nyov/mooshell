@@ -1,6 +1,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
   <title>{{ shell.title }} - jsFiddle demo{% if shell.author %} by {{ shell.author }}{% endif %}</title>
+  {# CoffeeScript #}{% ifequal shell.panel_js 1 %}<script type="text/javascript" src="/js/coffeescript/coffeescript.js"></script>{% endifequal %}
   <script type='text/javascript' src='{{ shell.js_lib.href }}'{% if shell.js_lib_option %} {{ shell.js_lib_option|safe }}{% endif %}></script>
   {% for js in dependencies %}<script type="text/javascript" src="{{ js.url }}"></script>
   {% endfor %}
@@ -15,25 +16,25 @@
     {% endifequal %}
   {% endfor %}
   <style type='text/css'>
-    {{ shell.code_css|safe }}
+    {{ css|safe }}
   </style>
   {% ifnotequal shell.js_wrap "b" %}
-  <script type='text/javascript'>
-  //<![CDATA[ 
-  {{ wrap.code_start|safe }}
-  {{ shell.code_js|safe }}
-  {{ wrap.code_end|safe }}
-  //]]> 
+    {% ifequal shell.panel_js 1 %}<script type="text/coffeescript">{% endifequal %}
+    {% if not shell.panel_js %}<script type='text/javascript'>//<![CDATA[{% endif %} 
+  {% if not shell.panel_js %}{{ wrap.code_start|safe }}{% endif %}
+{{ js|safe }}
+  {% if not shell.panel_js %}{{ wrap.code_end|safe }}//]]> {% endif %} 
   </script>
   {% endifnotequal %}
 </head>
 {{ shell.body_tag|default:"<body>"|safe }}
-  {{ shell.code_html|safe }}
+  {{ html|safe }}
   {% ifequal shell.js_wrap "b" %}
-  <script type='text/javascript'>
-  //<![CDATA[ 
-  {{ shell.code_js|safe }}
-  //]]> 
+    {% ifequal shell.panel_js 1 %}<script type="text/coffeescript">{% endifequal %}
+    {% if not shell.panel_js %}<script type='text/javascript'>//<![CDATA[{% endif %} 
+  {% if not shell.panel_js %}{{ wrap.code_start|safe }}{% endif %}
+{{ js|safe }}
+  {% if not shell.panel_js %}{{ wrap.code_end|safe }}//]]> {% endif %} 
   </script>
   {% endifequal %}
 </body>

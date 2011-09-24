@@ -242,11 +242,19 @@ class Draft(models.Model):
 
     objects = DraftManager()
 
+LANG_HTML = ((0, 'HTML'),)
+LANG_CSS = ((0, 'CSS'),
+            (1, 'SASS'))
+LANG_JS = ((0, 'JavaScript'),
+           (1, 'CoffeeScript'))
 
 class Shell(models.Model):
     """
     Holds shell data
     """
+    PANEL_HTML = [i[1] for i in LANG_HTML]
+    PANEL_CSS = [i[1] for i in LANG_CSS]
+    PANEL_JS = [i[1] for i in LANG_JS]
     pastie = models.ForeignKey(Pastie, related_name='shells')
     version = models.IntegerField(default=0, blank=True)
     revision = models.IntegerField(default=0, blank=True, null=True)
@@ -271,6 +279,12 @@ class Shell(models.Model):
     code_css = models.TextField('CSS', null=True, blank=True)
     code_html = models.TextField('HTML', null=True, blank=True)
     code_js = models.TextField('Javascript', null=True, blank=True)
+
+    # code modifiers
+    panel_html = models.IntegerField(choices=LANG_HTML, default=False, blank=True, null=True)
+    panel_css = models.IntegerField(choices=LANG_CSS, default=False, blank=True, null=True)
+    panel_js = models.IntegerField(choices=LANG_JS, default=False, blank=True, null=True)
+
     # filled automatically
     created_at = models.DateTimeField(default=datetime.now)
     # is it proposed to be an example

@@ -3,6 +3,7 @@ import time
 import base64
 
 from random import choice
+from scss import Scss
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
@@ -165,6 +166,10 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         ]
         c.update({
             'shell': shell,
+            'panels': {
+                    'html': (Shell.PANEL_HTML, len(Shell.PANEL_HTML) > 1),
+                    'css': (Shell.PANEL_CSS, len(Shell.PANEL_CSS) > 1),
+                    'js': (Shell.PANEL_JS, len(Shell.PANEL_JS) > 1)},
             'external_resources': external_resources,
             'css_files': [reverse('mooshell_css', args=["%s.css" % skin])],
             'js_libs': js_libs,
@@ -194,8 +199,6 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
     else:
         shellform = ShellForm()
     c['shellform'] = shellform
-
-
 
     if slug and c['shell']:
         pastie = c['shell'].pastie
@@ -310,6 +313,7 @@ service provided by
             except Exception, err:
                 log_to_file("ERROR: pastie_edit: "
                         "saving shell failed %s" % str(err))
+                print str(err)
                 return HttpResponseNotAllowed('Error saving shell')
 
             # add saved dependencies
@@ -406,8 +410,18 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
     if not skin:
         skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
 
+    html = shell.code_html
+    css = shell.code_css
+    if shell.panel_css == 1:
+        # compile to SASS
+        css = Scss().compile(css)
+    js = shell.code_js
+    print (Shell.PANEL_CSS)
     page = render_to_response('pastie_show.html', {
         'shell': shell,
+        'html': html,
+        'css': css,
+        'js': js,
         'dependencies': dependencies,
         'resources': resources,
         'resources_length': len(resources),
