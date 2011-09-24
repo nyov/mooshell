@@ -1,6 +1,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>{{ shell.title }} - jsFiddle demo{% if shell.author %} by {{ shell.author }}{% endif %}</title>
+  {# CoffeeScript #}{% ifequal shell.panel_js 1 %}<script type="text/javascript" src="/js/coffeescript/coffeescript.js"></script>{% endifequal %}
   <script type='text/javascript' src='{{ shell.js_lib.href }}'{% if shell.js_lib_option %} {{ shell.js_lib_option|safe }}{% endif %}></script>
   {% for js in dependencies %}<script type="text/javascript" src="{{ js.url }}"></script>
   {% endfor %}

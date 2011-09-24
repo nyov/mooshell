@@ -313,7 +313,6 @@ service provided by
             except Exception, err:
                 log_to_file("ERROR: pastie_edit: "
                         "saving shell failed %s" % str(err))
-                print str(err)
                 return HttpResponseNotAllowed('Error saving shell')
 
             # add saved dependencies
