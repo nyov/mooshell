@@ -388,6 +388,26 @@ class Shell(models.Model):
             args.extend([self.pastie.slug,self.version,self.revision])
         return (rev, args)
 
+    def get_panel_name(self, panel):
+        try:
+            if panel == 'HTML':
+                return Shell.PANEL_HTML[self.panel_html]
+            if panel == 'CSS':
+                return Shell.PANEL_CSS[self.panel_css]
+            if panel == 'JS':
+                return Shell.PANEL_JS[self.panel_js]
+        except Exception:
+            return panel
+
+    def get_html_panel_name(self):
+        return self.get_panel_name('HTML')
+
+    def get_css_panel_name(self):
+        return self.get_panel_name('CSS')
+
+    def get_js_panel_name(self):
+        return self.get_panel_name('JS')
+
     def get_next_version(self):
         shell_with_highest_version = Shell.objects.filter(
             pastie=self.pastie).order_by('-version')[0]

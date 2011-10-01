@@ -144,6 +144,7 @@ MooShellEditor.JS = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'js',
+        language: 'javascript',
         focus: true,
 		useCodeMirror: true,
 		flexibleHeight: true,
@@ -171,6 +172,7 @@ MooShellEditor.CSS = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'css',
+        language: 'css',
 		useCodeMirror: true,
 		stylesheet: [
 			"css/codemirror/style.css",
@@ -195,6 +197,7 @@ MooShellEditor.HTML = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'html',
+        language: 'html',
 		useCodeMirror: true,
 		stylesheet: [
 			"css/codemirror/style.css",

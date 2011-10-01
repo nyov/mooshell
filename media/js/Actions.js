@@ -132,6 +132,19 @@ var MooShellActions = new Class({
 		});
 		
 	},
+    updateLanguage: function() {
+		Layout.editors.each(function(w){
+            var lang_choice = $('panel_' + w.options.name + '_choice'),
+                lang_option;
+
+            if (lang_choice) {
+                lang_option = lang_choice.getElement('option[selected]')
+                if (lang_option) {
+                    w.options.language = lang_option.get('text').toLowerCase();
+                }
+            }
+		});
+    },
 	prepareAndLaunchTidy: function(e) {
 		e.stop();
 		if (!$defined(window.js_beautify)) {
@@ -144,11 +157,16 @@ var MooShellActions = new Class({
 	},
 	makeTidy: function(){
 		Layout.editors.each(function(w){
-			var code = w.editor.getCode();
+			var code = w.editor.getCode(),
+                language;
 			if (code) {
-				var fixed = Beautifier[w.options.name](code);
-				if (fixed) w.editor.setCode(fixed);
-				else w.editor.reindent();
+                language = w.options.language;
+                if (language == 'javascript') language = 'js';
+                if (Beautifier[language]) {
+                    var fixed = Beautifier[language](code);
+                    if (fixed) w.editor.setCode(fixed);
+                    else w.editor.reindent();
+                }
 			}
 		});
 	},
@@ -167,14 +185,19 @@ var MooShellActions = new Class({
 		var html = '<div class="modalWrap modal_jslint">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
-		if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
-			html = 	html.substitute({title: 'Errors'}) + 
-					JSLINT.report(true) +
-					'</div></div>';
-		} else {
-			html = 	html.substitute({title: 'Valid!'})+
-					'<p>Your JS code is valid.</p></div></div>';
-		}
+        if (Layout.editors.js.language == 'javascript') {
+            if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
+                html = 	html.substitute({title: 'Errors'}) + 
+                        JSLINT.report(true) +
+                        '</div></div>';
+            } else {
+                html = 	html.substitute({title: 'Valid!'})+
+                        '<p>Your JS code is valid.</p></div></div>';
+            }
+        } else {
+            html = html.substitute({title: ' - Sorry No JavaScript!'}) + 
+                        '<p>You\'re using ' + panel_js + '</p>';
+        }
 		new StickyWin({
 			content: html,
 			relativeTo: $(document.body),

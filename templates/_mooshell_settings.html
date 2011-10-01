@@ -88,17 +88,17 @@
 <div class="element" id="panels_settings">
     <div class="elementBody">
         <div class="ebCont">
-            {% if panels.html.1 %}<select name="panel_html">
+            {% if panels.html.1 %}<select name="panel_html" id="panel_html_choice">
                 {% for lang in panels.html.0 %}
                 <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_html forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
                 {% endfor %}
             </select>{% endif %}
-            {% if panels.css.1 %}<select name="panel_css">
+            {% if panels.css.1 %}<select name="panel_css" id="panel_css_choice">
                 {% for lang in panels.css.0 %}
                 <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_css forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
                 {% endfor %}
             </select>{% endif %}
-            {% if panels.js.1 %}<select name="panel_js">
+            {% if panels.js.1 %}<select name="panel_js" id="panel_js_choice">
                 {% for lang in panels.js.0 %}
                 <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_js forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
                 {% endfor %}
