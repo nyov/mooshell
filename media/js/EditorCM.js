@@ -133,7 +133,13 @@ var MooShellEditor = new Class({
 	getPosition: function() {
 		if (this.editor) return $(this.editor.frame).getPosition();
 		return this.element.getPosition();
-	}
+	},
+    makeDummyOptions: function(name) {
+        this.options.codeMirrorOptions = {
+            iframeClass: name || 'dummy',
+            parserfile: ['parsedummy.js']
+        }
+    }
 });
 
 
@@ -159,6 +165,10 @@ MooShellEditor.JS = new Class({
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
+        // XXX: This is kind of hardcoded ...
+        if (this.options.language == 'coffeescript') {
+            this.makeDummyOptions('coffeescript');
+        }
 		this.parent(el,this.options);
 	}
 });
