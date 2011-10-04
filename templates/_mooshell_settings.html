@@ -58,11 +58,16 @@
       {% if SHOW_LIB_OPTION %}
       <p class="libraryTagAttributes">
         <label>
-          Library tag attributes
-          {{ shellform.js_lib_option }}
+            Library tag attributes <a target="_new" href="http://doc.jsfiddle.net/basic/introduction.html#choose-framework">(?)</a>
         </label>
+        {{ shellform.js_lib_option }}
       </p>
       {% endif %}
+
+      <p id="normalize_check">
+          {{ shellform.normalize_css }}
+          <label for="id_normalize_css">Normalized CSS</label>
+      </p>
     </div>
   </div>
 </div>
@@ -77,3 +82,27 @@
     })
   });
 </script>
+
+
+<h3 class="toggler" id="pannels_toggler">Panels</h3>
+<div class="element" id="panels_settings">
+    <div class="elementBody">
+        <div class="ebCont">
+            {% if panels.html.1 %}<select name="panel_html" id="panel_html_choice">
+                {% for lang in panels.html.0 %}
+                <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_html forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
+                {% endfor %}
+            </select>{% endif %}
+            {% if panels.css.1 %}<select name="panel_css" id="panel_css_choice">
+                {% for lang in panels.css.0 %}
+                <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_css forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
+                {% endfor %}
+            </select>{% endif %}
+            {% if panels.js.1 %}<select name="panel_js" id="panel_js_choice">
+                {% for lang in panels.js.0 %}
+                <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_js forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
+                {% endfor %}
+            </select>{% endif %}
+        </div>
+    </div>
+</div>

@@ -1,6 +1,9 @@
 <div id="actions">
-	<ul class="actionCont">
+	<ul class="actionCont collapsed">
 		<li class="actionItem"><a class="aiButton" id="run" title="Run" href="#run"><span>Run</span></a></li>
+        {% if user.is_authenticated %}
+            <li class="actionItem"><a data-draft="1" class="aiButton" id="m" title="debug on mobile" href="#m"><span>debug on mobile</span></a></li>
+        {% endif %}
 	</ul>
 
 	<ul class="actionCont collapsed">

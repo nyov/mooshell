@@ -3,12 +3,12 @@
 {{ shellform.version }}
 <input type='hidden' id='id_slug' name='slug' value='{{ shell.pastie.slug }}'/>
 <fieldset class='column left'>
-	<div class='window top'>
+    <div class='window top' id="panel_html" data-panel_type="{{ shell.get_html_panel_name|lower|default:'html' }}">
 		{{ shellform.code_html }}
 		<span class='window_label'>HTML</span>
 	</div>
 	<div class='handler handler_horizontal'></div>
-	<div class='window bottom'>
+	<div class='window bottom' id="panel_js" data-panel_type="{{ shell.get_js_panel_name|lower|default:'js' }}">
 		{{ shellform.code_js }}
 		<span class='window_label'>JavaScript</span>
 	</div>
@@ -18,7 +18,7 @@
 <div class='handler' id='handler_vertical'></div>
 
 <fieldset class='column right'>
-	<div class='window top'>
+	<div class='window top' id="panel_css" data-panel_type="{{ shell.get_css_panel_name|lower|default:'css' }}">
 		{{ shellform.code_css }}
 		<span class='window_label'>CSS</span>
 	</div>

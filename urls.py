@@ -4,6 +4,7 @@ urlpatterns = patterns(
     'mooshell.views',
     # draft
     url(r'^draft/$','display_draft', name='mooshell_draft'),
+    url(r'^m/(?P<hashtag>[a-zA-z0-9]{3})/$','display_draft', name='mdraft'),
 
     url(r'^mooshellmedia/(?P<path>.*)$', 'serve_static', name='mooshell_media'),
     url(r'^css/(?P<path>.*)$', 'serve_static', {'mimetype': 'css'}, name='mooshell_css'),
@@ -17,15 +18,9 @@ urlpatterns = patterns(
     url(r'^_confirm_delete/(?P<slug>[a-zA-Z0-9]{5})/$','pastie_delete', {'confirmation': True}, name='pastie_delete_confirmation'),
     url(r'^_display/$','pastie_save', {'nosave': True}, name='pastie_display'),
     url(r'^_display/(?P<skin>\w+)/$','pastie_save', {'nosave': True}),
-    url(r'^_get_dependencies/(?P<lib_id>.*)/$','get_dependencies', name='_get_dependencies'),
-    url(r'^_get_library_versions/(?P<group_id>.*)/$','get_library_versions', name='_get_library_versions'),
+    url(r'^_get_dependencies/(?P<lib_id>\w+)/$','get_dependencies', name='_get_dependencies'),
+    url(r'^_get_library_versions/(?P<group_id>\w+)/$','get_library_versions', name='_get_library_versions'),
 
-    # Echo
-    url(r'^echo/js/$','echo_js', name='echo_js'),
-    url(r'^echo/json/$','echo_json', name='echo_json'),
-    url(r'^echo/jsonp/$','echo_jsonp', name='echo_jsonp'),
-    url(r'^echo/html/$','echo_html', name='echo_html'),
-    url(r'^echo/xml/$','echo_xml', name='echo_xml'),
 
     # OLD ECHO
     url(r'^ajax_json_response/$','ajax_json_response', name='ajax_json_response'),
@@ -38,7 +33,7 @@ urlpatterns = patterns(
     url(r'^ajax_xml_echo/nodelay/$','ajax_xml_echo', {'delay': False}, name='ajax_xml_echo_nodelay'),
 
     # expire
-    url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
+    #url(r'^expire/(?P<path>.*)/$','expire_path', name='expire'),
 
     # compatibility with old mooshell/* urls DO NOT USE THEM
     url(r'^mooshell/ajax_json_response/$','ajax_json_response', name='old_ajax_json_response'),

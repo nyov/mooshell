@@ -56,6 +56,7 @@ var MooShellActions = new Class({
 		saveAndReloadId: 'update',
 		saveAsNewId: 'savenew',
 		runId: 'run',
+		draftId: 'm',
 		cleanId: 'clean',
 		jslintId: 'jslint',
 		tidyId: 'tidy',
@@ -89,6 +90,7 @@ var MooShellActions = new Class({
 		addBinded(this.options.saveAndReloadId, this.saveAndReload, this);
 		addBinded(this.options.saveAsNewId, this.saveAsNew, this);
 		addBinded(this.options.runId, this.run, this);
+		addBinded(this.options.draftId, this.run, this);
 		addBinded(this.options.cleanId, this.cleanEntries, this);
 		addBinded(this.options.jslintId, this.jsLint, this);
 		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
@@ -130,6 +132,19 @@ var MooShellActions = new Class({
 		});
 		
 	},
+    updateLanguage: function() {
+		Layout.editors.each(function(w){
+            var lang_choice = $('panel_' + w.options.name + '_choice'),
+                lang_option;
+
+            if (lang_choice) {
+                lang_option = lang_choice.getElement('option[selected]')
+                if (lang_option) {
+                    w.options.language = lang_option.get('text').toLowerCase();
+                }
+            }
+		});
+    },
 	prepareAndLaunchTidy: function(e) {
 		e.stop();
 		if (!$defined(window.js_beautify)) {
@@ -142,11 +157,16 @@ var MooShellActions = new Class({
 	},
 	makeTidy: function(){
 		Layout.editors.each(function(w){
-			var code = w.editor.getCode();
+			var code = w.editor.getCode(),
+                language;
 			if (code) {
-				var fixed = Beautifier[w.options.name](code);
-				if (fixed) w.editor.setCode(fixed);
-				else w.editor.reindent();
+                language = w.options.language;
+                if (language == 'javascript') language = 'js';
+                if (Beautifier[language]) {
+                    var fixed = Beautifier[language](code);
+                    if (fixed) w.editor.setCode(fixed);
+                    else w.editor.reindent();
+                }
 			}
 		});
 	},
@@ -165,14 +185,19 @@ var MooShellActions = new Class({
 		var html = '<div class="modalWrap modal_jslint">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
-		if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
-			html = 	html.substitute({title: 'Errors'}) + 
-					JSLINT.report(true) +
-					'</div></div>';
-		} else {
-			html = 	html.substitute({title: 'Valid!'})+
-					'<p>Your JS code is valid.</p></div></div>';
-		}
+        if (Layout.editors.js.language == 'javascript') {
+            if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
+                html = 	html.substitute({title: 'Errors'}) + 
+                        JSLINT.report(true) +
+                        '</div></div>';
+            } else {
+                html = 	html.substitute({title: 'Valid!'})+
+                        '<p>Your JS code is valid.</p></div></div>';
+            }
+        } else {
+            html = html.substitute({title: ' - Sorry No JavaScript!'}) + 
+                        '<p>You\'re using ' + panel_js + '</p>';
+        }
 		new StickyWin({
 			content: html,
 			relativeTo: $(document.body),
@@ -222,7 +247,7 @@ var MooShellActions = new Class({
 	},
 	// update existing (create shell with new version)
 	saveAndReload: function(e) {
-		e.stop(); 
+		if (e) e.stop(); 
 		Layout.updateFromMirror();
 		new Request.JSON({
 			'url': this.options.exampleSaveUrl,
@@ -235,9 +260,22 @@ var MooShellActions = new Class({
 	},
 	// run - submit the form (targets to the iframe)
 	run: function(e) {
+        var draftonly = false;
 		if (e) e.stop(); 
+        if (e && e.target.getParent().get('id') == 'm') {
+            var draftonly = new Element('input', {
+                'hidden': true,
+                'name': 'draftonly',
+                'id': 'draftonly',
+                'value': true
+            });
+            draftonly.inject(this.form);
+        }
 		Layout.updateFromMirror();
 		this.form.submit();
+        if (draftonly) {
+            draftonly.destroy();
+        }
 		this.fireEvent('run');
 	},
     loadDraft: function(e) {
@@ -259,6 +297,7 @@ var MooShellActions = new Class({
                   '<div id="kbd" class="modalBody">' +
                   '<ul>' +
                   '<li><kbd>Control</kbd> + <kbd>Return</kbd> <span>Run fiddle</span></li>' +
+                  '<li><kbd>Control</kbd> + <kbd>s</kbd> <span>Save fiddle (Save or Update)</span></li>' +
                   '<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> <span>Load draft</span></li>' +
                   '<li><kbd>Control</kbd> + <kbd>&uarr;</kbd> or <kbd>Control</kbd> + <kbd>&darr;</kbd> <span>Switch editor windows</span></li>' +
                   '<li><kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>&uarr;</kbd> <span>Toggle sidebar</span></li>' +

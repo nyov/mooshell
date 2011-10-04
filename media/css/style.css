@@ -243,6 +243,16 @@ body {
 			font-size: 11px;
 			background-color: #45719B;
 		}
+
+        #actions li.actionItem #m {
+
+        }
+            #actions li.actionItem #m span {
+                background-position: 6px -372px;
+                padding: 0 8px;
+                text-indent: -9999px;
+                width: 10px;
+            }
 		
 			#actions li.actionItem a.aiButton span {
 				display: block;
@@ -298,11 +308,11 @@ body {
 		}
 
 	#actions #run span {
-		background-position: 6px -66px;
+		background-position: 6px -100px;
 	}
 
 	#actions #update span {
-		background-position: 6px -100px;
+		background-position: 6px -66px;
 	}
 
 	#actions #savenew span {

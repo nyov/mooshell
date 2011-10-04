@@ -2,6 +2,9 @@ import random
 import time
 import base64
 
+from random import choice
+from scss import Scss
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed
@@ -46,7 +49,6 @@ def get_pastie_edit_key(req, slug=None, version=None, revision=None,
     if revision: key = "%s:%d" % (key, revision)
     if author: key = "%s:%s" % (key, author)
     if skin: key = "%s:%s" % (key, skin)
-
     return key
 
 def pastie_edit(req, slug=None, version=None, revision=None, author=None,
@@ -65,6 +67,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         return HttpResponseNotAllowed("Error in generating the key")
 
     c = None
+    to_log = "%s, slug: %s, version: %s, rev: %s, author: %s, skin: %s" % (
+            key, slug, str(version), str(revision), str(author), str(skin))
     if cache.get(key, None):
         c = cache.get(key)
 
@@ -89,11 +93,13 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                 # {slug}/{skin} "
                 try:
                     user = User.objects.get(username=slug)
+                except:
+                    pass
+                else:
                     author = slug
                     slug = skin
                     skin = None
-                except:
-                    pass
+
             pastie = get_object_or_404(Pastie, slug=slug)
             if version == None:
                 # shell is the base version of the fiddle
@@ -115,6 +121,8 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
                             "Multiple shells: %s, %s" % (slug, version))
                     shell = list(Shell.objects.filter(pastie__slug=slug,
                                             version=version, author=user))[0]
+                except:
+                    raise
 
             external_resources = ShellExternalResource.objects.filter(
                 shell__id=shell.id)
@@ -158,6 +166,10 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         ]
         c.update({
             'shell': shell,
+            'panels': {
+                    'html': (Shell.PANEL_HTML, len(Shell.PANEL_HTML) > 1),
+                    'css': (Shell.PANEL_CSS, len(Shell.PANEL_CSS) > 1),
+                    'js': (Shell.PANEL_JS, len(Shell.PANEL_JS) > 1)},
             'external_resources': external_resources,
             'css_files': [reverse('mooshell_css', args=["%s.css" % skin])],
             'js_libs': js_libs,
@@ -188,8 +200,6 @@ def pastie_edit(req, slug=None, version=None, revision=None, author=None,
         shellform = ShellForm()
     c['shellform'] = shellform
 
-
-
     if slug and c['shell']:
         pastie = c['shell'].pastie
         c['is_author'] = (pastie.author and req.user.is_authenticated() and pastie.author_id == req.user.id)
@@ -216,6 +226,8 @@ def pastie_save(req, nosave=False, skin=None):
                 if req.user.is_authenticated():
                     pastie.author = req.user
                 pastie.save()
+
+        draftonly=req.POST.get('draftonly', False)
 
         shellform = ShellForm(req.POST)
 
@@ -248,6 +260,8 @@ def pastie_save(req, nosave=False, skin=None):
             for dep_id in dependency_ids:
                 dep = JSDependency.objects.get(id=dep_id)
                 dependencies.append(dep)
+            dependencies = sorted(
+                    dependencies, key=lambda d: d.ord, reverse=True)
 
             # append external resources
             external_resources = []
@@ -273,6 +287,21 @@ def pastie_save(req, nosave=False, skin=None):
                 if req.POST.get('username', False):
                     Draft.objects.make(req.POST.get('username'), display_page)
 
+                if draftonly:
+                    hashtag = ''.join(
+                        [choice('abcdefghjkmnpqrstuvwxyz') for i in range(3)])
+                    mdraft_url = "%s%s" % (settings.MOOSHELL_FORCE_SERVER,
+                            reverse('mdraft', args=[hashtag]))
+                    return HttpResponse("""
+<p>EXPERIMENTAL</p>
+<p>Please load result <a target="_draft" href="%s">%s</a> on mobile and
+<a href="http://debug.phonegap.com/client/#jsf_%s">
+debugger</a>
+on the desktop (Chrome, Safari, weinre app)</p>
+<p><a target="_blank" href="http://pmuellr.github.com/weinre/">weinre</a>
+service provided by
+<a target="_blank" href="http://phonegap.com/">PhoneGap</p>""" % (
+    mdraft_url, mdraft_url, hashtag))
                 return display_page
 
             # add user to shell if anyone logged in
@@ -300,7 +329,7 @@ def pastie_save(req, nosave=False, skin=None):
             " return json with pastie url "
             return HttpResponse(simplejson.dumps({
                     'pastie_url_relative': shell.get_absolute_url()
-                    }),mimetype='application/javascript'
+                    }),mimetype='application/json'
                 )
         else:
             error = "Shell form does not validate"
@@ -312,7 +341,7 @@ def pastie_save(req, nosave=False, skin=None):
 
     # Report errors
     return HttpResponse(simplejson.dumps({'error': error}),
-                    mimetype='application/javascript')
+                    mimetype='application/json')
 
 
 @login_required
@@ -341,15 +370,21 @@ def pastie_delete(req, slug, confirmation=False):
         delete_dashboard_keys(req)
 
     return HttpResponse(simplejson.dumps(response),
-                       mimetype='application/javascript')
+                       mimetype='application/json')
 
 
 
 @login_required
-def display_draft(req):
+def display_draft(req, hashtag=False):
     " return the draft as saved in user's files "
     try:
-        return HttpResponse(req.user.draft.all()[0].html)
+        draft = req.user.draft.all()[0].html
+        if hashtag:
+            draft = draft.replace("</head>",
+                    ('<script src="'
+                    'http://debug.phonegap.com/target/target-script-min.js#jsf_%s"'
+                    '></script></head>') % hashtag)
+        return HttpResponse(draft)
     except:
         return HttpResponse("<p>You've got no draft saved</p>"
                 "<p>Please hit [Run] after logging in</p>"
@@ -374,8 +409,18 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
     if not skin:
         skin = req.GET.get('skin',settings.MOOSHELL_DEFAULT_SKIN)
 
+    html = shell.code_html
+    css = shell.code_css
+    if shell.panel_css == 1:
+        # compile to SASS
+        css = Scss().compile(css)
+    js = shell.code_js
+    print (Shell.PANEL_CSS)
     page = render_to_response('pastie_show.html', {
         'shell': shell,
+        'html': html,
+        'css': css,
+        'js': js,
         'dependencies': dependencies,
         'resources': resources,
         'resources_length': len(resources),
@@ -564,63 +609,6 @@ def show_part(req, slug, part, version=None, author=None):
     return render_to_response('show_part.html',
                                 {'content': getattr(shell, 'code_'+part)})
 
-def echo_js(req):
-    " respond JS from GET['js']"
-
-    referer = (settings.MOOSHELL_FORCE_SHOW_SERVER,) \
-            if hasattr(settings, 'MOOSHELL_FORCE_SHOW_SERVER') else False
-    if not is_referer_allowed(req, referer):
-        raise Http404
-    delay(req)
-    return HttpResponse(req.GET.get('js', ''),
-                      mimetype='application/javascript')
-
-
-def echo_json(req):
-    " respond with POST['json'] "
-    delay(req)
-    try:
-        response = simplejson.dumps(
-            simplejson.loads(req.POST.get('json', '{}')))
-    except Exception, e:
-        response = simplejson.dumps({'error': str(e)})
-    return HttpResponse(
-        response,
-        mimetype='application/javascript'
-    )
-
-
-def echo_html(req):
-    " respond with POST['html'] "
-    delay(req)
-    return HttpResponse(req.POST.get('html', ''))
-
-
-def echo_jsonp(req):
-    " respond what provided via GET "
-    delay(req)
-    response = {}
-    callback = req.GET.get('callback', False)
-    noresponse_keys = ['callback', 'delay']
-
-    for key, value in req.GET.items():
-        if key not in noresponse_keys:
-            response.update({key: value})
-
-    response = simplejson.dumps(response)
-
-    if callback:
-        response = '%s(%s);' % (callback, response)
-
-    return HttpResponse(response, mimetype='application/javascript')
-
-
-def echo_xml(req):
-    " respond with POST['xml'] "
-    delay(req)
-    return HttpResponse(req.POST.get('xml', ''), mimetype='text/xml')
-
-
 def ajax_json_echo(req, delay=True):
     " OLD: echo GET and POST via JSON "
     if delay:
@@ -630,7 +618,7 @@ def ajax_json_echo(req, delay=True):
         c['get_response'].update({key: value})
     for key, value in req.POST.items():
         c['post_response'].update({key: value})
-    return HttpResponse(simplejson.dumps(c),mimetype='application/javascript')
+    return HttpResponse(simplejson.dumps(c),mimetype='application/json')
 
 
 def ajax_html_echo(req, delay=True):
@@ -658,7 +646,7 @@ def ajax_json_response(req):
             'array': ['This','is',['an','array'],1,2,3],
             'object': {'key': 'value'}
         }),
-        mimetype='application/javascript'
+        mimetype='application/json'
     )
 
 
@@ -676,6 +664,12 @@ def serve_static(request, path, media='media', mimetype=None):
 @cache_page(CACHE_TIME)
 def get_library_versions(request, group_id):
     " get library versions for current framework "
+    try:
+        group_id = int(group_id)
+    except:
+        log_to_file("ERROR: get_library_versions called with group_id:"
+                " %s" % group_id)
+        raise Http404
     libraries = JSLibrary.objects.filter(library_group__id=group_id)
     c = {'libraries': [
             {
@@ -691,36 +685,39 @@ def get_library_versions(request, group_id):
     if selected:
         selected = selected[0]
         c['dependencies'] = get_dependencies_dict(selected.id)
-    return HttpResponse(simplejson.dumps(c),mimetype='application/javascript')
+    return HttpResponse(simplejson.dumps(c),mimetype='application/json')
 
 
 @cache_page(CACHE_TIME)
 def get_dependencies(request, lib_id):
     " get dependencies for current library version "
+    try:
+        lib_id = int(lib_id)
+    except:
+        log_to_file("ERROR: get_dependencies called with lib_id: %s" % lib_id)
+        raise Http404
     return HttpResponse(simplejson.dumps(get_dependencies_dict(lib_id)),
-                        mimetype='application/javascript')
+                        mimetype='application/json')
 
 def get_dependencies_dict(lib_id):
     " returns a dict of dependencies for given library version "
     dependencies = JSDependency.objects.filter(active=True,library__id=lib_id)
-    return [{'id': d.id, 'name': d.name, 'selected': d.selected} \
-            for d in dependencies ]
+    return [{'id': d.id,
+             'name': d.name,
+             'selected': d.selected} for d in dependencies]
 
-def expire_path(r, path):
-    " make the path expire - used with base version (I think) "
-    log_to_file('DEBUG: expire_path used')
-    path = '%s' % path
-    expire_page(path)
-    return HttpResponse(simplejson.dumps(
-        {'message':'path expired', 'path':path}
-    ), mimetype="application/javascript")
+#def expire_path(r, path):
+#    " make the path expire - used with base version (I think) "
+#    path = '%s' % path
+#    expire_page(path)
+#    return HttpResponse(simplejson.dumps(
+#        {'message':'path expired', 'path':path}
+#    ), mimetype="application/json")
 
 
 def make_favourite(req):
     " set the base version "
     shell_id = req.POST.get('shell_id', None)
-    log_to_file('DEBUG: make_favourite - '
-            'user: %s, shell id: %s' % (str(req.user), str(shell_id)))
     if not shell_id:
         log_to_file('ERROR: make_favourite: no shell_id')
         return HttpResponse(
@@ -746,27 +743,23 @@ def make_favourite(req):
     shell.pastie.favourite = shell
     shell.pastie.save()
 
-    log_to_file(
-            'DEBUG: make_favourite - Version %d saved as base in Pastie %s' % (
-                shell.version, shell.pastie.slug))
-
-    keys_deleted = delete_pastie_show_keys(
-            shell.pastie.slug, author=shell.author)
+    delete_pastie_show_keys(shell.pastie.slug, author=shell.author)
     keys = [get_pastie_edit_key(req, shell.author, author=shell.pastie.slug),
-            #get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
-            #                    version=shell.version),
-            get_embedded_key(req, shell.pastie.slug, author=shell.author)
-            ]
+            get_pastie_edit_key(req, shell.author, skin=shell.pastie.slug),
+            get_pastie_edit_key(req, shell.pastie.slug, author=shell.author,
+                                version=shell.version),
+            get_pastie_edit_key(req, shell.pastie.slug, author=shell.author),
+            get_embedded_key(req, shell.pastie.slug, author=shell.author)]
+    keys_deleted = []
     for key in keys:
         if cache.has_key(key):
             cache.delete(key)
-    keys_deleted.extend(keys)
-    log_to_file('DEBUG: make_favourite: deleting keys %s' % str(keys_deleted))
+            keys_deleted.append(key)
 
     return HttpResponse(simplejson.dumps({
             'message': 'saved as favourite',
             'url': shell.pastie.get_absolute_url()
-        }), mimetype="application/javascript")
+        }), mimetype="application/json")
 
 
 @cache_page(CACHE_TIME)
@@ -854,4 +847,4 @@ def add_external_resource(req):
             'url': resource.url,
             'filename': resource.filename,
             'extension': resource.extension
-        }), mimetype="application/javascript")
+        }), mimetype="application/json")

@@ -133,7 +133,13 @@ var MooShellEditor = new Class({
 	getPosition: function() {
 		if (this.editor) return $(this.editor.frame).getPosition();
 		return this.element.getPosition();
-	}
+	},
+    makeDummyOptions: function(name) {
+        this.options.codeMirrorOptions = {
+            iframeClass: name || 'dummy',
+            parserfile: ['parsedummy.js']
+        }
+    }
 });
 
 
@@ -144,6 +150,7 @@ MooShellEditor.JS = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'js',
+        language: 'javascript',
         focus: true,
 		useCodeMirror: true,
 		flexibleHeight: true,
@@ -158,6 +165,10 @@ MooShellEditor.JS = new Class({
 	},
 	initialize: function(el,options) {
 		this.setOptions(options);
+        // XXX: This is kind of hardcoded ...
+        if (this.options.language == 'coffeescript') {
+            this.makeDummyOptions('coffeescript');
+        }
 		this.parent(el,this.options);
 	}
 });
@@ -171,6 +182,7 @@ MooShellEditor.CSS = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'css',
+        language: 'css',
 		useCodeMirror: true,
 		stylesheet: [
 			"css/codemirror/style.css",
@@ -195,6 +207,7 @@ MooShellEditor.HTML = new Class({
 	Extends: MooShellEditor,
 	options: {
 		name: 'html',
+        language: 'html',
 		useCodeMirror: true,
 		stylesheet: [
 			"css/codemirror/style.css",
