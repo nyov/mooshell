@@ -1,5 +1,5 @@
 body {
-	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
+	font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 	background: #efefef;
 	overflow: hidden;
 	padding: 0;
@@ -66,8 +66,8 @@ body {
 		color: #626262;
 		font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 		font-size: 1em;
-		background: #fff url(../img/shadow.gif) 0 0 repeat-x !important;
-		border: 1px solid #ADADAD !important;
+		border: 1px solid #BFBFBF;
+		box-shadow: inset 0 1px 3px #E4E4E4;
 	}
 
 	#sidebar textarea {
@@ -120,16 +120,15 @@ body {
 		}
 
 #sidebar #id_title {
-	font-weight: 500;
 }
 
 #sidebar .toggler {
-	background: transparent url(../img/sprites.png) no-repeat 0 -287px;
-	color: #6B6B6B;
-	text-shadow: 1px 0 0 #fff;
-	height: 30px;
-	line-height: 30px;
-	text-indent: 3px;
+	background: transparent url(../img/sprites.png) no-repeat 0 -284px;
+	color: #858585;
+	height: 36px;
+	line-height: 36px;
+	text-indent: 4px;
+	font-weight: normal;
 }
 
 	#sidebar .toggler em {
@@ -140,7 +139,8 @@ body {
 
 	
 	#sidebar .toggler.active {
-		background-position: 0 -322px;
+		background-position: 0 -318px;
+		color: #333;
 	}
 
 	#sidebar .toggler.selected {
@@ -195,8 +195,7 @@ body {
 		color: #626262;
 		font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 		font-size: 1em;
-		background: #fff url(../img/shadow.gif) 0 0 repeat-x !important;
-		border: 1px solid #ADADAD !important;
+		border: 1px solid #ADADAD;
 	}
 
 .libraryTagAttributes {
@@ -210,7 +209,7 @@ body {
 
 #actions ul.actionCont {
 	float: left;
-	margin: 8px 10px 0 0;
+	margin: 5px 10px 0 0;
 }
 
 	#actions ul.right {
@@ -220,7 +219,7 @@ body {
 
 	#actions li.actionItem {
 		float: left;
-		position: relative;		
+		position: relative;
 	}
 	
 	
@@ -237,10 +236,10 @@ body {
 			display: block;
 			outline: none;
 			text-decoration: none;
-			text-shadow: 0 1px 0 #0C131C;
+			text-shadow: 0 1px 1px #253E5C;
 			color: #ffffff;
 			font-weight: bold;
-			font-size: 11px;
+			font-size: 12px;
 			background-color: #45719B;
 		}
 
@@ -256,9 +255,8 @@ body {
 		
 			#actions li.actionItem a.aiButton span {
 				display: block;
-				padding: 0 8px 0 28px;
-				line-height: 26px;
-				font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
+				padding: 0 10px 0 30px;
+				line-height: 30px;
 			}
 
 			#actions li.noIcon a.aiButton span {
@@ -308,37 +306,37 @@ body {
 		}
 
 	#actions #run span {
-		background-position: 6px -100px;
+		background-position: 8px -98px;
 	}
 
 	#actions #update span {
-		background-position: 6px -66px;
+		background-position: 8px -64px;
 	}
 
 	#actions #savenew span {
-		background-position: 6px -134px;
+		background-position: 8px -132px;
 	}
 
 	#actions #clean span {
-	   background-position: 6px -168px;
+	   background-position: 8px -166px;
 	}
 
 	#actions #mark_favourite span {
-	   background-position: 6px -202px;
+	   background-position: 8px -200px;
 	}
 
 	#actions #is_favourite span,
 	#actions #mark_favourite.isFavourite span {
-	   background-position: 6px -236px;
+	   background-position: 8px -234px;
 	   cursor: pointer;
 	}
 
 	#actions #tidy span {
-	   background-position: 6px -270px;
+	   background-position: 8px -268px;
 	}
 	
 	#actions #jslint span {
-	   background-position: 6px -338px;
+	   background-position: 8px -336px;
 	}
 	
 /* select link */
@@ -399,8 +397,8 @@ div.dropdownCont {
 
 #content .window {
 	width: 100%;
-	border: 1px solid #adadad !important;
-	background: url(../img/shadow.gif) repeat-x 0 0;
+	border: 1px solid #adadad;
+	box-shadow: inset 0 1px 3px #E4E4E4;
 }
 
 	#content .top {
@@ -462,7 +460,8 @@ div.dropdownCont {
 	/* editors */
 	#content textarea,
 	#content iframe {
-		background: #fff url(../img/shadow.gif) 0 0 repeat-x;
+		background: #fff;
+		box-shadow: inset 0 1px 3px #E4E4E4;
 		border: 0 !important;
 	}
 
