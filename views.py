@@ -415,7 +415,6 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
         # compile to SASS
         css = Scss().compile(css)
     js = shell.code_js
-    print (Shell.PANEL_CSS)
     page = render_to_response('pastie_show.html', {
         'shell': shell,
         'html': html,
