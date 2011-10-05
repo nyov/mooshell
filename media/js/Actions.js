@@ -1,48 +1,4 @@
 // TODO: refactor 
-var DiscussionWindow = new Class({
-	initialize: function(){
-		this.modal;
-	},
-	
-	showModalFx: function(){
-		$$('.modalWrap')[0].addClass('show');
-	},
-
-	create: function(subs){
-		var discussionHtml = '';
-		discussionHtml += '<div class="modalWrap {specialClass}">';
-		discussionHtml += '<div class="modalHeading"><h3>Discussion</h3><span class="close">Close window</span></div>';
-		discussionHtml += '<div id="{specialId}" class="modalBody"></div>';
-		discussionHtml += '</div>';
-
-		subs = $merge({
-			specialClass: '',
-			specialId: ''
-		}, subs);
-
-		this.modal = new StickyWin({
-			content: discussionHtml.substitute(subs),
-			relativeTo: $(document.body),
-			position: 'center',
-			edge: 'center',
-			closeClassName: 'close',
-			draggable: true,
-			dragHandleSelector: 'h3',
-			closeOnEsc: true,
-			destroyOnClose: true,
-            allowMultiple: false,
-            onDisplay: this.showModalFx
-		});
-		
-		this.modal.show();
-
-		return this.modal;
-	},
-
-	destroy: function(){
-		this.modal.hide();
-	}
-});
 
 /*
  * Define actions on the run/save/clean buttons
@@ -60,7 +16,6 @@ var MooShellActions = new Class({
 		cleanId: 'clean',
 		jslintId: 'jslint',
 		tidyId: 'tidy',
-		disqusId: 'discussion',
 		shareSelector: '#share_link_dropdown, #share_embedded_dropdown, #share_result_dropdown',
 		favId: 'mark_favourite',
 		entriesSelector: 'textarea',
@@ -95,7 +50,6 @@ var MooShellActions = new Class({
 		addBinded(this.options.jslintId, this.jsLint, this);
 		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
 		addBinded(this.options.favId, this.makeFavourite, this);
-		addBinded(this.options.disqusId, this.showDisqusWindow, this);
 		$$('a.keyActions').addEvents({
 			click: function(e){
                 this.showShortcutDialog(e);
@@ -117,20 +71,6 @@ var MooShellActions = new Class({
 		//	this.run();
 			this.displayExampleURL();
 		}
-	},
-	showDisqusWindow: function(e) {
-		e.stop();
-
-		// create the discussion modal
-		new DiscussionWindow().create({
-			specialClass: 'disqus_thread',
-			specialId: 'disqus_thread'
-		});
-		
-		Asset.javascript('http://jsfiddle.disqus.com/embed.js', {
-			async: true
-		});
-		
 	},
     updateLanguage: function() {
 		Layout.editors.each(function(w){

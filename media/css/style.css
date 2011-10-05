@@ -341,15 +341,6 @@ body {
 	   background-position: 6px -338px;
 	}
 	
-	#actions #discussion span {
-	   background-position: 6px -304px;
-	}
-	
-		#actions #discussion span strong {
-			color: #CFD9E6;
-			font-weight: normal;
-		}
-	
 /* select link */
 #select_link {
 	background: transparent url(../img/sprites.png) no-repeat 0 -254px;

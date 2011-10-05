@@ -1,24 +1,2 @@
 {% if shell %}
-<a style="display: none" id="hidden-comment-count" title="" href="#disqus_thread"></a>
-
-<script type="text/javascript" charset="utf-8">
-	window.addEvents({
-		domready: function(){
-			// this piece fetches the number of comments
-			var links = $$('a');
-			var query = '?';
-			links.each(function(link, i){
-				if(links[i].href.indexOf('#disqus_thread') >= 0) {
-					query += 'url' + i + '=' + encodeURIComponent('{{ disqus_url }}') + '&';
-				}
-			});
-			Asset.javascript('http://disqus.com/forums/jsfiddle/get_num_replies.js' + query, {
-				onload: function(){
-					$('discussion').getElement('strong').set('text', $('hidden-comment-count').get('text'));
-				}
-			});
-		}
-	});
-
-</script>
 {% endif %}
