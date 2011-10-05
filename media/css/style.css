@@ -1,5 +1,5 @@
 body {
-	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
+	font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 	background: #efefef;
 	overflow: hidden;
 	padding: 0;
@@ -40,10 +40,10 @@ body {
 /* sidebar
  ================================================================ */
 #sidebar {
-	padding: 2px 8px 0 8px;
+	padding: 0;
 	margin: 0;
 	font-size: 11px;
-	width: 203px;
+	width: 217px;
 	position: absolute;
 	top: 45px;
 	left: 0;
@@ -66,8 +66,8 @@ body {
 		color: #626262;
 		font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 		font-size: 1em;
-		background: #fff url(../img/shadow.gif) 0 0 repeat-x !important;
-		border: 1px solid #ADADAD !important;
+		border: 1px solid #CCC;
+		box-shadow: inset 0 1px 3px #E4E4E4;
 	}
 
 	#sidebar textarea {
@@ -109,7 +109,7 @@ body {
 	}
 
 	#sidebar .ebCont {
-		padding: 4px 0 8px 3px;
+		padding: 4px 8px 8px;
 	}
 
 		#sidebar .ebCont h3 {
@@ -120,16 +120,15 @@ body {
 		}
 
 #sidebar #id_title {
-	font-weight: 500;
 }
 
 #sidebar .toggler {
-	background: transparent url(../img/sprites.png) no-repeat 0 -287px;
-	color: #6B6B6B;
-	text-shadow: 1px 0 0 #fff;
-	height: 30px;
-	line-height: 30px;
-	text-indent: 3px;
+	background: transparent url(../img/sprites.png) no-repeat 10px -284px;
+	color: #858585;
+	height: 36px;
+	line-height: 36px;
+	padding: 0 8px;
+	font-weight: normal;
 }
 
 	#sidebar .toggler em {
@@ -140,7 +139,9 @@ body {
 
 	
 	#sidebar .toggler.active {
-		background-position: 0 -322px;
+		background-position: 10px -318px;
+		color: #333;
+		box-shadow: inset 0 2px 1px #F3F3F3;
 	}
 
 	#sidebar .toggler.selected {
@@ -195,8 +196,7 @@ body {
 		color: #626262;
 		font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 		font-size: 1em;
-		background: #fff url(../img/shadow.gif) 0 0 repeat-x !important;
-		border: 1px solid #ADADAD !important;
+		border: 1px solid #ADADAD;
 	}
 
 .libraryTagAttributes {
@@ -210,7 +210,7 @@ body {
 
 #actions ul.actionCont {
 	float: left;
-	margin: 8px 10px 0 0;
+	margin: 6px 10px 0 0;
 }
 
 	#actions ul.right {
@@ -220,7 +220,7 @@ body {
 
 	#actions li.actionItem {
 		float: left;
-		position: relative;		
+		position: relative;
 	}
 	
 	
@@ -237,10 +237,10 @@ body {
 			display: block;
 			outline: none;
 			text-decoration: none;
-			text-shadow: 0 1px 0 #0C131C;
+			text-shadow: 0 1px 1px #253E5C;
 			color: #ffffff;
 			font-weight: bold;
-			font-size: 11px;
+			font-size: 12px;
 			background-color: #45719B;
 		}
 
@@ -256,9 +256,8 @@ body {
 		
 			#actions li.actionItem a.aiButton span {
 				display: block;
-				padding: 0 8px 0 28px;
-				line-height: 26px;
-				font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
+				padding: 0 10px 0 30px;
+				line-height: 28px;
 			}
 
 			#actions li.noIcon a.aiButton span {
@@ -287,7 +286,8 @@ body {
 
    
 		#actions li.actionItem a.aiButton:active {
-			background-position: 0 0;
+			background-image: none;
+			box-shadow: inset 0 0 6px #264872;
 		}
 
 	#actions ul.collapsed li.actionItem {
@@ -308,37 +308,37 @@ body {
 		}
 
 	#actions #run span {
-		background-position: 6px -100px;
+		background-position: 8px -99px;
 	}
 
 	#actions #update span {
-		background-position: 6px -66px;
+		background-position: 8px -65px;
 	}
 
 	#actions #savenew span {
-		background-position: 6px -134px;
+		background-position: 8px -133px;
 	}
 
 	#actions #clean span {
-	   background-position: 6px -168px;
+	   background-position: 8px -167px;
 	}
 
 	#actions #mark_favourite span {
-	   background-position: 6px -202px;
+	   background-position: 8px -201px;
 	}
 
 	#actions #is_favourite span,
 	#actions #mark_favourite.isFavourite span {
-	   background-position: 6px -236px;
+	   background-position: 8px -235px;
 	   cursor: pointer;
 	}
 
 	#actions #tidy span {
-	   background-position: 6px -270px;
+	   background-position: 8px -269px;
 	}
 	
 	#actions #jslint span {
-	   background-position: 6px -338px;
+	   background-position: 8px -337px;
 	}
 	
 /* select link */
@@ -399,8 +399,8 @@ div.dropdownCont {
 
 #content .window {
 	width: 100%;
-	border: 1px solid #adadad !important;
-	background: url(../img/shadow.gif) repeat-x 0 0;
+	border: 1px solid #adadad;
+	box-shadow: inset 0 1px 3px #E4E4E4;
 }
 
 	#content .top {
@@ -462,7 +462,8 @@ div.dropdownCont {
 	/* editors */
 	#content textarea,
 	#content iframe {
-		background: #fff url(../img/shadow.gif) 0 0 repeat-x;
+		background: #fff;
+		box-shadow: inset 0 1px 3px #E4E4E4;
 		border: 0 !important;
 	}
 
@@ -584,12 +585,12 @@ div.dropdownCont {
 /* license text
  ================================================================ */
 #documentation-info {
-	margin: 20px 0 0;
+	margin: 20px 8px 0;
 	color: #9A9A9A;
 }
 
 	#documentation-info p {
-		font-size: .9em;
+		font-size: 1em;
 	}
 	
 	#documentation-info a {
@@ -637,18 +638,17 @@ div.dropdownCont {
 #info {
 	background: #FEFFE5;
 	padding: 7px;
-	border: 2px solid #EBBA95;
-	font-family: Helvetica, Tahoma;
+	border: 1px solid #EBBA95;
 	font-size: 11px;
 	color: #C98657;
-	margin: 5px 0 10px 0;
+	margin: 7px 8px 10px;
 	line-height: 130%;
 	text-shadow: 0 1px 0 #FFF7F4;
 	position: relative;
 	display: none;
 
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 }
 
 	#info #info-close {
