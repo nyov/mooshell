@@ -40,10 +40,10 @@ body {
 /* sidebar
  ================================================================ */
 #sidebar {
-	padding: 2px 8px 0 8px;
+	padding: 0;
 	margin: 0;
 	font-size: 11px;
-	width: 203px;
+	width: 217px;
 	position: absolute;
 	top: 45px;
 	left: 0;
@@ -66,7 +66,7 @@ body {
 		color: #626262;
 		font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 		font-size: 1em;
-		border: 1px solid #BFBFBF;
+		border: 1px solid #CCC;
 		box-shadow: inset 0 1px 3px #E4E4E4;
 	}
 
@@ -109,7 +109,7 @@ body {
 	}
 
 	#sidebar .ebCont {
-		padding: 4px 0 8px 3px;
+		padding: 4px 8px 8px;
 	}
 
 		#sidebar .ebCont h3 {
@@ -123,11 +123,11 @@ body {
 }
 
 #sidebar .toggler {
-	background: transparent url(../img/sprites.png) no-repeat 0 -284px;
+	background: transparent url(../img/sprites.png) no-repeat 10px -284px;
 	color: #858585;
 	height: 36px;
 	line-height: 36px;
-	text-indent: 4px;
+	padding: 0 8px;
 	font-weight: normal;
 }
 
@@ -139,8 +139,10 @@ body {
 
 	
 	#sidebar .toggler.active {
-		background-position: 0 -318px;
+		background-position: 10px -318px;
 		color: #333;
+		background-color: #FAFAFA;
+		box-shadow: inset 0 2px 1px #ECECEC;
 	}
 
 	#sidebar .toggler.selected {
@@ -155,6 +157,8 @@ body {
 
 	#sidebar .element {
 		border-bottom: 1px solid #D5D5D5;
+		background: #FAFAFA;
+		
 	}
 
 	#sidebar .element a:hover {
@@ -583,12 +587,12 @@ div.dropdownCont {
 /* license text
  ================================================================ */
 #documentation-info {
-	margin: 20px 0 0;
+	margin: 20px 8px 0;
 	color: #9A9A9A;
 }
 
 	#documentation-info p {
-		font-size: .9em;
+		font-size: 1em;
 	}
 	
 	#documentation-info a {
@@ -636,18 +640,17 @@ div.dropdownCont {
 #info {
 	background: #FEFFE5;
 	padding: 7px;
-	border: 2px solid #EBBA95;
-	font-family: Helvetica, Tahoma;
+	border: 1px solid #EBBA95;
 	font-size: 11px;
 	color: #C98657;
-	margin: 5px 0 10px 0;
+	margin: 7px 8px 10px;
 	line-height: 130%;
 	text-shadow: 0 1px 0 #FFF7F4;
 	position: relative;
 	display: none;
 
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 }
 
 	#info #info-close {
