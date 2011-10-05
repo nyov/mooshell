@@ -210,7 +210,7 @@ body {
 
 #actions ul.actionCont {
 	float: left;
-	margin: 5px 10px 0 0;
+	margin: 6px 10px 0 0;
 }
 
 	#actions ul.right {
@@ -257,7 +257,7 @@ body {
 			#actions li.actionItem a.aiButton span {
 				display: block;
 				padding: 0 10px 0 30px;
-				line-height: 30px;
+				line-height: 28px;
 			}
 
 			#actions li.noIcon a.aiButton span {
@@ -286,7 +286,8 @@ body {
 
    
 		#actions li.actionItem a.aiButton:active {
-			background-position: 0 0;
+			background-image: none;
+			box-shadow: inset 0 0 6px #264872;
 		}
 
 	#actions ul.collapsed li.actionItem {
@@ -307,37 +308,37 @@ body {
 		}
 
 	#actions #run span {
-		background-position: 8px -98px;
+		background-position: 8px -99px;
 	}
 
 	#actions #update span {
-		background-position: 8px -64px;
+		background-position: 8px -65px;
 	}
 
 	#actions #savenew span {
-		background-position: 8px -132px;
+		background-position: 8px -133px;
 	}
 
 	#actions #clean span {
-	   background-position: 8px -166px;
+	   background-position: 8px -167px;
 	}
 
 	#actions #mark_favourite span {
-	   background-position: 8px -200px;
+	   background-position: 8px -201px;
 	}
 
 	#actions #is_favourite span,
 	#actions #mark_favourite.isFavourite span {
-	   background-position: 8px -234px;
+	   background-position: 8px -235px;
 	   cursor: pointer;
 	}
 
 	#actions #tidy span {
-	   background-position: 8px -268px;
+	   background-position: 8px -269px;
 	}
 	
 	#actions #jslint span {
-	   background-position: 8px -336px;
+	   background-position: 8px -337px;
 	}
 	
 /* select link */
