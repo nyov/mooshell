@@ -128,18 +128,17 @@ var MooShellEditor = new Class({
 	},
 	setHeight: function(height) {
 		this.getWindow().setStyle('height',height);
-        console.log('wtf')
 	},
 	getPosition: function() {
 		if (this.editor) return $(this.editor.frame).getPosition();
 		return this.element.getPosition();
 	},
     makeDummyOptions: function(name) {
-        //this.options.codeMirrorOptions = {
-        //    iframeClass: null,
-        //    parserfile: [],
-        //    autoMatchParens: false,
-        //};
+        this.options.codeMirrorOptions = {
+            iframeClass: this.options.codeMirrorOptions.iframeClass, 
+            parserfile: 'parsedummy.js',
+            height: false
+        };
     }
 });
 
