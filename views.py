@@ -413,7 +413,10 @@ def pastie_display(req, slug, shell=None, dependencies=[], resources=[],
     css = shell.code_css
     if shell.panel_css == 1:
         # compile to SASS
-        css = Scss().compile(css)
+        try:
+            css = Scss().compile(css)
+        except Exception, error:
+            css = "/* There where errors in SCSS */\n%s" % css
     js = shell.code_js
     page = render_to_response('pastie_show.html', {
         'shell': shell,
