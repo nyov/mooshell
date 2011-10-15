@@ -210,7 +210,7 @@ body {
 
 #actions ul.actionCont {
 	float: left;
-	margin: 5px 10px 0 0;
+	margin: 7px 10px 0 0;
 }
 
 	#actions ul.right {
@@ -257,7 +257,7 @@ body {
 			#actions li.actionItem a.aiButton span {
 				display: block;
 				padding: 0 10px 0 30px;
-				line-height: 30px;
+				line-height: 26px;
 			}
 
 			#actions li.noIcon a.aiButton span {
@@ -307,37 +307,37 @@ body {
 		}
 
 	#actions #run span {
-		background-position: 8px -98px;
+		background-position: 8px -100px;
 	}
 
 	#actions #update span {
-		background-position: 8px -64px;
+		background-position: 8px -66px;
 	}
 
 	#actions #savenew span {
-		background-position: 8px -132px;
+		background-position: 8px -134px;
 	}
 
 	#actions #clean span {
-	   background-position: 8px -166px;
+	   background-position: 8px -168px;
 	}
 
 	#actions #mark_favourite span {
-	   background-position: 8px -200px;
+	   background-position: 8px -202px;
 	}
 
 	#actions #is_favourite span,
 	#actions #mark_favourite.isFavourite span {
-	   background-position: 8px -234px;
+	   background-position: 8px -236px;
 	   cursor: pointer;
 	}
 
 	#actions #tidy span {
-	   background-position: 8px -268px;
+	   background-position: 8px -270px;
 	}
 	
 	#actions #jslint span {
-	   background-position: 8px -336px;
+	   background-position: 8px -338px;
 	}
 	
 /* select link */
@@ -786,7 +786,7 @@ legend {
 	bottom: 8px;
 	left: 8px;
 	display: block;
-	padding: 5px 0 5px 72px;
+	padding: 5px 0 5px 36px;
 	background: url(../img/keys.png) 0 0 no-repeat;
 	text-decoration: none;
 }
