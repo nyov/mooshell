@@ -1,4 +1,5 @@
-// TODO: refactor 
+// TODO: refactor
+// TODO: This code is now legacy code, none of it will make its way into Beta
 
 /*
  * Define actions on the run/save/clean buttons
@@ -39,9 +40,10 @@ var MooShellActions = new Class({
 		this.setOptions(options);
 		var addBinded = function(el, callback, bind) {
 			el = $(el);
-			if (el) 
+			if (el){
 				el.addEvent('click', callback.bind(bind));
-		}
+			}
+		};
 		addBinded(this.options.saveAndReloadId, this.saveAndReload, this);
 		addBinded(this.options.saveAsNewId, this.saveAsNew, this);
 		addBinded(this.options.runId, this.run, this);
@@ -90,7 +92,7 @@ var MooShellActions = new Class({
                 lang_option;
 
             if (lang_choice) {
-                lang_option = lang_choice.getElement('option[selected]')
+                lang_option = lang_choice.getElement('option[selected]');
                 if (lang_option) {
                     w.options.language = lang_option.get('text').toLowerCase();
                 }
@@ -160,9 +162,9 @@ var MooShellActions = new Class({
 			dragHandleSelector: 'h3',
 			closeOnEsc: true,
 			destroyOnClose: true,
-            allowMultiple: false,
-            onDisplay: this.showModalFx
-		}).show()
+        allowMultiple: false,
+        onDisplay: this.showModalFx
+		}).show();
 	},
 	// mark shell as favourite
 	makeFavourite: function(e) {
