@@ -244,7 +244,7 @@ class Draft(models.Model):
 
 LANG_HTML = ((0, 'HTML'),)
 LANG_CSS = ((0, 'CSS'),
-            (1, 'SASS'))
+            (1, 'SCSS'))
 LANG_JS = ((0, 'JavaScript'),
            (1, 'CoffeeScript'))
 

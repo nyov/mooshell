@@ -85,20 +85,39 @@ var MooShellActions = new Class({
 		//	this.run();
 			this.displayExampleURL();
 		}
+        // assign change language in panel
+        $$('.panel_choice').addEvent('change', this.switchLanguage.bind(this));
 	},
-    updateLanguage: function() {
-		Layout.editors.each(function(w){
-            var lang_choice = $('panel_' + w.options.name + '_choice'),
-                lang_option;
+    
+    /*
+     * Change language in panel
+     */
+    switchLanguage: function(e) {
+        if (!e) return;
+        sel = e.target;
+        var panel_name = sel.get('data-panel'), 
+            editor = Layout.editors[panel_name],
+            Klass = MooShellEditor[panel_name.toUpperCase()],
+            language = sel.getElement('option[selected]').get('text');
 
-            if (lang_choice) {
-                lang_option = lang_choice.getElement('option[selected]');
-                if (lang_option) {
-                    w.options.language = lang_option.get('text').toLowerCase();
-                }
-            }
-		});
+        // if (lang_choice) {
+        //     lang_option = lang_choice.getElement('option[selected]');
+        //     if (lang_option) {
+        //         w.options.language = lang_option.get('text').toLowerCase();
+        //     }
+        // }
+        editor.updateCode();
+        editor.getWindow().getElement('.CodeMirror-wrapping').destroy();
+        Layout.editors[panel_name] = editor = false;
+        new Klass($(sel.get('data-panel_id')), {
+            language: language.toLowerCase()
+        });
+        Layout.editors[panel_name].setLabelName(language);
+        //console.log(window['panel_' + panel_name])
+        window['panel_' + panel_name] = language.toLowerCase();
+        //console.log(window['panel_' + panel_name])
     },
+
 	prepareAndLaunchTidy: function(e) {
 		e.stop();
 		if (!$defined(window.js_beautify)) {
@@ -139,7 +158,7 @@ var MooShellActions = new Class({
 		var html = '<div class="modalWrap modal_jslint">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
-        if (Layout.editors.js.language == 'javascript') {
+        if (panel_js == 'javascript') {
             if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
                 html = 	html.substitute({title: 'Errors'}) + 
                         JSLINT.report(true) +

@@ -5,26 +5,36 @@
  */
 
 var disallowedPlatforms = ['ios', 'android', 'ipod'];
+var default_code_mirror_options = {
+    lineNumbers: false,
+    autoMatchParens: true,
+    indentUnit: 4,
+    tabMode: 'shift',
+    parserfile: 'parsedummy.js',
+    height: false 
+}
 
 var MooShellEditor = new Class({
-	Implements: [Options, Events, Class.Occlude],
+	Implements: [Options, Events],
 	parameter: "Editor",
 	options: {
 		useCodeMirror: true,
-		codeMirrorOptions: {
-			lineNumbers: false,
-			autoMatchParens: true,
-			indentUnit: 4,
-			tabMode: 'shift',
-			height: ""
-		}
+		codeMirrorOptions: default_code_mirror_options 
 	},
+    window_names: {
+        'javascript': 'JavaScript',
+        'html': 'HTML',
+        'css': 'CSS',
+        'scss': 'SCSS',
+        'coffeescript': 'CoffeeScript'
+    },
+
 	initialize: function(el, options) {
 		// switch off CodeMirror for IE
 		//if (Browser.Engine.trident) options.useCodeMirror = false;
 		this.element = $(el);
-		if (this.occlude()) return this.occluded;
 		this.setOptions(options);
+        //console.log(this.options.name + ' / ' + this.options.language);
         var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
 		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && !is_disallowed) {
             // hide textarea
@@ -78,67 +88,93 @@ var MooShellEditor = new Class({
 			'run': this.b64decode.bind(this)
 		});
 		Layout.registerEditor(this);
+        this.setLabelName(this.options.language || this.options.name)
 	},
+
 	getEditor: function() {
 		return this.editor || this.element;
 	},
+
 	getWindow: function() {
 		if (!this.window) {
 			this.window = this.element.getParent('.window');
 		}
 		return this.window;
 	},
+
 	getLabel: function() {
 		return this.getWindow().getElement('.window_label');
 	},
+
 	b64decode: function() {
 		this.element.set('value', this.before_decode);
 	},
+
     getCode: function() {
       return (this.editor) ? this.editor.getCode() : this.element.get('value');
     },
+
 	updateFromMirror: function() {
 		this.before_decode = this.getCode(); 
 		this.element.set('value', Base64.encode(this.before_decode));
 	},
+
+    updateCode: function() {
+        this.element.set('value', this.getCode());
+    },
+
 	clean: function() {
 		this.element.set('value','');
 		this.cleanEditor();
 	},
+
 	cleanEditor: function() {
 		if (this.editor) this.editor.setCode('');
 	},
+
 	hide: function() {
 		this.getWindow().hide();
 	},
+
 	show: function() {
 		this.getWindow().show();
 	},
+
+    setLanguage: function(language) {
+        // XXX: This is hacky
+        this.setLabelName(language);
+    },
+
+    setLabelName: function(language) {
+        this.getLabel().set('text', this.window_names[language] || language);
+    },
+
 	setStyle: function(key, value) {
 		if (this.editor) return $(this.editor.frame).setStyle(key, value);
 		return this.element.setStyle(key, value);
 	},
+
 	setStyles: function(options) {
 		if (this.editor) return $(this.editor.frame).setStyles(options);
 		return this.element.setStyles(options);
 	},
+
 	setWidth: function(width) {
 		this.getWindow().setStyle('width',width);
 		//this.setStyle('width', width);
 	},
+
 	setHeight: function(height) {
 		this.getWindow().setStyle('height',height);
-		//this.setStyle('height', height);
 	},
+
 	getPosition: function() {
 		if (this.editor) return $(this.editor.frame).getPosition();
 		return this.element.getPosition();
 	},
-    makeDummyOptions: function(name) {
-        this.options.codeMirrorOptions = {
-            iframeClass: name || 'dummy',
-            parserfile: ['parsedummy.js']
-        }
+
+    forceDefaultCodeMirrorOptions: function() {
+        this.options.codeMirrorOptions = default_code_mirror_options;
     }
 });
 
@@ -148,6 +184,7 @@ var MooShellEditor = new Class({
  */
 MooShellEditor.JS = new Class({
 	Extends: MooShellEditor,
+
 	options: {
 		name: 'js',
         language: 'javascript',
@@ -163,13 +200,17 @@ MooShellEditor.JS = new Class({
 			parserfile: ["tokenizejavascript.js", "parsejavascript.js"]
 		}
 	},
+
 	initialize: function(el,options) {
 		this.setOptions(options);
         // XXX: This is kind of hardcoded ...
-        if (this.options.language == 'coffeescript') {
-            this.makeDummyOptions('coffeescript');
+        if (this.options.language != 'javascript') {
+            this.forceDefaultCodeMirrorOptions();
+            $(mooshell.options.jslintId).getParent('li').hide();
+        } else {
+            $(mooshell.options.jslintId).getParent('li').show();
         }
-		this.parent(el,this.options);
+		this.parent(el, this.options);
 	}
 });
 
@@ -180,6 +221,7 @@ MooShellEditor.JS = new Class({
  */
 MooShellEditor.CSS = new Class({
 	Extends: MooShellEditor,
+
 	options: {
 		name: 'css',
         language: 'css',
@@ -193,6 +235,7 @@ MooShellEditor.CSS = new Class({
 			parserfile: ["parsecss.js"]
 		}
 	},
+
 	initialize: function(el,options) {
 		this.setOptions(options);
 		this.parent(el,this.options);
@@ -205,6 +248,7 @@ MooShellEditor.CSS = new Class({
  */
 MooShellEditor.HTML = new Class({
 	Extends: MooShellEditor,
+
 	options: {
 		name: 'html',
         language: 'html',
@@ -218,6 +262,7 @@ MooShellEditor.HTML = new Class({
 			parserfile: ["parsexml.js"]
 		}
 	},
+
 	initialize: function(el,options) {
 		this.setOptions(options);
 		this.parent(el,this.options);
