@@ -2,7 +2,7 @@
 	<ul class="actionCont collapsed">
 		<li class="actionItem"><a class="aiButton" id="run" title="Run" href="#run"><span>Run</span></a></li>
         {% if user.is_authenticated %}
-            <li class="actionItem"><a data-draft="1" class="aiButton" id="m" title="debug on mobile" href="#m"><span>debug on mobile</span></a></li>
+            <li class="actionItem"><a data-draft="1" class="aiButton" id="m" title="Debug on mobile" href="#mobile"><span>Debug on mobile</span></a></li>
         {% endif %}
 	</ul>
 
@@ -48,7 +48,7 @@
 						</p>
 						<p>
 							<label for="share_embedded_dropdown">Embed on your page</label>
-							<input id="share_embedded_dropdown" type="text" class="share" value='<iframe style="width: 100%; height: 300px" src="{{ embedded_url }}"></iframe>' />
+							<input id="share_embedded_dropdown" type="text" class="share" value='<iframe style="width: 100%; height: 300px" src="{{ embedded_url }}" allowfullscreen="allowfullscreen" frameborder="0"></iframe>' />
 						</p>
 					</div>
 					
