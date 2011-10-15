@@ -88,7 +88,7 @@ var MooShellEditor = new Class({
 			'run': this.b64decode.bind(this)
 		});
 		Layout.registerEditor(this);
-        this.setLanguage(this.options.language || this.options.name)
+        this.setLabelName(this.options.language || this.options.name)
 	},
 
 	getEditor: function() {
@@ -138,10 +138,10 @@ var MooShellEditor = new Class({
 
     setLanguage: function(language) {
         // XXX: This is hacky
-        this.setWindowName(language);
+        this.setLabelName(language);
     },
 
-    setWindowName: function(language) {
+    setLabelName: function(language) {
         this.getLabel().set('text', this.window_names[language]);
     },
 
