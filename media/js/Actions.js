@@ -50,11 +50,23 @@ var MooShellActions = new Class({
 		addBinded(this.options.jslintId, this.jsLint, this);
 		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
 		addBinded(this.options.favId, this.makeFavourite, this);
-		$$('a.keyActions').addEvents({
-			click: function(e){
-                this.showShortcutDialog(e);
-			}.bind(this)
-		});
+
+    // show key shortcuts
+    $$('a.keyActions').addEvents({
+      click: function(event){
+        this.showShortcutDialog(event);
+      }.bind(this)
+    });
+    document.id(document.body).addEvents({
+      keydown: function(event){
+        if (event.shift && event.key === '/'){
+          var elType = new Element(event.target);
+          if (elType.get('tag') === 'body'){
+            $$('a.keyActions')[0].fireEvent('click');
+          }
+        }
+      }
+    });
 
 		var share = $$(this.options.shareSelector);
 		if (share.length > 0) {
