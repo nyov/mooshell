@@ -54,7 +54,8 @@ var MooShellActions = new Class({
 		addBinded(this.options.favId, this.makeFavourite, this);
 
     // show key shortcuts
-    $$('a.keyActions').addEvents({
+    var keyActions = document.getElements('a.keyActions');
+    keyActions.addEvents({
       click: function(event){
         this.showShortcutDialog(event);
       }.bind(this)
@@ -64,7 +65,7 @@ var MooShellActions = new Class({
         if (event.shift && event.key === '/'){
           var elType = new Element(event.target);
           if (elType.get('tag') === 'body'){
-            $$('a.keyActions')[0].fireEvent('click');
+            keyActions[0].fireEvent('click');
           }
         }
       }
