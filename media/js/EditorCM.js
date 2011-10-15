@@ -119,6 +119,10 @@ var MooShellEditor = new Class({
 		this.element.set('value', Base64.encode(this.before_decode));
 	},
 
+    updateCode: function() {
+        this.element.set('value', this.getCode());
+    },
+
 	clean: function() {
 		this.element.set('value','');
 		this.cleanEditor();
@@ -202,6 +206,9 @@ MooShellEditor.JS = new Class({
         // XXX: This is kind of hardcoded ...
         if (this.options.language != 'javascript') {
             this.forceDefaultCodeMirrorOptions();
+            $(mooshell.options.jslintId).getParent('li').hide();
+        } else {
+            $(mooshell.options.jslintId).getParent('li').show();
         }
 		this.parent(el, this.options);
 	}
