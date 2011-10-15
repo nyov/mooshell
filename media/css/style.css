@@ -119,6 +119,23 @@ body {
 			border-top: 1px solid #EEEFEE;
 		}
 
+#sidebar .selectPanel {
+	border: solid 1px #E7E7E7;
+	background: #F9F9F9;
+}
+
+	#sidebar .selectPanel select,
+	#sidebar .selectPanel .selectFake {
+		width: 82px;
+		margin: 8px;
+	}
+	
+	#sidebar .selectPanel .selectFake {
+		color: #999;
+		font-size: 1em;
+	}
+	
+
 #sidebar #id_title {
 }
 
