@@ -490,19 +490,21 @@ div.dropdownCont {
 
 	/* editor labels */
 	.window_label {
-		background: transparent url(../img/sprites.png) no-repeat -254px -51px;
-		display: block;
-		width: 79px;
-		height: 28px;
-		line-height: 28px;
+		background: #fff;
+		display: inline-block;
+		height: 20px;
+		padding: 0 6px;
+		line-height: 20px;
 		z-index: 100;
 		position: absolute;
-		top: 0;
-		right: -2px;
+		top: 5px;
+		right: 4px;
 		font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
 		text-align: center;
 		font-size: 11px;
-		font-weight: bold;
+		color: #888;
+		border-radius: 3px;
+		border: solid 1px #D3D4D5;
 	}
 
 	/* fullscreen */
