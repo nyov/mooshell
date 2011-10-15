@@ -71,20 +71,28 @@ var MooShellActions = new Class({
 		//	this.run();
 			this.displayExampleURL();
 		}
+        // assign change language in panel
+        $$('.panel_choice').addEvent('change', this.switchLanguage);
 	},
-    updateLanguage: function() {
-		Layout.editors.each(function(w){
-            var lang_choice = $('panel_' + w.options.name + '_choice'),
-                lang_option;
+    
+    /*
+     * Change language in panel
+     */
+    switchLanguage: function(e) {
+        if (!e) return;
+        var panel_name = this.get('data-panel'), 
+            editor = Layout.editors[panel_name],
+            Klass = MooShellEditor[panel_name.toUpperCase()],
+            language = this.getElement('option[selected]').get('text');
 
-            if (lang_choice) {
-                lang_option = lang_choice.getElement('option[selected]')
-                if (lang_option) {
-                    w.options.language = lang_option.get('text').toLowerCase();
-                }
-            }
-		});
+        editor.getWindow().getElement('.CodeMirror-wrapping').destroy();
+        Layout.editors[panel_name] = editor = false;
+        new Klass($(this.get('data-panel_id')), {
+            language: language.toLowerCase()
+        });
+        Layout.editors[panel_name].setLabelName(language);
     },
+
 	prepareAndLaunchTidy: function(e) {
 		e.stop();
 		if (!$defined(window.js_beautify)) {

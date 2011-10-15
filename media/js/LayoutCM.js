@@ -227,14 +227,6 @@ var Layout = {
 		this.resize();
 	},
 	resize: function(e) {
-
-//		this.editors.each( function(ed) {
-//			ed.hide();
-//		});
-//		if (this.result) {
-//			this.result.hide();
-//		}
-
 		if (!this.content) {
 			this.findLayoutElements();
 		}

@@ -15,7 +15,7 @@ var default_code_mirror_options = {
 }
 
 var MooShellEditor = new Class({
-	Implements: [Options, Events, Class.Occlude],
+	Implements: [Options, Events],
 	parameter: "Editor",
 	options: {
 		useCodeMirror: true,
@@ -33,8 +33,8 @@ var MooShellEditor = new Class({
 		// switch off CodeMirror for IE
 		//if (Browser.Engine.trident) options.useCodeMirror = false;
 		this.element = $(el);
-		if (this.occlude()) return this.occluded;
 		this.setOptions(options);
+        //console.log(this.options.name + ' / ' + this.options.language);
         var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
 		if (this.options.useCodeMirror && CodeMirror.isProbablySupported() && !is_disallowed) {
             // hide textarea
@@ -142,7 +142,7 @@ var MooShellEditor = new Class({
     },
 
     setLabelName: function(language) {
-        this.getLabel().set('text', this.window_names[language]);
+        this.getLabel().set('text', this.window_names[language] || language);
     },
 
 	setStyle: function(key, value) {
