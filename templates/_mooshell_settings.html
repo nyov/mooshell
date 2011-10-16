@@ -89,19 +89,19 @@
   <div class="elementBody">
     <div class="ebCont">
       <div class="selectPanel">
-          <select name="panel_html" class='panel_choice' id="panel_html_choice"{% if not panel.html.1 %} disabled="disabled"{% endif %} data-panel_id="id_code_html" data-panel="html">
+          <select name="panel_html" class='panel_choice' id="panel_html_choice"{% if not panels.html.1 %} disabled="disabled"{% endif %} data-panel_id="id_code_html" data-panel="html">
         {% for lang in panels.html.0 %}
           <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_html forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
         {% endfor %}
         </select>
 
-        <select name="panel_css" class='panel_choice' id="panel_css_choice"{% if not panel.css.1 %} disabled="disabled"{% endif %} data-panel_id="id_code_css" data-panel="css">
+        <select name="panel_css" class='panel_choice' id="panel_css_choice"{% if not panels.css.1 %} disabled="disabled"{% endif %} data-panel_id="id_code_css" data-panel="css">
           {% for lang in panels.css.0 %}
           <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_css forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
           {% endfor %}
         </select>
 
-        <select name="panel_js" class='panel_choice' id="panel_js_choice"{% if not panel.js.1 %} disabled="disabled"{% endif %} data-panel_id="id_code_js" data-panel="js">
+        <select name="panel_js" class='panel_choice' id="panel_js_choice"{% if not panels.js.1 %} disabled="disabled"{% endif %} data-panel_id="id_code_js" data-panel="js">
           {% for lang in panels.js.0 %}
           <option value="{{ forloop.counter0 }}"{% ifequal shell.panel_js forloop.counter0 %} selected{% endifequal %}>{{ lang }}</option>
           {% endfor %}
