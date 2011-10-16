@@ -94,6 +94,7 @@ var MooShellActions = new Class({
      * Change language in panel
      */
     switchLanguage: function(e) {
+        console.log('wtf')
         if (!e) return;
         sel = e.target;
         var panel_name = sel.get('data-panel'), 
