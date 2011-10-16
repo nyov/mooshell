@@ -44,8 +44,6 @@
     window.addEvent('domready', function() {
       if (panel_js != 'javascript' && $('tidy')) {
         $('tidy').getParent('li').hide();
-      }
-      if (panel_js != 'javascript' && panel_css != 'css' && $('jslint')) {
         $('jslint').getParent('li').hide();
       }
       $extend(Layout, new Events());

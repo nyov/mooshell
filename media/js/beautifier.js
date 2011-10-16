@@ -1522,3 +1522,4 @@ var Beautifier = {
 	//	return style_html(content);
 	//},
 	css: $empty
+}

@@ -207,8 +207,10 @@ MooShellEditor.JS = new Class({
         if (this.options.language != 'javascript') {
             this.forceDefaultCodeMirrorOptions();
             $(mooshell.options.jslintId).getParent('li').hide();
+            $(mooshell.options.tidyId).getParent('li').hide();
         } else {
             $(mooshell.options.jslintId).getParent('li').show();
+            $(mooshell.options.tidyId).getParent('li').show();
         }
 		this.parent(el, this.options);
 	}

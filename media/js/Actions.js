@@ -94,7 +94,6 @@ var MooShellActions = new Class({
      * Change language in panel
      */
     switchLanguage: function(e) {
-        console.log('wtf')
         if (!e) return;
         sel = e.target;
         var panel_name = sel.get('data-panel'), 
@@ -102,12 +101,6 @@ var MooShellActions = new Class({
             Klass = MooShellEditor[panel_name.toUpperCase()],
             language = sel.getElement('option[selected]').get('text');
 
-        // if (lang_choice) {
-        //     lang_option = lang_choice.getElement('option[selected]');
-        //     if (lang_option) {
-        //         w.options.language = lang_option.get('text').toLowerCase();
-        //     }
-        // }
         editor.updateCode();
         editor.getWindow().getElement('.CodeMirror-wrapping').destroy();
         Layout.editors[panel_name] = editor = false;
@@ -115,14 +108,12 @@ var MooShellActions = new Class({
             language: language.toLowerCase()
         });
         Layout.editors[panel_name].setLabelName(language);
-        //console.log(window['panel_' + panel_name])
         window['panel_' + panel_name] = language.toLowerCase();
-        //console.log(window['panel_' + panel_name])
     },
 
 	prepareAndLaunchTidy: function(e) {
 		e.stop();
-		if (!$defined(window.js_beautify)) {
+		if (!$defined(window.Beautifier)) {
 			Asset.javascript('/js/beautifier.js', {
 				onload: this.makeTidy.bind(this)
 			});
@@ -136,7 +127,9 @@ var MooShellActions = new Class({
                 language;
 			if (code) {
                 language = w.options.language;
-                if (language == 'javascript') language = 'js';
+                if (language == 'javascript') {
+                    language = 'js';
+                }
                 if (Beautifier[language]) {
                     var fixed = Beautifier[language](code);
                     if (fixed) w.editor.setCode(fixed);
