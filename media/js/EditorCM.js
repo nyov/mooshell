@@ -11,7 +11,7 @@ var default_code_mirror_options = {
     indentUnit: 4,
     tabMode: 'shift',
     parserfile: 'parsedummy.js',
-    height: false 
+    height: '' 
 }
 
 var MooShellEditor = new Class({
