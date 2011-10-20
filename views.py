@@ -235,6 +235,9 @@ def pastie_save(req, nosave=False, skin=None):
 
             " Instantiate shell data from the form "
             shell = shellform.save(commit=False)
+            if not shell.panel_html:
+                # XXX: A hack to pass the form
+                shell.panel_html = 0
 
             " Base64 decode "
             try:
@@ -500,12 +503,17 @@ def embedded(req, slug, version=None, revision=0, author=None, tabs=None,
         if [x for x in tabs_order if x not in allowed_tabs]:
             return HttpResponseNotAllowed('Tab name not allowed')
         tabs = []
+        titles = settings.MOOSHELL_EMBEDDED_TITLES
+        titles['html'] = shell.PANEL_HTML[shell.panel_html]
+        titles['css'] = shell.PANEL_CSS[shell.panel_css]
+        titles['js'] = shell.PANEL_JS[shell.panel_js]
+
         for t in tabs_order:
             tab = { 'type': t,
-                    'title': settings.MOOSHELL_EMBEDDED_TITLES[t]
+                    'title': titles[t]
                   }
             if not t in ["result", "resources"]:
-                tab['code'] = getattr(shell,'code_'+t)
+                tab['code'] = getattr(shell, 'code_' + t)
             tabs.append(tab)
 
         context = {

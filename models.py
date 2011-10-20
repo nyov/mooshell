@@ -285,9 +285,9 @@ class Shell(models.Model):
     code_js = models.TextField('Javascript', null=True, blank=True)
 
     # code modifiers
-    panel_html = models.IntegerField(choices=LANG_HTML, default=False, blank=True, null=True)
-    panel_css = models.IntegerField(choices=LANG_CSS, default=False, blank=True, null=True)
-    panel_js = models.IntegerField(choices=LANG_JS, default=False, blank=True, null=True)
+    panel_html = models.IntegerField(choices=LANG_HTML, default=0, blank=True)
+    panel_css = models.IntegerField(choices=LANG_CSS, default=0, blank=True)
+    panel_js = models.IntegerField(choices=LANG_JS, default=0, blank=True)
 
     # filled automatically
     created_at = models.DateTimeField(default=datetime.now)
