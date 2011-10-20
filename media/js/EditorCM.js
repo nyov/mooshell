@@ -26,7 +26,8 @@ var MooShellEditor = new Class({
         'html': 'HTML',
         'css': 'CSS',
         'scss': 'SCSS',
-        'coffeescript': 'CoffeeScript'
+        'coffeescript': 'CoffeeScript',
+        'javascript 1.7': 'JavaScript 1.7'
     },
 
 	initialize: function(el, options) {
@@ -204,7 +205,7 @@ MooShellEditor.JS = new Class({
 	initialize: function(el,options) {
 		this.setOptions(options);
         // XXX: This is kind of hardcoded ...
-        if (this.options.language != 'javascript') {
+        if (this.options.language != 'javascript' && this.options.language != 'javascript 1.7') {
             this.forceDefaultCodeMirrorOptions();
             $(mooshell.options.jslintId).getParent('li').hide();
             $(mooshell.options.tidyId).getParent('li').hide();

@@ -6,6 +6,7 @@ from django.db.models.signals import pre_save, post_save
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 
 from managers import JSDependencyManager, JSLibraryManager, PastieManager, \
         ShellManager, DraftManager
@@ -76,7 +77,7 @@ class JSLibrary(models.Model):
 
     class Meta:
         verbose_name_plural = "JS Library versions"
-        ordering = ['-active','library_group','-version']
+        ordering = ['-active', 'library_group', '-version']
 
 
 
@@ -89,7 +90,7 @@ class JSDependency(models.Model):
     url = models.CharField('URL to the library file', max_length=255)
     description = models.TextField(blank=True, null=True)
     selected = models.BooleanField(blank=True, default=False)
-    ord = models.IntegerField("Order",default=0, blank=True, null=True)
+    ord = models.IntegerField("Order", default=0, blank=True, null=True)
     active = models.BooleanField(default=True, blank=True)
 
     objects = JSDependencyManager()
@@ -184,7 +185,7 @@ class Pastie(models.Model):
 
     def set_slug(self):
         from random import choice
-        allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+        allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
         check_slug = True
         # repeat until the slug will be unique
         while check_slug:
@@ -192,17 +193,18 @@ class Pastie(models.Model):
                 for i in range(settings.MOOSHELL_SLUG_LENGTH)])
             try:
                 check_slug = Pastie.objects.get(slug=self.slug)
-            except:
+            except ObjectDoesNotExist:
                 check_slug = False
 
     def __unicode__(self):
         return self.slug
 
     def get_latest(self):
-        try:
-            return Shell.objects.filter(
-                pastie__id=self.id).order_by('-version')[0]
-        except:
+        shells = Shell.objects.filter(
+                pastie__id=self.id).order_by('-version')
+        if shells:
+            return shells[0]
+        else:
             return []
 
 
@@ -227,7 +229,8 @@ class Pastie(models.Model):
         ordering = ['-example', '-created_at']
 
 def make_slug_on_create(instance, **kwargs):
-    if kwargs.get('raw',False): return
+    if kwargs.get('raw', False):
+        return
     if not instance.id and not instance.slug:
         instance.set_slug()
 pre_save.connect(make_slug_on_create, sender=Pastie)
@@ -246,7 +249,8 @@ LANG_HTML = ((0, 'HTML'),)
 LANG_CSS = ((0, 'CSS'),
             (1, 'SCSS'))
 LANG_JS = ((0, 'JavaScript'),
-           (1, 'CoffeeScript'))
+           (1, 'CoffeeScript'),
+           (2, 'JavaScript 1.7'))
 
 class Shell(models.Model):
     """
@@ -333,7 +337,7 @@ class Shell(models.Model):
             args = [self.author.username]
             rev = 'author_'
         else:
-            args=[]
+            args = []
             rev = ''
 
         if not self.revision or self.revision == 0:
@@ -342,10 +346,10 @@ class Shell(models.Model):
                 args.append(self.pastie.slug)
             else:
                 rev += 'shell'
-                args.extend([self.pastie.slug,self.version])
+                args.extend([self.pastie.slug, self.version])
         else:
             rev += 'revision'
-            args.extend([self.pastie.slug,self.version,self.revision])
+            args.extend([self.pastie.slug, self.version, self.revision])
         return (rev, args)
 
     @models.permalink
@@ -354,7 +358,7 @@ class Shell(models.Model):
             args = [self.author.username]
             rev = 'author_'
         else:
-            args=[]
+            args = []
             rev = ''
         rev += 'embedded'
         if not self.revision or self.revision == 0:
@@ -362,10 +366,10 @@ class Shell(models.Model):
                 args.append(self.pastie.slug)
             else:
                 rev += '_with_version'
-                args.extend([self.pastie.slug,self.version])
+                args.extend([self.pastie.slug, self.version])
         else:
             rev += '_revision'
-            args.extend([self.pastie.slug,self.version,self.revision])
+            args.extend([self.pastie.slug, self.version, self.revision])
         return (rev, args)
 
     @models.permalink
@@ -374,7 +378,7 @@ class Shell(models.Model):
             args = [self.author.username]
             rev = 'author_'
         else:
-            args=[]
+            args = []
             rev = ''
         rev += 'pastie_show'
         if not self.revision or self.revision == 0:
@@ -382,10 +386,10 @@ class Shell(models.Model):
                 args.append(self.pastie.slug)
             else:
                 rev += '_with_version'
-                args.extend([self.pastie.slug,self.version])
+                args.extend([self.pastie.slug, self.version])
         else:
             rev += '_revision'
-            args.extend([self.pastie.slug,self.version,self.revision])
+            args.extend([self.pastie.slug, self.version, self.revision])
         return (rev, args)
 
     def get_panel_name(self, panel):
@@ -396,7 +400,7 @@ class Shell(models.Model):
                 return Shell.PANEL_CSS[self.panel_css]
             if panel == 'JS':
                 return Shell.PANEL_JS[self.panel_js]
-        except Exception:
+        except KeyError:
             return panel
 
     def get_html_panel_name(self):
@@ -444,22 +448,25 @@ class ShellExternalResource(models.Model):
 
 
 def increase_version_on_save(instance, **kwargs):
-    if kwargs.get('raw',False): return
+    if kwargs.get('raw', False):
+        return
     if not instance.id:
         # check if any shell exists for the pastie
-        try:
-            shells = Shell.objects.filter(
-                pastie__id=instance.pastie.id).order_by('-version')
+        shells = Shell.objects.filter(
+            pastie__id=instance.pastie.id).order_by('-version')
+        if shells:
             version = list(shells)[0].version + 1
-        except:
+        else:
             version = 0
         instance.version = version
 pre_save.connect(increase_version_on_save, sender=Shell)
 
 
 def make_first_version_favourite(instance, **kwargs):
-    if kwargs.get('raw',False): return
-    if not kwargs.get('created'): return
+    if kwargs.get('raw', False):
+        return
+    if not kwargs.get('created'):
+        return
     if instance.version == 0:
         instance.pastie.favourite = instance
         instance.pastie.save()

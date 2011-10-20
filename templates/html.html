@@ -18,24 +18,10 @@
   <style type='text/css'>
     {{ css|safe }}
   </style>
-  {% ifnotequal shell.js_wrap "b" %}
-    {% ifequal shell.panel_js 1 %}<script type="text/coffeescript">{% endifequal %}
-    {% if not shell.panel_js %}<script type='text/javascript'>//<![CDATA[{% endif %} 
-  {% if not shell.panel_js %}{{ wrap.code_start|safe }}{% endif %}
-{{ js|safe }}
-  {% if not shell.panel_js %}{{ wrap.code_end|safe }}//]]> {% endif %} 
-  </script>
-  {% endifnotequal %}
+  {% ifnotequal shell.js_wrap "b" %}{% include "_render_panel_js.html" %}{% endifnotequal %}
 </head>
 {{ shell.body_tag|default:"<body>"|safe }}
   {{ html|safe }}
-  {% ifequal shell.js_wrap "b" %}
-    {% ifequal shell.panel_js 1 %}<script type="text/coffeescript">{% endifequal %}
-    {% if not shell.panel_js %}<script type='text/javascript'>//<![CDATA[{% endif %} 
-  {% if not shell.panel_js %}{{ wrap.code_start|safe }}{% endif %}
-{{ js|safe }}
-  {% if not shell.panel_js %}{{ wrap.code_end|safe }}//]]> {% endif %} 
-  </script>
-  {% endifequal %}
+  {% ifequal shell.js_wrap "b" %}{% include "_render_panel_js.html" %}{% endifequal %}
 </body>
 

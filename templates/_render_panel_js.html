@@ -1,0 +1,10 @@
+{% ifequal shell.panel_js 1 %}<script type="text/coffeescript">{% endifequal %}
+{% ifequal shell.panel_js 2 %}<script type="text/javascript" language="JavaScript 1.7">//<![CDATA[{% endifequal %}
+{% ifequal shell.panel_js 2 %}{{ wrap.code_start|safe }}{% endifequal %}
+{% if not shell.panel_js %}<script type='text/javascript'>//<![CDATA[{% endif %} 
+{% if not shell.panel_js %}{{ wrap.code_start|safe }}{% endif %}
+{{ js|safe }}
+{% if not shell.panel_js %}{{ wrap.code_end|safe }}//]]> {% endif %} 
+{% ifequal shell.panel_js 2 %}{{ wrap.code_end|safe }}//]]> {% endifequal %}
+</script>
+
