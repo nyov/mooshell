@@ -95,7 +95,7 @@ var MooShellActions = new Class({
      */
     switchLanguage: function(e) {
         if (!e) return;
-        sel = e.target;
+        sel = $(e.target);
         var panel_name = sel.get('data-panel'), 
             editor = Layout.editors[panel_name],
             Klass = MooShellEditor[panel_name.toUpperCase()],
@@ -230,7 +230,7 @@ var MooShellActions = new Class({
 	run: function(e) {
         var draftonly = false;
 		if (e) e.stop(); 
-        if (e && e.target.getParent().get('id') == 'm') {
+        if (e && $(e.target).getParent().get('id') == 'm') {
             var draftonly = new Element('input', {
                 'hidden': true,
                 'name': 'draftonly',
