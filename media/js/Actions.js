@@ -17,6 +17,7 @@ var MooShellActions = new Class({
 		cleanId: 'clean',
 		jslintId: 'jslint',
 		tidyId: 'tidy',
+        showJsId: 'showjscode',
 		shareSelector: '#share_link_dropdown, #share_embedded_dropdown, #share_result_dropdown',
 		favId: 'mark_favourite',
 		entriesSelector: 'textarea',
@@ -50,51 +51,56 @@ var MooShellActions = new Class({
 				el.addEvent('click', callback.bind(bind));
 			}
 		};
-		addBinded(this.options.saveAndReloadId, this.saveAndReload, this);
-		addBinded(this.options.saveAsNewId, this.saveAsNew, this);
-		addBinded(this.options.runId, this.run, this);
-		addBinded(this.options.draftId, this.run, this);
-		addBinded(this.options.cleanId, this.cleanEntries, this);
-		addBinded(this.options.jslintId, this.jsLint, this);
-		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
-		addBinded(this.options.favId, this.makeFavourite, this);
+        Layout.addEvent('ready', function() {
+            addBinded(this.options.saveAndReloadId, this.saveAndReload, this);
+            addBinded(this.options.saveAsNewId, this.saveAsNew, this);
+            addBinded(this.options.runId, this.run, this);
+            addBinded(this.options.draftId, this.run, this);
+            addBinded(this.options.cleanId, this.cleanEntries, this);
+            addBinded(this.options.jslintId, this.jsLint, this);
+            addBinded(this.options.showJsId, this.showJs, this);
+            addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
+            addBinded(this.options.favId, this.makeFavourite, this);
 
-        // show key shortcuts
-        var keyActions = document.getElements('a.keyActions');
-        keyActions.addEvents({
-          click: function(event){
-            this.showShortcutDialog(event);
-          }.bind(this)
-        });
-        document.id(document.body).addEvents({
-          keydown: function(event){
-            if (event.shift && event.key === '/'){
-              var elType = new Element(event.target);
-              if (elType.get('tag') === 'body'){
-                keyActions[0].fireEvent('click');
+            // show key shortcuts
+            var keyActions = document.getElements('a.keyActions');
+            keyActions.addEvents({
+              click: function(event){
+                this.showShortcutDialog(event);
+              }.bind(this)
+            });
+            document.id(document.body).addEvents({
+              keydown: function(event){
+                if (event.shift && event.key === '/'){
+                  var elType = new Element(event.target);
+                  if (elType.get('tag') === 'body'){
+                    keyActions[0].fireEvent('click');
+                  }
+                }
               }
+            });
+
+            var share = $$(this.options.shareSelector);
+            if (share.length > 0) {
+                share.addEvent('click', function() {
+                    this.select();
+                });
             }
-          }
-        });
 
-		var share = $$(this.options.shareSelector);
-		if (share.length > 0) {
-			share.addEvent('click', function() {
-				this.select();
-			});
-		}
+            // actions run if shell loaded
+            
+            this.form = document.id(this.options.formId);
 
-		// actions run if shell loaded
-		
-		this.form = document.id(this.options.formId);
-
-		if (this.options.exampleURL) {
-		//	this.run();
-			this.displayExampleURL();
-		}
-        // assign change language in panel
-        $$('.panel_choice').addEvent('change', this.switchLanguage.bind(this));
-        Layout.addEvent('ready', this.showHideJsLint.bind(this));
+            if (this.options.exampleURL) {
+            //	this.run();
+                this.displayExampleURL();
+            }
+            // assign change language in panel
+            $$('.panel_choice').addEvent('change', this.switchLanguage.bind(this));
+            this.showHideJsLint();
+            this.showHideTidyUp();
+            this.showHideShowJs();
+        }.bind(this));
 	},
     
     /*
@@ -118,14 +124,72 @@ var MooShellActions = new Class({
         window['panel_' + panel_name] = language.toLowerCase();
         this.showHideTidyUp();
         this.showHideJsLint();
+        this.showHideShowJs();
     },
 
-    prepareTidyUp: function(callback) {
-		if (!$defined(window.Beautifier)) {
-			Asset.javascript('/js/beautifier.js', {
+    loadAsset: function(check, file, callback, scope) {
+		if (!check()) {
+            if (scope) callback = callback.bind(scope);
+			Asset.javascript(file, {
 				onload: callback
 			});
             return true;
+        }
+    },
+
+    prepareCoffee: function(callback) {
+        return this.loadAsset(function() {
+            return $defined(window.CoffeeScript);
+        }, '/js/coffeescript/coffeescript.js', callback, this);
+    },
+
+    showJs: function() {
+        if (this.prepareCoffee(this.showJs, this)) return;
+		var html = '<div class="modalWrap modal_Coffee">' +
+					'<div class="modalHeading"><h3>JavaScript Code</h3><span class="close">Close window</span></div>'+
+					'<div id="" class="modalBody">',
+            jscode, coffeecode;
+        if (panel_js != 'coffeescript') return;
+        coffeecode = Layout.editors.js.editor.getCode();
+        try {
+            jscode = CoffeeScript.compile(coffeecode); 
+            html += '<pre>' + jscode + '</pre>';
+        } catch(e) {
+            html += '<p class="error">' + e + '</p>';
+        }
+        html += '</div></div>';
+		new StickyWin({
+			content: html,
+			relativeTo: $(document.body),
+			position: 'center',
+			edge: 'center',
+			closeClassName: 'close',
+			draggable: true,
+			dragHandleSelector: 'h3',
+			closeOnEsc: true,
+			destroyOnClose: true,
+        allowMultiple: false,
+        onDisplay: this.showModalFx
+		}).show();
+
+    },
+
+    prepareTidyUp: function(callback, scope) {
+        return this.loadAsset(function() { 
+            return $defined(window.Beautifier); 
+        }, '/js/beautifier.js', callback, scope);
+    },
+
+    showHideShowJs: function() {
+        var hide = true,
+            showjs = $(this.options.showJsId);
+
+        if (!showjs) return;
+		hide = (Layout.editors.js.options.language != 'coffeescript');
+        if (hide) {
+            showjs.getParent('li').hide();
+        } else {
+            showjs.getParent('li').show();
         }
     },
 
@@ -147,7 +211,7 @@ var MooShellActions = new Class({
     },
 
     showHideTidyUp: function() {
-        if (this.prepareTidyUp(this.showHideTidyUp.bind(this))) return;
+        if (this.prepareTidyUp(this.showHideTidyUp, this)) return;
         var hide = true,
             tidy = $(this.options.tidyId);
 
@@ -200,7 +264,7 @@ var MooShellActions = new Class({
 		var html = '<div class="modalWrap modal_jslint">' +
 					'<div class="modalHeading"><h3>JSLint {title}</h3><span class="close">Close window</span></div>'+
 					'<div id="" class="modalBody">';
-        if (panel_js == 'javascript') {
+        if (this.options.jslintLanguages.contains(panel_js)) {
             if (!JSLINT(Layout.editors.js.editor.getCode(), this.options.jslint)) {
                 html = 	html.substitute({title: 'Errors'}) + 
                         JSLINT.report(true) +

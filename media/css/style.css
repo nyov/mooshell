@@ -352,6 +352,10 @@ body {
 	#actions #tidy span {
 	   background-position: 8px -270px;
 	}
+
+	#actions #showjscode span {
+	   background-position: 8px -270px;
+	}
 	
 	#actions #jslint span {
 	   background-position: 8px -338px;
@@ -716,6 +720,7 @@ div.dropdownCont {
 }
 
 	.modal_jslint code,
+    .modal_Coffee .error,
 	.modal_jslint .evidence {
 	
 		padding: 0 2px;
@@ -723,6 +728,10 @@ div.dropdownCont {
 		font-size: .9em;
 		background: #fffadb;
 	}
+
+    .modal_Coffee .error {
+        padding: 5px 10px;
+    }
 	
 	.modal_jslint #errors {
 		
