@@ -35,7 +35,9 @@ var MooShellActions = new Class({
 			passfail: false,
 			browser: true,
 			newcap: false
-		}
+		},
+        jslintLanguages: ['javascript', 'javascript 1.7'],
+        showJSLanguages: ['coffeescript']
 	},
 	/*
 	 * Assign actions
@@ -92,7 +94,7 @@ var MooShellActions = new Class({
 		}
         // assign change language in panel
         $$('.panel_choice').addEvent('change', this.switchLanguage.bind(this));
-        this.showHideTidyUp();
+        Layout.addEvent('ready', this.showHideJsLint.bind(this));
 	},
     
     /*
@@ -115,6 +117,7 @@ var MooShellActions = new Class({
         Layout.editors[panel_name].setLabelName(language);
         window['panel_' + panel_name] = language.toLowerCase();
         this.showHideTidyUp();
+        this.showHideJsLint();
     },
 
     prepareTidyUp: function(callback) {
@@ -123,6 +126,23 @@ var MooShellActions = new Class({
 				onload: callback
 			});
             return true;
+        }
+    },
+
+    showHideJsLint: function() {
+        var hide = true,
+            lint = $(this.options.jslintId);
+
+        if (!lint) return;
+		Layout.editors.each(function(w){
+            if (this.options.jslintLanguages.contains(w.options.language)) {
+                hide = false;
+            }
+        }, this);
+        if (hide) {
+            lint.getParent('li').hide();
+        } else {
+            lint.getParent('li').show();
         }
     },
 

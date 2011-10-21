@@ -19,7 +19,8 @@ var MooShellEditor = new Class({
 	parameter: "Editor",
 	options: {
 		useCodeMirror: true,
-		codeMirrorOptions: default_code_mirror_options 
+		codeMirrorOptions: default_code_mirror_options,
+        syntaxHighlighting: []
 	},
     window_names: {
         'javascript': 'JavaScript',
@@ -34,6 +35,9 @@ var MooShellEditor = new Class({
 		// switch off CodeMirror for IE
 		//if (Browser.Engine.trident) options.useCodeMirror = false;
 		this.element = $(el);
+        if (!this.options.syntaxHighlighting.contains(this.options.language)) {
+            this.forceDefaultCodeMirrorOptions();
+        }
 		this.setOptions(options);
         //console.log(this.options.name + ' / ' + this.options.language);
         var is_disallowed = (disallowedPlatforms.contains(Browser.Platform.name));
@@ -199,18 +203,12 @@ MooShellEditor.JS = new Class({
 		codeMirrorOptions: {
 			iframeClass: 'js',
 			parserfile: ["tokenizejavascript.js", "parsejavascript.js"]
-		}
+		},
+        syntaxHighlighting: ['javascript', 'javascript 1.7']
 	},
 
 	initialize: function(el,options) {
 		this.setOptions(options);
-        // XXX: This is kind of hardcoded ...
-        if (this.options.language != 'javascript' && this.options.language != 'javascript 1.7') {
-            this.forceDefaultCodeMirrorOptions();
-            $(mooshell.options.jslintId).getParent('li').hide();
-        } else {
-            $(mooshell.options.jslintId).getParent('li').show();
-        }
 		this.parent(el, this.options);
 	}
 });
@@ -234,7 +232,8 @@ MooShellEditor.CSS = new Class({
 		codeMirrorOptions: {
 			iframeClass: 'css',
 			parserfile: ["parsecss.js"]
-		}
+		},
+        syntaxHighlighting: ['css', 'scss']
 	},
 
 	initialize: function(el,options) {
@@ -261,7 +260,8 @@ MooShellEditor.HTML = new Class({
 		codeMirrorOptions: {
 			iframeClass: 'html',
 			parserfile: ["parsexml.js"]
-		}
+		},
+        syntaxHighlighting: ['html']
 	},
 
 	initialize: function(el,options) {
