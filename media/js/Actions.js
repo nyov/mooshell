@@ -26,6 +26,10 @@ var MooShellActions = new Class({
 		exampleURL: '',
 		exampleSaveURL: '',
 		loadDependenciesURL: '',
+        tidy: {
+            'javascript': 'js',
+            'javascript 1.7': 'js'
+        },
 		jslint: {
 			evil: true,
 			passfail: false,
@@ -53,23 +57,23 @@ var MooShellActions = new Class({
 		addBinded(this.options.tidyId, this.prepareAndLaunchTidy, this);
 		addBinded(this.options.favId, this.makeFavourite, this);
 
-    // show key shortcuts
-    var keyActions = document.getElements('a.keyActions');
-    keyActions.addEvents({
-      click: function(event){
-        this.showShortcutDialog(event);
-      }.bind(this)
-    });
-    document.id(document.body).addEvents({
-      keydown: function(event){
-        if (event.shift && event.key === '/'){
-          var elType = new Element(event.target);
-          if (elType.get('tag') === 'body'){
-            keyActions[0].fireEvent('click');
+        // show key shortcuts
+        var keyActions = document.getElements('a.keyActions');
+        keyActions.addEvents({
+          click: function(event){
+            this.showShortcutDialog(event);
+          }.bind(this)
+        });
+        document.id(document.body).addEvents({
+          keydown: function(event){
+            if (event.shift && event.key === '/'){
+              var elType = new Element(event.target);
+              if (elType.get('tag') === 'body'){
+                keyActions[0].fireEvent('click');
+              }
+            }
           }
-        }
-      }
-    });
+        });
 
 		var share = $$(this.options.shareSelector);
 		if (share.length > 0) {
@@ -88,6 +92,7 @@ var MooShellActions = new Class({
 		}
         // assign change language in panel
         $$('.panel_choice').addEvent('change', this.switchLanguage.bind(this));
+        this.showHideTidyUp();
 	},
     
     /*
@@ -109,34 +114,56 @@ var MooShellActions = new Class({
         });
         Layout.editors[panel_name].setLabelName(language);
         window['panel_' + panel_name] = language.toLowerCase();
+        this.showHideTidyUp();
+    },
+
+    prepareTidyUp: function(callback) {
+		if (!$defined(window.Beautifier)) {
+			Asset.javascript('/js/beautifier.js', {
+				onload: callback
+			});
+            return true;
+        }
+    },
+
+    showHideTidyUp: function() {
+        if (this.prepareTidyUp(this.showHideTidyUp.bind(this))) return;
+        var hide = true,
+            tidy = $(this.options.tidyId);
+
+        if (!tidy) return;
+		Layout.editors.each(function(w){
+            language = this.options.tidy[w.options.language];
+            if (language && Beautifier[language]) {
+                hide = false;
+            }
+        }, this);
+        if (hide) {
+            tidy.getParent('li').hide();
+        } else {
+            tidy.getParent('li').show();
+        }
+
     },
 
 	prepareAndLaunchTidy: function(e) {
 		e.stop();
-		if (!$defined(window.Beautifier)) {
-			Asset.javascript('/js/beautifier.js', {
-				onload: this.makeTidy.bind(this)
-			});
-		} else {
-			this.makeTidy();
-		}
+		if (this.prepareTidyUp(this.makeTidy.bind(this))) return;
+        this.makeTidy();
 	},
 	makeTidy: function(){
 		Layout.editors.each(function(w){
 			var code = w.editor.getCode(),
                 language;
 			if (code) {
-                language = w.options.language;
-                if (language == 'javascript') {
-                    language = 'js';
-                }
-                if (Beautifier[language]) {
+                language = this.options.tidy[w.options.language];
+                if (language && Beautifier[language]) {
                     var fixed = Beautifier[language](code);
                     if (fixed) w.editor.setCode(fixed);
                     else w.editor.reindent();
                 }
 			}
-		});
+		}, this);
 	},
 	jsLint: function(e) {
 		e.stop();

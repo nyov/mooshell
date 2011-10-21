@@ -113,7 +113,7 @@ var Layout = {
       }, this));
     },
 
-	findLayoutElements: function() {
+    findLayoutElements: function() {
 		// look up some elements, and cache the findings
 		this.content = document.id('content');
 		this.columns = this.content.getChildren('.column');

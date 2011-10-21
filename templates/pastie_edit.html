@@ -42,8 +42,7 @@
     {% if preload_resources %}preload_resources = {{ preload_resources|safe }}{% endif %}
     Layout.skin = "";// "{{ skin }}"
     window.addEvent('domready', function() {
-      if (panel_js != 'javascript' && $('tidy')) {
-        $('tidy').getParent('li').hide();
+      if (panel_js != 'javascript' && $('jslint')) {
         $('jslint').getParent('li').hide();
       }
       $extend(Layout, new Events());
