@@ -143,7 +143,8 @@ var MooShellActions = new Class({
         }, '/js/coffeescript/coffeescript.js', callback, this);
     },
 
-    showJs: function() {
+    showJs: function(e) {
+        if (e) e.stop();
         if (this.prepareCoffee(this.showJs, this)) return;
 		var html = '<div class="modalWrap modal_Coffee">' +
 					'<div class="modalHeading"><h3>JavaScript Code</h3><span class="close">Close window</span></div>'+
