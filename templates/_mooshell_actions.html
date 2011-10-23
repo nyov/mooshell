@@ -1,6 +1,6 @@
 <div id="actions">
 	<ul class="actionCont collapsed">
-		<li class="actionItem"><a class="aiButton" id="run" title="Run" href="#run"><span>Run</span></a></li>
+		<li class="actionItem"><a class="aiButton" id="run" title="Run (Control + Return)" href="#run"><span>Run</span></a></li>
         {% if user.is_authenticated %}
             <li class="actionItem"><a data-draft="1" class="aiButton" id="m" title="Debug on mobile" href="#mobile"><span>Debug on mobile</span></a></li>
         {% endif %}
@@ -8,10 +8,10 @@
 
 	<ul class="actionCont collapsed">
 		{% if shell %}
-			<li class="actionItem"><a class="aiButton" id="update" title="Update" href="#update"><span>Update</span></a></li>
-			<li class="actionItem"><a class="aiButton" id="savenew" title="Fork to new Fiddle" href="#save"><span>Fork</span></a></li>
+			<li class="actionItem"><a class="aiButton" id="update" title="Update (Control + s)" href="#update"><span>Update</span></a></li>
+			<li class="actionItem"><a class="aiButton" id="savenew" title="Fork into a new Fiddle" href="#fork"><span>Fork</span></a></li>
 		{% else %}
-			<li class="actionItem"><a class="aiButton" id="savenew" title="Save new Fiddle" href="#save"><span>Save</span></a></li>
+			<li class="actionItem"><a class="aiButton" id="savenew" title="Save new Fiddle (Control + s)" href="#save"><span>Save</span></a></li>
 		{% endif %}
 		<li class="actionItem"><a class="aiButton" id="clean" title="Reset all fields" href="#clear"><span>Reset</span></a></li>
 		{% if is_author %}
