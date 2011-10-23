@@ -12,7 +12,7 @@ var default_code_mirror_options = {
     tabMode: 'shift',
     parserfile: 'parsedummy.js',
     height: '' 
-}
+};
 
 var MooShellEditor = new Class({
 	Implements: [Options, Events],
@@ -74,7 +74,7 @@ var MooShellEditor = new Class({
                 this.editor.win.addEventHandler(this.editor.win, 'focus', function() {
                   Layout.current_editor = this.options.name;
                 }.bind(this));
-              }.bind(this)
+              }.bind(this);
             }
 			this.editor = new CodeMirror(this.element.getParent(), this.options.codeMirrorOptions);
 		}
@@ -93,7 +93,7 @@ var MooShellEditor = new Class({
 			'run': this.b64decode.bind(this)
 		});
 		Layout.registerEditor(this);
-        this.setLabelName(this.options.language || this.options.name)
+        this.setLabelName(this.options.language || this.options.name);
 	},
 
 	getEditor: function() {
