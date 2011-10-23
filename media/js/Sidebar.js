@@ -54,6 +54,13 @@ var Sidebar = new Class({
       Layout.resize();
     },
     toggle: function(ev) {
+      var label = $(this.options.toggleSidebar).getElement('span');
+      if (label.get('text') === 'Hide sidebar'){
+        label.set('text', 'Show sidebar');
+      } else {
+        label.set('text', 'Hide sidebar');
+      }
+      label.toggleClass('hidden');
       if (ev) {
         ev.stop();
       }

@@ -361,6 +361,15 @@ body {
 	   background-position: 8px -338px;
 	}
 	
+	#actions #toggleSidebar span {
+	   background-position: 8px -406px;
+	}
+	
+	#actions #toggleSidebar span.hidden {
+	   background-position: 8px -440px;
+	}
+	
+	
 /* select link */
 #select_link {
 	background: transparent url(../img/sprites.png) no-repeat 0 -254px;

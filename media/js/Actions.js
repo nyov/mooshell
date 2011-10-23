@@ -366,10 +366,11 @@ var MooShellActions = new Class({
         window.location = '/user/login/';
       }
     },
-    toggleSidebar: function(e) {
-      if (e) e.stop();
-      Layout.sidebar.toggle();
-    },
+    // this is not even used
+    // toggleSidebar: function(e) {
+    //   if (e) e.stop();
+    //   Layout.sidebar.toggle();
+    // },
     showShortcutDialog: function(e) {
       if (e) e.stop();
       var html = '<div class="modalWrap modal_kbd">' +
